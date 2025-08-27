@@ -1,4 +1,4 @@
-package org.com.imaapi.service;
+package org.com.imaapi.core.adapter.repositoryImpl;
 
 import org.com.imaapi.model.consulta.dto.ConsultaDto;
 import org.com.imaapi.model.consulta.input.ConsultaInput;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 import java.time.LocalDate;
 
-public interface ConsultaService {
+public interface ConsultaServiceImpl {
     ResponseEntity<ConsultaOutput> criarEvento(ConsultaInput consultaInput);
 
     ResponseEntity<List<ConsultaDto>> getConsultasDia(String user);
@@ -38,7 +38,6 @@ public interface ConsultaService {
 
     public ResponseEntity<ConsultaDto> getConsultaPorId(Integer id);
     
-    // Novos métodos
     List<ConsultaOutput> buscarConsultasPorDia(String user, LocalDate data);
     
     List<ConsultaOutput> buscarHistoricoConsultas(String user);
@@ -49,6 +48,5 @@ public interface ConsultaService {
     
     void remarcarConsulta(Integer id, ConsultaRemarcarInput input);
     
-    // Cancel consultation method
     ResponseEntity<ConsultaDto> cancelarConsulta(Integer id);
 }

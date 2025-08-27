@@ -1,4 +1,4 @@
-package org.com.imaapi.service;
+package org.com.imaapi.core.adapter.repositoryImpl;
 
 import org.com.imaapi.model.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
 import org.com.imaapi.model.usuario.input.UsuarioInputPrimeiraFase;
@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Map;
 
-public interface PerfilService {
+public interface PerfilServiceImpl {
     // Métodos genéricos para buscar e atualizar dados
     UsuarioDadosPessoaisOutput buscarDadosPessoaisPorId(Integer usuarioId);
     EnderecoOutput buscarEnderecoPorId(Integer usuarioId);

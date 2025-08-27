@@ -1,4 +1,4 @@
-package org.com.imaapi.service;
+package org.com.imaapi.core.adapter.repositoryImpl;
 
 import org.com.imaapi.model.usuario.Ficha;
 import org.com.imaapi.model.usuario.Usuario;
@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.List;
 import java.util.Optional;
 
-public interface UsuarioService {
+public interface UsuarioServiceImpl {
     Usuario cadastrarPrimeiraFase(UsuarioInputPrimeiraFase usuarioInputPrimeiraFase);
     
     Usuario cadastrarPrimeiraFaseVoluntario(UsuarioInputPrimeiraFase usuarioInputPrimeiraFase);    Usuario cadastrarSegundaFase(Integer idUsuario, UsuarioInputSegundaFase usuarioInputSegundaFase);

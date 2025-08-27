@@ -1,5 +1,4 @@
-package org.com.imaapi.controller;
-
+package org.com.imaapi.core.adapter.controller;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

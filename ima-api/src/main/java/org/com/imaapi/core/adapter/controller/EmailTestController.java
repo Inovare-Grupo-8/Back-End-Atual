@@ -1,6 +1,6 @@
-package org.com.imaapi.controller;
+package org.com.imaapi.core.adapter.controller;
 
-import org.com.imaapi.service.EmailService;
+import org.com.imaapi.core.adapter.repositoryImpl.EmailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmailTestController {
 
     @Autowired
-    private EmailService emailService;
+    private EmailServiceImpl emailService;
 
     @GetMapping("/test-connection")
     public ResponseEntity<String> testEmailConnection(@RequestParam String email) {

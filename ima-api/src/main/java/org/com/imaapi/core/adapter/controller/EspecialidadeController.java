@@ -1,9 +1,9 @@
-package org.com.imaapi.controller;
+package org.com.imaapi.core.adapter.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.com.imaapi.model.especialidade.dto.EspecialidadeDto;
-import org.com.imaapi.service.EspecialidadeService;
+import org.com.imaapi.core.adapter.repositoryImpl.EspecialidadeServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EspecialidadeController {
 
-    private final EspecialidadeService especialidadeService;
+    private final EspecialidadeServiceImpl especialidadeService;
 
     @PostMapping
     @Operation(summary = "Criar uma nova especialidade")

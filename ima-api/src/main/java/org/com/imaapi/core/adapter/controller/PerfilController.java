@@ -1,4 +1,4 @@
-package org.com.imaapi.controller;
+package org.com.imaapi.core.adapter.controller;
 
 import jakarta.validation.Valid;
 import org.com.imaapi.model.usuario.Usuario;
@@ -10,14 +10,14 @@ import org.com.imaapi.model.usuario.output.EnderecoOutput;
 import org.com.imaapi.model.usuario.output.UsuarioDadosPessoaisOutput;
 import org.com.imaapi.model.usuario.output.UsuarioOutput;
 import org.com.imaapi.repository.UsuarioRepository;
-import org.com.imaapi.service.PerfilService;
+import org.com.imaapi.core.adapter.repositoryImpl.PerfilServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.com.imaapi.service.AssistenteSocialService;
+import org.com.imaapi.core.adapter.repositoryImpl.AssistenteSocialServiceImpl;
 import org.com.imaapi.model.usuario.output.AssistenteSocialOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +33,11 @@ import java.util.Map;
 public class PerfilController {
 
     @Autowired
-    private PerfilService perfilService;
+    private PerfilServiceImpl perfilService;
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
-    private AssistenteSocialService assistenteSocialService;
+    private AssistenteSocialServiceImpl assistenteSocialService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PerfilController.class);
 

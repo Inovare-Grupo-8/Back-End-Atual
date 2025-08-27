@@ -1,5 +1,5 @@
-package org.com.imaapi.service;
+package org.com.imaapi.core.adapter.repositoryImpl;
 
-public interface EmailService {
+public interface EmailServiceImpl {
     public String enviarEmail(String destinatario, String nome, String assunto);
 }

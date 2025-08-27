@@ -1,5 +1,4 @@
-package org.com.imaapi.controller;
-
+package org.com.imaapi.core.adapter.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
@@ -10,8 +9,7 @@ import org.com.imaapi.model.consulta.input.ConsultaRemarcarInput;
 import org.com.imaapi.model.consulta.output.ConsultaOutput;
 import org.com.imaapi.model.enums.ModalidadeConsulta;
 import org.com.imaapi.model.enums.StatusConsulta;
-import org.com.imaapi.service.ConsultaService;
-import org.com.imaapi.util.JsonValidator;
+import org.com.imaapi.core.adapter.repositoryImpl.ConsultaServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -32,7 +30,7 @@ import java.util.stream.Collectors;
 public class ConsultaController {
 
     @Autowired
-    private ConsultaService consultaService;
+    private ConsultaServiceImpl consultaService;
 
     @PostMapping
     public ResponseEntity<ConsultaOutput> criarEvento(@RequestBody @Valid ConsultaInput consultaInput) {
