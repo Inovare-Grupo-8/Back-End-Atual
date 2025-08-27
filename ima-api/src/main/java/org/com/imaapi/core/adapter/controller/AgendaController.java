@@ -1,7 +1,7 @@
-package org.com.imaapi.controller;
+package org.com.imaapi.core.adapter.controller;
 
 import org.com.imaapi.model.consulta.output.ConsultaOutput;
-import org.com.imaapi.service.ConsultaService;
+import org.com.imaapi.core.adapter.repositoryImpl.ConsultaServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 public class AgendaController {
 
     @Autowired
-    private ConsultaService consultaService;
+    private ConsultaServiceImpl consultaService;
 
     @GetMapping("/dia")
     public ResponseEntity<List<ConsultaOutput>> listarConsultasPorDia(

@@ -1,9 +1,9 @@
-package org.com.imaapi.controller;
+package org.com.imaapi.core.adapter.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.com.imaapi.model.usuario.input.AssistenteSocialInput;
 import org.com.imaapi.model.usuario.output.AssistenteSocialOutput;
-import org.com.imaapi.service.AssistenteSocialService;
+import org.com.imaapi.core.adapter.repositoryImpl.AssistenteSocialServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AssistenteSocialController {
 
-    private final AssistenteSocialService assistenteSocialService;
+    private final AssistenteSocialServiceImpl assistenteSocialService;
 
     @PostMapping
     public ResponseEntity<AssistenteSocialOutput> cadastrar(@RequestBody AssistenteSocialInput input) {

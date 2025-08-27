@@ -1,8 +1,8 @@
-package org.com.imaapi.service;
+package org.com.imaapi.core.adapter.repositoryImpl;
 
 import org.com.imaapi.model.usuario.input.VoluntarioInput;
 
-public interface VoluntarioService {
+public interface VoluntarioServiceImpl {
     public void cadastrarVoluntario(VoluntarioInput voluntarioInput);
 
     public void atualizarVoluntario(VoluntarioInput voluntarioInput);

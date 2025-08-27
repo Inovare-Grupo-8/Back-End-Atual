@@ -1,4 +1,4 @@
-package org.com.imaapi.controller;
+package org.com.imaapi.core.adapter.controller;
 
 import lombok.Data;
 import lombok.Getter;

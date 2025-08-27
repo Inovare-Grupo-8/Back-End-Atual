@@ -1,7 +1,7 @@
-package org.com.imaapi.controller;
+package org.com.imaapi.core.adapter.controller;
 
 import org.com.imaapi.model.consulta.output.ConsultaOutput;
-import org.com.imaapi.service.ConsultaService;
+import org.com.imaapi.core.adapter.repositoryImpl.ConsultaServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class HistoricoController {
 
     @Autowired
-    private ConsultaService consultaService;
+    private ConsultaServiceImpl consultaService;
     
     @GetMapping("/{consultaId}")
     public ResponseEntity<ConsultaOutput> detalharConsulta(

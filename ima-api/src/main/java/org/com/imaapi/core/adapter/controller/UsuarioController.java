@@ -1,4 +1,4 @@
-package org.com.imaapi.controller;
+package org.com.imaapi.core.adapter.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -11,8 +11,8 @@ import org.com.imaapi.model.usuario.input.UsuarioInputSegundaFase;
 import org.com.imaapi.model.usuario.output.*;
 import org.com.imaapi.repository.TelefoneRepository;
 import org.com.imaapi.repository.VoluntarioRepository;
-import org.com.imaapi.service.EnderecoService;
-import org.com.imaapi.service.UsuarioService;
+import org.com.imaapi.core.adapter.repositoryImpl.EnderecoServiceImpl;
+import org.com.imaapi.core.adapter.repositoryImpl.UsuarioServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +32,10 @@ public class UsuarioController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioServiceImpl usuarioService;
 
     @Autowired
-    private EnderecoService enderecoService;
+    private EnderecoServiceImpl enderecoService;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioController.class);

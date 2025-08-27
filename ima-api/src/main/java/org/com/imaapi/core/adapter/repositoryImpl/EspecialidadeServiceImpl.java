@@ -1,11 +1,11 @@
-package org.com.imaapi.service;
+package org.com.imaapi.core.adapter.repositoryImpl;
 
 import org.com.imaapi.model.especialidade.dto.EspecialidadeDto;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public interface EspecialidadeService {
+public interface EspecialidadeServiceImpl {
     ResponseEntity<EspecialidadeDto> criar(EspecialidadeDto especialidadeDto);
 
     ResponseEntity<EspecialidadeDto> atualizar(Integer id, EspecialidadeDto especialidadeDto);

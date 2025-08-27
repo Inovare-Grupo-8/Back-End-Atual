@@ -1,4 +1,4 @@
-package org.com.imaapi.service;
+package org.com.imaapi.core.adapter.repositoryImpl;
 
 import org.com.imaapi.model.usuario.Endereco;
 import org.com.imaapi.model.usuario.input.EnderecoInput;
@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-public interface EnderecoService {
+public interface EnderecoServiceImpl {
     ResponseEntity<EnderecoOutput> buscaEndereco(String cep, String numero, String complemento);
 
     List<EnderecoOutput> listarEnderecos();
