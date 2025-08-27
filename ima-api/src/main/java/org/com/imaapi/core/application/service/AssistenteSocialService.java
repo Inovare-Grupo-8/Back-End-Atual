@@ -1,4 +1,3 @@
-package org.com.imaapi.service;
 
 import lombok.RequiredArgsConstructor;
 import org.com.imaapi.model.enums.Genero;
