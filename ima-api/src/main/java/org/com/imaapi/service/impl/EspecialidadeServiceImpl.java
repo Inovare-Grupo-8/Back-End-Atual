@@ -1,8 +1,8 @@
 package org.com.imaapi.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.com.imaapi.model.especialidade.Especialidade;
-import org.com.imaapi.model.especialidade.dto.EspecialidadeDto;
+import org.com.imaapi.domain.model.especialidade.Especialidade;
+import org.com.imaapi.domain.model.especialidade.dto.EspecialidadeDto;
 import org.com.imaapi.repository.EspecialidadeRepository;
 import org.com.imaapi.service.EspecialidadeService;
 import org.springframework.http.HttpStatus;

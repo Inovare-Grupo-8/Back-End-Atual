@@ -1,9 +1,9 @@
 package org.com.imaapi.service;
 
-import org.com.imaapi.model.consulta.dto.ConsultaDto;
-import org.com.imaapi.model.consulta.input.ConsultaInput;
-import org.com.imaapi.model.consulta.input.ConsultaRemarcarInput;
-import org.com.imaapi.model.consulta.output.ConsultaOutput;
+import org.com.imaapi.domain.model.consulta.dto.ConsultaDto;
+import org.com.imaapi.domain.model.consulta.input.ConsultaInput;
+import org.com.imaapi.domain.model.consulta.input.ConsultaRemarcarInput;
+import org.com.imaapi.domain.model.consulta.output.ConsultaOutput;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

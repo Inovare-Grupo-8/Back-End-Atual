@@ -1,14 +1,14 @@
 package org.com.imaapi.service.impl;
 
-import org.com.imaapi.model.usuario.*;
-import org.com.imaapi.model.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
-import org.com.imaapi.model.usuario.input.VoluntarioDadosProfissionaisInput;
-import org.com.imaapi.model.usuario.output.EnderecoOutput;
-import org.com.imaapi.model.usuario.output.UsuarioDadosPessoaisOutput;
-import org.com.imaapi.model.usuario.output.UsuarioOutput;
-import org.com.imaapi.model.especialidade.Especialidade;
-import org.com.imaapi.model.enums.TipoUsuario;
-import org.com.imaapi.model.enums.Funcao;
+import org.com.imaapi.domain.model.usuario.*;
+import org.com.imaapi.domain.model.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
+import org.com.imaapi.domain.model.usuario.input.VoluntarioDadosProfissionaisInput;
+import org.com.imaapi.domain.model.usuario.output.EnderecoOutput;
+import org.com.imaapi.domain.model.usuario.output.UsuarioDadosPessoaisOutput;
+import org.com.imaapi.domain.model.usuario.output.UsuarioOutput;
+import org.com.imaapi.domain.model.especialidade.Especialidade;
+import org.com.imaapi.domain.model.enums.TipoUsuario;
+import org.com.imaapi.domain.model.enums.Funcao;
 import org.com.imaapi.repository.*;
 import org.com.imaapi.service.EnderecoService;
 import org.com.imaapi.service.FotoService;

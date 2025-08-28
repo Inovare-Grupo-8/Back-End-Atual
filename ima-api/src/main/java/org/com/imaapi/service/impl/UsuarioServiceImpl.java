@@ -1,13 +1,13 @@
 package org.com.imaapi.service.impl;
 
 import org.com.imaapi.config.GerenciadorTokenJwt;
-import org.com.imaapi.model.enums.Genero;
-import org.com.imaapi.model.enums.TipoUsuario;
-import org.com.imaapi.model.usuario.*;
-import org.com.imaapi.model.usuario.input.UsuarioInputPrimeiraFase;
-import org.com.imaapi.model.usuario.input.UsuarioInputSegundaFase;
-import org.com.imaapi.model.usuario.input.VoluntarioInput;
-import org.com.imaapi.model.usuario.output.*;
+import org.com.imaapi.domain.model.enums.Genero;
+import org.com.imaapi.domain.model.enums.TipoUsuario;
+import org.com.imaapi.domain.model.usuario.*;
+import org.com.imaapi.domain.model.usuario.output.*;
+import org.com.imaapi.domain.model.usuario.input.UsuarioInputPrimeiraFase;
+import org.com.imaapi.domain.model.usuario.input.UsuarioInputSegundaFase;
+import org.com.imaapi.domain.model.usuario.input.VoluntarioInput;
 import org.com.imaapi.repository.*;
 import org.com.imaapi.service.EmailService;
 import org.com.imaapi.service.EnderecoService;

@@ -3,8 +3,8 @@ package org.com.imaapi.service.pagamento;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.com.imaapi.config.ConfigCoraPagamento;
-import org.com.imaapi.model.pagamento.dto.TokenRequest;
-import org.com.imaapi.model.pagamento.dto.TokenResponse;
+import org.com.imaapi.domain.model.pagamento.dto.TokenRequest;
+import org.com.imaapi.domain.model.pagamento.dto.TokenResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

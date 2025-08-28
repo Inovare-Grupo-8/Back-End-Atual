@@ -2,7 +2,7 @@ package org.com.imaapi.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.com.imaapi.model.especialidade.dto.EspecialidadeDto;
+import org.com.imaapi.domain.model.especialidade.dto.EspecialidadeDto;
 import org.com.imaapi.service.EspecialidadeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

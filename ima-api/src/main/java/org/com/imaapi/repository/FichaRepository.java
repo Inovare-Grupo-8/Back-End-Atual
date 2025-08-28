@@ -1,7 +1,7 @@
 package org.com.imaapi.repository;
 
-import org.com.imaapi.model.usuario.Ficha;
-import org.com.imaapi.model.usuario.Usuario;
+import org.com.imaapi.domain.model.usuario.Ficha;
+import org.com.imaapi.domain.model.usuario.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

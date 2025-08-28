@@ -1,13 +1,13 @@
 package org.com.imaapi.service;
 
-import org.com.imaapi.model.usuario.Ficha;
-import org.com.imaapi.model.usuario.Usuario;
-import org.com.imaapi.model.usuario.input.UsuarioInputPrimeiraFase;
-import org.com.imaapi.model.usuario.input.UsuarioInputSegundaFase;
-import org.com.imaapi.model.usuario.output.UsuarioListarOutput;
-import org.com.imaapi.model.usuario.output.UsuarioTokenOutput;
-import org.com.imaapi.model.usuario.output.UsuarioClassificacaoOutput;
-import org.com.imaapi.model.usuario.output.VoluntarioListagemOutput;
+import org.com.imaapi.domain.model.usuario.Ficha;
+import org.com.imaapi.domain.model.usuario.Usuario;
+import org.com.imaapi.domain.model.usuario.input.UsuarioInputPrimeiraFase;
+import org.com.imaapi.domain.model.usuario.input.UsuarioInputSegundaFase;
+import org.com.imaapi.domain.model.usuario.output.UsuarioListarOutput;
+import org.com.imaapi.domain.model.usuario.output.UsuarioTokenOutput;
+import org.com.imaapi.domain.model.usuario.output.UsuarioClassificacaoOutput;
+import org.com.imaapi.domain.model.usuario.output.VoluntarioListagemOutput;
 
 import org.springframework.security.oauth2.core.user.OAuth2User;
 

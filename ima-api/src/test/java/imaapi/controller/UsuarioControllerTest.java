@@ -1,12 +1,9 @@
 package imaapi.controller;
 
 import org.com.imaapi.controller.UsuarioController;
-import org.com.imaapi.model.usuario.Usuario;
-import org.com.imaapi.model.usuario.input.UsuarioAutenticacaoInput;
-import org.com.imaapi.model.usuario.input.UsuarioInputPrimeiraFase;
-import org.com.imaapi.model.usuario.input.UsuarioInputSegundaFase;
-import org.com.imaapi.model.usuario.output.UsuarioListarOutput;
-import org.com.imaapi.model.usuario.output.UsuarioTokenOutput;
+import org.com.imaapi.domain.model.usuario.Usuario;
+import org.com.imaapi.domain.model.usuario.input.UsuarioInputSegundaFase;
+import org.com.imaapi.domain.model.usuario.output.UsuarioListarOutput;
 import org.com.imaapi.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,10 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;

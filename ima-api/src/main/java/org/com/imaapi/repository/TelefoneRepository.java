@@ -1,6 +1,6 @@
 package org.com.imaapi.repository;
 
-import org.com.imaapi.model.usuario.Telefone;
+import org.com.imaapi.domain.model.usuario.Telefone;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

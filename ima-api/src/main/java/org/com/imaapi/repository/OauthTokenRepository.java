@@ -1,6 +1,6 @@
 package org.com.imaapi.repository;
 
-import org.com.imaapi.model.oauth.OauthToken;
+import org.com.imaapi.domain.model.oauth.OauthToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,8 @@
 package org.com.imaapi.service.impl;
 
-import org.com.imaapi.model.usuario.Ficha;
-import org.com.imaapi.model.usuario.Usuario;
-import org.com.imaapi.model.usuario.output.UsuarioDetalhesOutput;
+import org.com.imaapi.domain.model.usuario.Ficha;
+import org.com.imaapi.domain.model.usuario.Usuario;
+import org.com.imaapi.domain.model.usuario.output.UsuarioDetalhesOutput;
 import org.com.imaapi.repository.FichaRepository;
 import org.com.imaapi.repository.UsuarioRepository;
 import org.slf4j.Logger;

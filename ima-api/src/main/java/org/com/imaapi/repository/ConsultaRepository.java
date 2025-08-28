@@ -1,7 +1,7 @@
 package org.com.imaapi.repository;
 
-import org.com.imaapi.model.consulta.Consulta;
-import org.com.imaapi.model.enums.StatusConsulta;
+import org.com.imaapi.domain.model.consulta.Consulta;
+import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

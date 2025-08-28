@@ -2,7 +2,7 @@ package org.com.imaapi.service.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.com.imaapi.model.enums.TipoUsuario;
+import org.com.imaapi.domain.model.enums.TipoUsuario;
 import java.time.LocalDate;
 
 @Data

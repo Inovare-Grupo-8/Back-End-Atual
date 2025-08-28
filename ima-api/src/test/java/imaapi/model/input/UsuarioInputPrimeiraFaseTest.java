@@ -1,8 +1,7 @@
 package imaapi.model.input;
 
-import org.com.imaapi.model.usuario.input.UsuarioInputPrimeiraFase;
+import org.com.imaapi.domain.model.usuario.input.UsuarioInputPrimeiraFase;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 

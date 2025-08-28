@@ -1,7 +1,7 @@
 package org.com.imaapi.service.impl;
 
-import org.com.imaapi.model.usuario.Voluntario;
-import org.com.imaapi.model.usuario.input.VoluntarioInput;
+import org.com.imaapi.domain.model.usuario.Voluntario;
+import org.com.imaapi.domain.model.usuario.input.VoluntarioInput;
 import org.com.imaapi.repository.UsuarioRepository;
 import org.com.imaapi.repository.VoluntarioRepository;
 import org.com.imaapi.service.VoluntarioService;

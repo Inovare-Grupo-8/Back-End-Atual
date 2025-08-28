@@ -1,6 +1,6 @@
 package org.com.imaapi.service;
 
-import org.com.imaapi.model.usuario.input.VoluntarioInput;
+import org.com.imaapi.domain.model.usuario.input.VoluntarioInput;
 
 public interface VoluntarioService {
     public void cadastrarVoluntario(VoluntarioInput voluntarioInput);

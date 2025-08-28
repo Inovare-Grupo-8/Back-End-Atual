@@ -1,9 +1,9 @@
 package org.com.imaapi.service.pagamento;
 
-import org.com.imaapi.model.pagamento.dto.BoletoPaymentResponse;
-import org.com.imaapi.model.pagamento.dto.Charge;
-import org.com.imaapi.model.pagamento.dto.PixPaymentResponse;
-import org.com.imaapi.model.pagamento.dto.TEDPaymentResponse;
+import org.com.imaapi.domain.model.pagamento.dto.BoletoPaymentResponse;
+import org.com.imaapi.domain.model.pagamento.dto.Charge;
+import org.com.imaapi.domain.model.pagamento.dto.PixPaymentResponse;
+import org.com.imaapi.domain.model.pagamento.dto.TEDPaymentResponse;
 
 public interface PagamentoService {
     PixPaymentResponse realizarPagamentoPix(Charge charge) throws Exception;

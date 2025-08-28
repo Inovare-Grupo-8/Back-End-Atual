@@ -1,16 +1,17 @@
 package org.com.imaapi.service.impl;
 
-import org.com.imaapi.model.consulta.AvaliacaoConsulta;
-import org.com.imaapi.model.consulta.Consulta;
-import org.com.imaapi.model.consulta.FeedbackConsulta;
-import org.com.imaapi.model.consulta.dto.ConsultaDto;
-import org.com.imaapi.model.consulta.input.ConsultaInput;
-import org.com.imaapi.model.consulta.input.ConsultaRemarcarInput;
-import org.com.imaapi.model.consulta.mapper.ConsultaMapper;
-import org.com.imaapi.model.consulta.output.ConsultaOutput;
-import org.com.imaapi.model.enums.StatusConsulta;
-import org.com.imaapi.model.especialidade.Especialidade;
-import org.com.imaapi.model.usuario.Usuario;
+import org.com.imaapi.domain.model.usuario.output.UsuarioDetalhesOutput;
+import org.com.imaapi.domain.model.consulta.AvaliacaoConsulta;
+import org.com.imaapi.domain.model.consulta.Consulta;
+import org.com.imaapi.domain.model.consulta.FeedbackConsulta;
+import org.com.imaapi.domain.model.consulta.dto.ConsultaDto;
+import org.com.imaapi.domain.model.consulta.input.ConsultaInput;
+import org.com.imaapi.domain.model.consulta.input.ConsultaRemarcarInput;
+import org.com.imaapi.domain.model.consulta.mapper.ConsultaMapper;
+import org.com.imaapi.domain.model.consulta.output.ConsultaOutput;
+import org.com.imaapi.domain.model.enums.StatusConsulta;
+import org.com.imaapi.domain.model.especialidade.Especialidade;
+import org.com.imaapi.domain.model.usuario.Usuario;
 import org.com.imaapi.repository.*;
 import org.com.imaapi.service.ConsultaService;
 import org.slf4j.Logger;
@@ -706,9 +707,9 @@ public class ConsultaServiceImpl implements ConsultaService {
             org.springframework.security.core.Authentication authentication =
                     org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
 
-            if (authentication != null && authentication.getPrincipal() instanceof org.com.imaapi.model.usuario.output.UsuarioDetalhesOutput) {
-                org.com.imaapi.model.usuario.output.UsuarioDetalhesOutput userDetails =
-                        (org.com.imaapi.model.usuario.output.UsuarioDetalhesOutput) authentication.getPrincipal();
+            if (authentication != null && authentication.getPrincipal() instanceof UsuarioDetalhesOutput) {
+                UsuarioDetalhesOutput userDetails =
+                        (UsuarioDetalhesOutput) authentication.getPrincipal();
 
                 Usuario usuario = new Usuario();
                 usuario.setIdUsuario(userDetails.getIdUsuario());

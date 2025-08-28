@@ -1,6 +1,6 @@
 package org.com.imaapi.controller;
 
-import org.com.imaapi.model.consulta.output.ConsultaOutput;
+import org.com.imaapi.domain.model.consulta.output.ConsultaOutput;
 import org.com.imaapi.service.ConsultaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

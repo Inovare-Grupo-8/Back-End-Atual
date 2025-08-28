@@ -1,11 +1,11 @@
 package org.com.imaapi.service;
 
 import lombok.RequiredArgsConstructor;
-import org.com.imaapi.model.enums.Genero;
-import org.com.imaapi.model.usuario.*;
-import org.com.imaapi.model.usuario.input.AssistenteSocialInput;
-import org.com.imaapi.model.usuario.input.EnderecoInput;
-import org.com.imaapi.model.usuario.output.AssistenteSocialOutput;
+import org.com.imaapi.domain.model.enums.Genero;
+import org.com.imaapi.domain.model.usuario.*;
+import org.com.imaapi.domain.model.usuario.input.AssistenteSocialInput;
+import org.com.imaapi.domain.model.usuario.input.EnderecoInput;
+import org.com.imaapi.domain.model.usuario.output.AssistenteSocialOutput;
 import org.com.imaapi.repository.FichaRepository;
 import org.com.imaapi.repository.TelefoneRepository;
 import org.com.imaapi.repository.UsuarioRepository;
@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class AssistenteSocialService {
 
         Endereco endereco = enderecoService.criarOuAtualizarEndereco(enderecoInput);
         // Create and set up Ficha with all user data
-        Ficha ficha = new Ficha();        
+        Ficha ficha = new Ficha();
         ficha.setNome(input.getNome());
         ficha.setSobrenome(input.getSobrenome());
         ficha.setCpf(input.getCpf());

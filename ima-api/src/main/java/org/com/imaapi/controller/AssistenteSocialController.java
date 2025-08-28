@@ -1,8 +1,8 @@
 package org.com.imaapi.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.com.imaapi.model.usuario.input.AssistenteSocialInput;
-import org.com.imaapi.model.usuario.output.AssistenteSocialOutput;
+import org.com.imaapi.domain.model.usuario.input.AssistenteSocialInput;
+import org.com.imaapi.domain.model.usuario.output.AssistenteSocialOutput;
 import org.com.imaapi.service.AssistenteSocialService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -2,8 +2,8 @@ package org.com.imaapi.service.pagamento;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.com.imaapi.config.ConfigCoraPagamento;
-import org.com.imaapi.model.pagamento.dto.Charge;
-import org.com.imaapi.model.pagamento.dto.PixPaymentResponse;
+import org.com.imaapi.domain.model.pagamento.dto.Charge;
+import org.com.imaapi.domain.model.pagamento.dto.PixPaymentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

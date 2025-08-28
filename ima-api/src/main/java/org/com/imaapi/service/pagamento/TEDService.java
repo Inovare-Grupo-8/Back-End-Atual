@@ -3,7 +3,7 @@ package org.com.imaapi.service.pagamento;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.com.imaapi.config.ConfigCoraPagamento;
-import org.com.imaapi.model.pagamento.dto.TEDPaymentResponse;
+import org.com.imaapi.domain.model.pagamento.dto.TEDPaymentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

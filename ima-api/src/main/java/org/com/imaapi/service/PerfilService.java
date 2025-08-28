@@ -1,11 +1,10 @@
 package org.com.imaapi.service;
 
-import org.com.imaapi.model.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
-import org.com.imaapi.model.usuario.input.UsuarioInputPrimeiraFase;
-import org.com.imaapi.model.usuario.input.VoluntarioDadosProfissionaisInput;
-import org.com.imaapi.model.usuario.output.EnderecoOutput;
-import org.com.imaapi.model.usuario.output.UsuarioDadosPessoaisOutput;
-import org.com.imaapi.model.usuario.output.UsuarioOutput;
+import org.com.imaapi.domain.model.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
+import org.com.imaapi.domain.model.usuario.input.VoluntarioDadosProfissionaisInput;
+import org.com.imaapi.domain.model.usuario.output.EnderecoOutput;
+import org.com.imaapi.domain.model.usuario.output.UsuarioDadosPessoaisOutput;
+import org.com.imaapi.domain.model.usuario.output.UsuarioOutput;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

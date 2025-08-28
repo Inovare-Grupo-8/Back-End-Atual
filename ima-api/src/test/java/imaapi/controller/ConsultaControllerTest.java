@@ -1,8 +1,8 @@
 package imaapi.controller;
 
 import org.com.imaapi.controller.ConsultaController;
-import org.com.imaapi.model.consulta.input.ConsultaInput;
-import org.com.imaapi.model.consulta.output.ConsultaOutput;
+import org.com.imaapi.domain.model.consulta.input.ConsultaInput;
+import org.com.imaapi.domain.model.consulta.output.ConsultaOutput;
 import org.com.imaapi.service.ConsultaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

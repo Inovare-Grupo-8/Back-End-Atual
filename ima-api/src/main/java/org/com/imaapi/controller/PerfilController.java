@@ -1,14 +1,12 @@
 package org.com.imaapi.controller;
 
 import jakarta.validation.Valid;
-import org.com.imaapi.model.usuario.Usuario;
-import org.com.imaapi.model.usuario.Voluntario;
-import org.com.imaapi.model.usuario.input.EnderecoInput;
-import org.com.imaapi.model.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
-import org.com.imaapi.model.usuario.input.VoluntarioDadosProfissionaisInput;
-import org.com.imaapi.model.usuario.output.EnderecoOutput;
-import org.com.imaapi.model.usuario.output.UsuarioDadosPessoaisOutput;
-import org.com.imaapi.model.usuario.output.UsuarioOutput;
+import org.com.imaapi.domain.model.usuario.input.EnderecoInput;
+import org.com.imaapi.domain.model.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
+import org.com.imaapi.domain.model.usuario.input.VoluntarioDadosProfissionaisInput;
+import org.com.imaapi.domain.model.usuario.output.EnderecoOutput;
+import org.com.imaapi.domain.model.usuario.output.UsuarioDadosPessoaisOutput;
+import org.com.imaapi.domain.model.usuario.output.UsuarioOutput;
 import org.com.imaapi.repository.UsuarioRepository;
 import org.com.imaapi.service.PerfilService;
 import org.slf4j.Logger;
@@ -18,9 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.com.imaapi.service.AssistenteSocialService;
-import org.com.imaapi.model.usuario.output.AssistenteSocialOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.com.imaapi.domain.model.usuario.output.AssistenteSocialOutput;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;

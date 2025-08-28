@@ -1,6 +1,6 @@
 package org.com.imaapi.controller;
 
-import org.com.imaapi.model.usuario.Usuario;
+import org.com.imaapi.domain.model.usuario.Usuario;
 import org.com.imaapi.repository.UsuarioRepository;
 import org.com.imaapi.service.impl.OauthTokenServiceImpl;
 import org.springframework.http.HttpStatus;

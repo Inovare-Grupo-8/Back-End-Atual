@@ -1,6 +1,6 @@
 package org.com.imaapi.service;
 
-import org.com.imaapi.model.especialidade.dto.EspecialidadeDto;
+import org.com.imaapi.domain.model.especialidade.dto.EspecialidadeDto;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

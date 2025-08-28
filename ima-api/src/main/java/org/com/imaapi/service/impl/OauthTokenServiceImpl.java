@@ -1,7 +1,7 @@
 package org.com.imaapi.service.impl;
 
-import org.com.imaapi.model.oauth.OauthToken;
-import org.com.imaapi.model.usuario.Usuario;
+import org.com.imaapi.domain.model.oauth.OauthToken;
+import org.com.imaapi.domain.model.usuario.Usuario;
 import org.com.imaapi.repository.OauthTokenRepository;
 import org.com.imaapi.repository.UsuarioRepository;
 import org.com.imaapi.service.OauthTokenService;

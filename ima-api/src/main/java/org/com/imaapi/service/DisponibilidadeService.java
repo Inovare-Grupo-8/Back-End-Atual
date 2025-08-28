@@ -1,10 +1,6 @@
 package org.com.imaapi.service;
 
-import org.com.imaapi.model.usuario.Disponibilidade;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
+import org.com.imaapi.domain.model.usuario.Disponibilidade;
 
 public interface DisponibilidadeService {
     boolean criarDisponibilidade(Integer usuarioId, Disponibilidade disponibilidade);

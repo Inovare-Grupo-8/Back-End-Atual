@@ -3,7 +3,7 @@ package org.com.imaapi.controller;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.validation.Valid;
-import org.com.imaapi.model.usuario.input.DevTokenInput;
+import org.com.imaapi.domain.model.usuario.input.DevTokenInput;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
