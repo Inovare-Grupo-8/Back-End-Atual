@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

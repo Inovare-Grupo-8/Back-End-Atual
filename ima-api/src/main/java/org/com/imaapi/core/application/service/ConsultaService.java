@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import org.com.imaapi.model.consulta.AvaliacaoConsulta;
 import org.com.imaapi.model.consulta.Consulta;
@@ -35,9 +35,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class ConsultaServiceImpl implements ConsultaService {
+public class ConsultaService implements ConsultaService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConsultaServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConsultaService.class);
 
     @Autowired
     private ConsultaRepository consultaRepository;

@@ -1,4 +1,7 @@
-package org.com.imaapi.service;
+package org.com.imaapi.core.application.service;
 
-public interface HistoricoService {
+import org.springframework.stereotype.Service;
+
+@Service
+public class HistoricoService {
 }

@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import org.com.imaapi.model.usuario.Endereco;
 import org.com.imaapi.model.usuario.input.EnderecoInput;
@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EnderecoServiceImpl implements EnderecoService {
+public class EnderecoService implements EnderecoService {
     private static final String ViaCepApi = "https://viacep.com.br/ws/%s/json/";
     private static final Logger LOGGER = LoggerFactory.getLogger(EnderecoService.class);
 
     private final EnderecoRepository enderecoRepository;
 
-    public EnderecoServiceImpl(EnderecoRepository enderecoRepository) {
+    public EnderecoService(EnderecoRepository enderecoRepository) {
         this.enderecoRepository = enderecoRepository;
     }
 

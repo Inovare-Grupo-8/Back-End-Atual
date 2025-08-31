@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import org.com.imaapi.model.oauth.OauthToken;
 import org.com.imaapi.model.usuario.Usuario;
@@ -21,17 +21,17 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class OauthTokenServiceImpl implements OauthTokenService {
+public class OauthTokenService implements OauthTokenService {
 
     private final OauthTokenRepository oauthTokenRepository;
     private final UsuarioRepository usuarioRepository;
     private final ClientRegistrationRepository clientRegistrationRepository;
     private final OAuth2AuthorizedClientManager oauthClientManager;
 
-    public OauthTokenServiceImpl(OauthTokenRepository oauthTokenRepository,
-                                 OAuth2AuthorizedClientManager oauthClientManager,
-                                 UsuarioRepository usuarioRepository,
-                                 ClientRegistrationRepository clientRegistrationRepository) {
+    public OauthTokenService(OauthTokenRepository oauthTokenRepository,
+                             OAuth2AuthorizedClientManager oauthClientManager,
+                             UsuarioRepository usuarioRepository,
+                             ClientRegistrationRepository clientRegistrationRepository) {
         this.oauthTokenRepository = oauthTokenRepository;
         this.oauthClientManager = oauthClientManager;
         this.usuarioRepository = usuarioRepository;

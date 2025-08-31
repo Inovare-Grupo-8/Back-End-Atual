@@ -1,4 +1,4 @@
-package org.com.imaapi.service.models;
+package org.com.imaapi.core.application.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

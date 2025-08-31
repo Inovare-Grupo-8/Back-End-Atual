@@ -10,8 +10,8 @@ import org.com.imaapi.model.usuario.UsuarioMapper;
 import org.com.imaapi.model.usuario.output.UsuarioTokenOutput;
 import org.com.imaapi.repository.FichaRepository;
 import org.com.imaapi.repository.UsuarioRepository;
-import org.com.imaapi.service.impl.OauthTokenServiceImpl;
-import org.com.imaapi.service.impl.UsuarioServiceImpl;
+import org.com.imaapi.core.application.service.OauthTokenService;
+import org.com.imaapi.core.application.service.UsuarioService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,17 +32,17 @@ public class AutenticacaoSucessHandler implements AuthenticationSuccessHandler {
     private final UsuarioRepository usuarioRepository;
     private final FichaRepository fichaRepository;
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
-    private final UsuarioServiceImpl usuarioService;
+    private final UsuarioService usuarioService;
     private final OAuth2AuthorizedClientManager authorizedClientManager;
-    private final OauthTokenServiceImpl oauthTokenService;
+    private final OauthTokenService oauthTokenService;
 
     public AutenticacaoSucessHandler(
             UsuarioRepository usuarioRepository,
             FichaRepository fichaRepository,
             GerenciadorTokenJwt gerenciadorTokenJwt,
-            UsuarioServiceImpl usuarioService,
+            UsuarioService usuarioService,
             OAuth2AuthorizedClientManager authorizedClientManager,
-            OauthTokenServiceImpl oauthTokenService) {
+            OauthTokenService oauthTokenService) {
         this.usuarioRepository = usuarioRepository;
         this.fichaRepository = fichaRepository;
         this.gerenciadorTokenJwt = gerenciadorTokenJwt;

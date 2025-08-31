@@ -1,6 +1,6 @@
 package org.com.imaapi.config;
 
-import org.com.imaapi.service.impl.AutenticacaoServiceImpl;
+import org.com.imaapi.core.application.service.AutenticacaoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -16,10 +16,10 @@ import org.springframework.stereotype.Component;
 public class AutenticacaoProvider implements AuthenticationProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AutenticacaoProvider.class);
 
-    private final AutenticacaoServiceImpl autenticacaoService;
+    private final AutenticacaoService autenticacaoService;
     private final PasswordEncoder passwordEncoder;
 
-    public AutenticacaoProvider(AutenticacaoServiceImpl autenticacaoService, PasswordEncoder passwordEncoder) {
+    public AutenticacaoProvider(AutenticacaoService autenticacaoService, PasswordEncoder passwordEncoder) {
         this.autenticacaoService = autenticacaoService;
         this.passwordEncoder = passwordEncoder;
     }    @Override

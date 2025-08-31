@@ -4,9 +4,9 @@ import org.com.imaapi.config.oauth2.AutenticacaoSucessHandler;
 import org.com.imaapi.config.oauth2.EscopoIncrementalFilter;
 import org.com.imaapi.repository.FichaRepository;
 import org.com.imaapi.repository.UsuarioRepository;
-import org.com.imaapi.service.impl.AutenticacaoServiceImpl;
-import org.com.imaapi.service.impl.OauthTokenServiceImpl;
-import org.com.imaapi.service.impl.UsuarioServiceImpl;
+import org.com.imaapi.core.application.service.AutenticacaoService;
+import org.com.imaapi.core.application.service.OauthTokenService;
+import org.com.imaapi.core.application.service.UsuarioService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -115,9 +115,9 @@ public class SecurityConfiguracao {    private static final AntPathRequestMatche
             UsuarioRepository usuarioRepository,
             FichaRepository fichaRepository,
             GerenciadorTokenJwt gerenciadorTokenJwt,
-            UsuarioServiceImpl usuarioService,
+            UsuarioService usuarioService,
             OAuth2AuthorizedClientManager authorizedClientManager,
-            OauthTokenServiceImpl oauthTokenService) {
+            OauthTokenService oauthTokenService) {
 
         return new AutenticacaoSucessHandler(
                 usuarioRepository,
@@ -132,7 +132,7 @@ public class SecurityConfiguracao {    private static final AntPathRequestMatche
     @Bean
     public EscopoIncrementalFilter escopoIncrementalFilter(
             OAuth2AuthorizedClientManager authorizedClientManager,
-            OauthTokenServiceImpl oauthTokenService,
+            OauthTokenService oauthTokenService,
             UsuarioRepository usuarioRepository) {
         return new EscopoIncrementalFilter(
                 authorizedClientManager,
@@ -147,8 +147,8 @@ public class SecurityConfiguracao {    private static final AntPathRequestMatche
     }
 
     @Bean
-    public AutenticacaoServiceImpl autenticacaoService() {
-        return new AutenticacaoServiceImpl();
+    public AutenticacaoService autenticacaoService() {
+        return new AutenticacaoService();
     }
 
     @Bean

@@ -1,4 +1,4 @@
-package org.com.imaapi.service.pagamento;
+package org.com.imaapi.core.application.pagamento;
 
 import org.com.imaapi.model.pagamento.dto.BoletoPaymentResponse;
 import org.com.imaapi.model.pagamento.dto.Charge;

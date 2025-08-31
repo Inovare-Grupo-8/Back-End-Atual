@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import org.com.imaapi.config.GerenciadorTokenJwt;
 import org.com.imaapi.model.enums.Genero;
@@ -34,8 +34,8 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class UsuarioServiceImpl implements UsuarioService {
-    private static final Logger logger = LoggerFactory.getLogger(UsuarioServiceImpl.class);
+public class UsuarioService implements UsuarioService {
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
     @Autowired
     private TelefoneRepository telefoneRepository;

@@ -2,7 +2,7 @@ package org.com.imaapi.core.adapter.controller;
 
 import org.com.imaapi.model.usuario.Usuario;
 import org.com.imaapi.repository.UsuarioRepository;
-import org.com.imaapi.service.impl.OauthTokenServiceImpl;
+import org.com.imaapi.core.application.service.OauthTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,11 +19,11 @@ import java.util.UUID;
 @RequestMapping("/oauth2")
 public class Oauth2Controller {
 
-    private final OauthTokenServiceImpl oauthTokenService;
+    private final OauthTokenService oauthTokenService;
     private final UsuarioRepository usuarioRepository;
 
     public Oauth2Controller(UsuarioRepository usuarioRepository,
-                            OauthTokenServiceImpl oauthTokenService) {
+                            OauthTokenService oauthTokenService) {
 
         this.usuarioRepository = usuarioRepository;
         this.oauthTokenService = oauthTokenService;

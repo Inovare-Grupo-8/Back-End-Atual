@@ -1,7 +1,9 @@
-package org.com.imaapi.service.pagamento;
+package org.com.imaapi.core.application.pagamento;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.com.imaapi.config.ConfigCoraPagamento;
+import org.com.imaapi.model.pagamento.dto.TEDPaymentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +12,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 @Service
-public class BoletoService {
+public class TEDService {
+
     @Autowired
     private ConfigCoraPagamento config;
 
-    public <BoletoRequest> String gerarBoleto(BoletoRequest request, String token) throws Exception {
-        URL url = new URL(config.getBaseUrl() + "/v2/boletos");
+    public String realizarTed(TEDPaymentResponse request, String token) throws Exception {
+        URL url = new URL(config.getBaseUrl() + "/v2/transfers");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("POST");
@@ -29,14 +32,9 @@ public class BoletoService {
         os.flush();
 
         if (conn.getResponseCode() != 200 && conn.getResponseCode() != 201) {
-            throw new RuntimeException("Erro ao gerar boleto. Código: " + conn.getResponseCode());
+            throw new RuntimeException("Erro ao realizar TED. Código: " + conn.getResponseCode());
         }
 
-        return "Boleto gerado com sucesso!";
+        return "TED realizada com sucesso!";
     }
 }
-
-
-
-
-

@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import org.com.imaapi.model.usuario.Voluntario;
 import org.com.imaapi.model.usuario.input.VoluntarioInput;
@@ -15,9 +15,9 @@ import java.time.LocalDate;
 
 @Service
 @Transactional
-public class VoluntarioServiceImpl implements VoluntarioService {
+public class VoluntarioService implements VoluntarioService {
 
-    private static final Logger logger = LoggerFactory.getLogger(VoluntarioServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(VoluntarioService.class);
 
     @Autowired
     private VoluntarioRepository voluntarioRepository;

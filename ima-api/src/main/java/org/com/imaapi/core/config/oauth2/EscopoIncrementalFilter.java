@@ -5,7 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.com.imaapi.repository.UsuarioRepository;
-import org.com.imaapi.service.impl.OauthTokenServiceImpl;
+import org.com.imaapi.core.application.service.OauthTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -26,12 +26,12 @@ public class EscopoIncrementalFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(EscopoIncrementalFilter.class);
 
     private final OAuth2AuthorizedClientManager authorizedClientManager;
-    private final OauthTokenServiceImpl oauthTokenService;
+    private final OauthTokenService oauthTokenService;
     private final UsuarioRepository usuarioRepository;
 
     public EscopoIncrementalFilter(
             OAuth2AuthorizedClientManager authorizedClientManager,
-            OauthTokenServiceImpl oauthTokenService,
+            OauthTokenService oauthTokenService,
             UsuarioRepository usuarioRepository
     ) {
         this.authorizedClientManager = authorizedClientManager;

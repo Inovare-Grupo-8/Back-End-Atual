@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import org.com.imaapi.service.FotoService;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-public class FotoServiceImpl implements FotoService {
+public class FotoService implements FotoService {
 
     @Override
     public String salvarFoto(String tipoUsuario, Integer usuarioId, MultipartFile file) throws IOException {

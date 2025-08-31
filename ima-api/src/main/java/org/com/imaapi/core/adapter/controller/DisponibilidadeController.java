@@ -1,7 +1,7 @@
 package org.com.imaapi.core.adapter.controller;
 
 import org.com.imaapi.model.usuario.Disponibilidade;
-import org.com.imaapi.service.impl.DisponibilidadeServiceImpl;
+import org.com.imaapi.core.application.service.DisponibilidadeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/disponibilidade")
 public class DisponibilidadeController {
     @Autowired
-    private DisponibilidadeServiceImpl disponibilidadeService;
+    private DisponibilidadeService disponibilidadeService;
 
     @PostMapping
     public ResponseEntity<Void> criarDisponibilidade(

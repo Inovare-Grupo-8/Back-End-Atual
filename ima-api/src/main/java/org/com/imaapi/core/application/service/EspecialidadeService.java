@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.com.imaapi.model.especialidade.Especialidade;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class EspecialidadeServiceImpl implements EspecialidadeService {
+public class EspecialidadeService implements EspecialidadeService {
 
     private final EspecialidadeRepository especialidadeRepository;
 

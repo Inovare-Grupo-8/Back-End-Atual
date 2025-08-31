@@ -1,4 +1,4 @@
-package org.com.imaapi.service.pagamento;
+package org.com.imaapi.core.application.pagamento;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.com.imaapi.config.ConfigCoraPagamento;

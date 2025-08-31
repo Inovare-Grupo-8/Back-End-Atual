@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import org.com.imaapi.model.usuario.*;
 import org.com.imaapi.model.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
@@ -27,8 +27,8 @@ import java.util.Map;
 
 @Service
 @Transactional
-public class PerfilServiceImpl implements PerfilService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PerfilServiceImpl.class);
+public class PerfilService implements PerfilService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PerfilService.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;

@@ -1,4 +1,4 @@
-package org.com.imaapi.service.impl;
+package org.com.imaapi.core.application.service;
 
 import org.com.imaapi.model.usuario.Ficha;
 import org.com.imaapi.model.usuario.Usuario;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AutenticacaoServiceImpl implements UserDetailsService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AutenticacaoServiceImpl.class);
+public class AutenticacaoService implements UserDetailsService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AutenticacaoService.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
