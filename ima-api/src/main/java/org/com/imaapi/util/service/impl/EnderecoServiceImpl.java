@@ -1,8 +1,8 @@
 package org.com.imaapi.util.service.impl;
 
 import org.com.imaapi.domain.model.usuario.Endereco;
-import org.com.imaapi.domain.model.usuario.input.EnderecoInput;
-import org.com.imaapi.domain.model.usuario.output.EnderecoOutput;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.EnderecoInputDTO;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.EnderecoOutputDTO;
 import org.com.imaapi.repository.EnderecoRepository;
 import org.com.imaapi.util.service.EnderecoService;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class EnderecoServiceImpl implements EnderecoService {
     }
 
     @Override
-    public ResponseEntity<EnderecoOutput> buscaEndereco(String cep, String numero, String complemento) {
+    public ResponseEntity<EnderecoOutputDTO> buscaEndereco(String cep, String numero, String complemento) {
         if (cep == null || cep.trim().isEmpty()) {
             throw new IllegalArgumentException("O CEP não pode ser nulo ou vazio.");
         }
@@ -53,8 +53,8 @@ public class EnderecoServiceImpl implements EnderecoService {
 
         RestTemplate restTemplate = new RestTemplate();
         String url = String.format(ViaCepApi, cep);
-        ResponseEntity<EnderecoOutput> response = restTemplate.getForEntity(url, EnderecoOutput.class);
-        EnderecoOutput enderecoOutput = response.getBody();
+        ResponseEntity<EnderecoOutputDTO> response = restTemplate.getForEntity(url, EnderecoOutputDTO.class);
+        EnderecoOutputDTO enderecoOutput = response.getBody();
 
         if (enderecoOutput == null || enderecoOutput.getCep() == null) {
             throw new RuntimeException("Não consegui obter o endereço com esse CEP: " + cep);
@@ -68,7 +68,7 @@ public class EnderecoServiceImpl implements EnderecoService {
     }
 
     @Override
-    public List<EnderecoOutput> listarEnderecos() {
+    public List<EnderecoOutputDTO> listarEnderecos() {
         List<Endereco> enderecos = enderecoRepository.findAll();
         return enderecos.stream()
                 .map(this::converterParaEnderecoOutput)
@@ -76,7 +76,7 @@ public class EnderecoServiceImpl implements EnderecoService {
     }
 
     @Override
-    public Endereco cadastrarEndereco(EnderecoOutput enderecoOutput, String complemento) {
+    public Endereco cadastrarEndereco(EnderecoOutputDTO enderecoOutput, String complemento) {
         if (enderecoOutput == null || enderecoOutput.getCep() == null) {
             throw new IllegalArgumentException("EndereçoOutput inválido para cadastro");
         }
@@ -96,16 +96,16 @@ public class EnderecoServiceImpl implements EnderecoService {
         endereco.setComplemento(complemento);
         return enderecoRepository.save(endereco);
     }    @Override
-    public Endereco criarOuAtualizarEndereco(EnderecoInput enderecoInput) {
-        if (enderecoInput == null) {
+    public Endereco criarOuAtualizarEndereco(EnderecoInputDTO enderecoInputDTO) {
+        if (enderecoInputDTO == null) {
             throw new IllegalArgumentException("O objeto EnderecoInput não pode ser nulo.");
         }
         
-        LOGGER.info("Iniciando criação/atualização de endereço com CEP: {}", enderecoInput.getCep());
+        LOGGER.info("Iniciando criação/atualização de endereço com CEP: {}", enderecoInputDTO.getCep());
         
-        String cep = formatarCep(enderecoInput.getCep());
-        String numero = enderecoInput.getNumero();
-        String complemento = enderecoInput.getComplemento();
+        String cep = formatarCep(enderecoInputDTO.getCep());
+        String numero = enderecoInputDTO.getNumero();
+        String complemento = enderecoInputDTO.getComplemento();
 
         if (!isValidCep(cep)) {
             throw new IllegalArgumentException("CEP inválido. Deve conter 8 dígitos.");
@@ -125,9 +125,9 @@ public class EnderecoServiceImpl implements EnderecoService {
         }
 
         // Se não existe, busca o endereço na API do ViaCEP e cria um novo
-        EnderecoOutput enderecoDetalhes = null;
+        EnderecoOutputDTO enderecoDetalhes = null;
         try {
-            ResponseEntity<EnderecoOutput> response = buscaEndereco(cep, numero, complemento);
+            ResponseEntity<EnderecoOutputDTO> response = buscaEndereco(cep, numero, complemento);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 enderecoDetalhes = response.getBody();
             }
@@ -143,8 +143,8 @@ public class EnderecoServiceImpl implements EnderecoService {
         return cadastrarEndereco(enderecoDetalhes, complemento);
     }
 
-    private EnderecoOutput converterParaEnderecoOutput(Endereco endereco) {
-        EnderecoOutput output = new EnderecoOutput();
+    private EnderecoOutputDTO converterParaEnderecoOutput(Endereco endereco) {
+        EnderecoOutputDTO output = new EnderecoOutputDTO();
         output.setCep(endereco.getCep());
         output.setLogradouro(endereco.getLogradouro());
         output.setBairro(endereco.getBairro());

@@ -1,7 +1,7 @@
 package org.com.imaapi.util.service.impl;
 
 import org.com.imaapi.domain.model.usuario.Voluntario;
-import org.com.imaapi.domain.model.usuario.input.VoluntarioInput;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.VoluntarioInputDTO;
 import org.com.imaapi.repository.UsuarioRepository;
 import org.com.imaapi.repository.VoluntarioRepository;
 import org.com.imaapi.util.service.VoluntarioService;
@@ -26,7 +26,7 @@ public class VoluntarioServiceImpl implements VoluntarioService {
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public void cadastrarVoluntario(VoluntarioInput voluntarioInput) {
+    public void cadastrarVoluntario(VoluntarioInputDTO voluntarioInput) {
         try {
             // Verifica se já existe um voluntário para este usuário
             Voluntario voluntarioExistente = voluntarioRepository.findByUsuario_IdUsuario(voluntarioInput.getFkUsuario());
@@ -50,7 +50,7 @@ public class VoluntarioServiceImpl implements VoluntarioService {
     }
 
     @Override
-    public void atualizarVoluntario(VoluntarioInput voluntarioInput) {
+    public void atualizarVoluntario(VoluntarioInputDTO voluntarioInput) {
         try {
             logger.info("Iniciando atualização de voluntário para usuário ID: {}", voluntarioInput.getFkUsuario());
 
@@ -90,7 +90,7 @@ public class VoluntarioServiceImpl implements VoluntarioService {
         }
     }
 
-    private Voluntario gerarObjetoVoluntario(VoluntarioInput voluntarioInput) {
+    private Voluntario gerarObjetoVoluntario(VoluntarioInputDTO voluntarioInput) {
         Voluntario voluntario = new Voluntario();
         voluntario.setFuncao(voluntarioInput.getFuncao());
         voluntario.setDataCadastro(LocalDate.now());

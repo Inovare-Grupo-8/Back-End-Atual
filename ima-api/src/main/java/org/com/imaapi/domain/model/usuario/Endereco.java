@@ -2,7 +2,7 @@ package org.com.imaapi.domain.model.usuario;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.com.imaapi.domain.model.usuario.output.EnderecoOutput;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.EnderecoOutputDTO;
 
 import java.time.LocalDateTime;
 
@@ -67,7 +67,7 @@ public class Endereco {
 
     }
 
-    public static Endereco of(EnderecoOutput enderecoOutput) {
+    public static Endereco of(EnderecoOutputDTO enderecoOutput) {
         Endereco endereco = new Endereco();
         endereco.setCep(enderecoOutput.getCep());
         endereco.setLogradouro(enderecoOutput.getLogradouro());

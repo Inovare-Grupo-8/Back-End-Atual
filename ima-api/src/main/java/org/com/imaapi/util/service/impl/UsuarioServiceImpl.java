@@ -4,10 +4,10 @@ import org.com.imaapi.config.GerenciadorTokenJwt;
 import org.com.imaapi.domain.model.enums.Genero;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
 import org.com.imaapi.domain.model.usuario.*;
-import org.com.imaapi.domain.model.usuario.output.*;
-import org.com.imaapi.domain.model.usuario.input.UsuarioInputPrimeiraFase;
-import org.com.imaapi.domain.model.usuario.input.UsuarioInputSegundaFase;
-import org.com.imaapi.domain.model.usuario.input.VoluntarioInput;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.*;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.UsuarioInputPrimeiraFaseDTO;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.UsuarioInputSegundaFaseDTO;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.VoluntarioInputDTO;
 import org.com.imaapi.repository.*;
 import org.com.imaapi.util.service.EmailService;
 import org.com.imaapi.util.service.EnderecoService;
@@ -70,7 +70,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private EnderecoService enderecoService;
 
     @Override
-    public Usuario cadastrarPrimeiraFase(UsuarioInputPrimeiraFase usuarioInputPrimeiraFase) {
+    public Usuario cadastrarPrimeiraFase(UsuarioInputPrimeiraFaseDTO usuarioInputPrimeiraFase) {
         logger.info("Iniciando cadastro da primeira fase do usuário. Dados recebidos: {}", usuarioInputPrimeiraFase);
 
         // Validar se CPF já existe
@@ -113,7 +113,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario cadastrarPrimeiraFaseVoluntario(UsuarioInputPrimeiraFase usuarioInputPrimeiraFase) {
+    public Usuario cadastrarPrimeiraFaseVoluntario(UsuarioInputPrimeiraFaseDTO usuarioInputPrimeiraFase) {
         logger.info("Iniciando cadastro da primeira fase do voluntário. Dados recebidos: {}", usuarioInputPrimeiraFase);
 
         // Validar se CPF já existe
@@ -176,7 +176,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario cadastrarSegundaFase(Integer idUsuario, UsuarioInputSegundaFase usuarioInputSegundaFase) {
+    public Usuario cadastrarSegundaFase(Integer idUsuario, UsuarioInputSegundaFaseDTO usuarioInputSegundaFase) {
         logger.info("Iniciando cadastro da segunda fase para usuário ID: {}", idUsuario);
         logger.debug("Dados recebidos para atualização: {}", usuarioInputSegundaFase);
 
@@ -194,8 +194,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
             logger.info("Processando endereço no início do cadastro: CEP={}, numero={}", cep, numero);
 
-            ResponseEntity<EnderecoOutput> enderecoResponse = enderecoService.buscaEndereco(cep, numero, complemento);
-            EnderecoOutput enderecoOutput = enderecoResponse.getBody();
+            ResponseEntity<EnderecoOutputDTO> enderecoResponse = enderecoService.buscaEndereco(cep, numero, complemento);
+            EnderecoOutputDTO enderecoOutput = enderecoResponse.getBody();
 
             if (enderecoOutput != null && enderecoOutput.getCep() != null) {
                 Optional<Endereco> endereco = enderecoRepository.findByCepAndNumero(cep, numero);
@@ -237,7 +237,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuario;
     }
 
-    @Override    public Usuario cadastrarSegundaFaseVoluntario(Integer idUsuario, UsuarioInputSegundaFase usuarioInputSegundaFase) {
+    @Override    public Usuario cadastrarSegundaFaseVoluntario(Integer idUsuario, UsuarioInputSegundaFaseDTO usuarioInputSegundaFase) {
         logger.info("Iniciando cadastro fase 2 para voluntário ID: {}", idUsuario);
         if (usuarioInputSegundaFase.getFuncao() == null) {
             throw new IllegalArgumentException("A função do voluntário deve ser informada");
@@ -254,7 +254,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.atualizarTipo(TipoUsuario.VOLUNTARIO);
         usuarioRepository.save(usuario);
         logger.info("Tipo do usuário atualizado para VOLUNTARIO e salvo: ID={}, email={}", usuario.getIdUsuario(), usuario.getEmail());
-        VoluntarioInput voluntarioInput = UsuarioMapper.of(usuarioInputSegundaFase, idUsuario);
+        VoluntarioInputDTO voluntarioInput = UsuarioMapper.of(usuarioInputSegundaFase, idUsuario);
 
         // Para segunda fase de voluntário, verificar se já existe um voluntário e atualizar em vez de criar
         Voluntario voluntarioExistente = voluntarioRepository.findByUsuario_IdUsuario(idUsuario);
@@ -275,7 +275,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioTokenOutput autenticar(Usuario usuario, Ficha ficha, String senha) {
+    public UsuarioTokenOutputDTO autenticar(Usuario usuario, Ficha ficha, String senha) {
         logger.info("[AUTENTICAR] Iniciando autenticação para email: {}", usuario.getEmail());
 //        logger.debug("[AUTENTICAR] Senha raw do usuário (primeiros 4 caracteres): {}",
 //                senha.length() > 4 ? senha.substring(0, 4) + "..." : "***");
@@ -284,7 +284,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         try {
 //            logger.debug("[AUTENTICAR] Criando token de autenticação com email: {}", usuario.getEmail());
-            UsuarioDetalhesOutput usuarioDetalhes = UsuarioMapper.ofDetalhes(usuario, ficha);
+            UsuarioDetalhesOutputDTO usuarioDetalhes = UsuarioMapper.ofDetalhes(usuario, ficha);
 //            logger.debug("[AUTENTICAR] Autoridades do usuário: {}", usuarioDetalhes.getAuthorities());
 
             final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
@@ -321,12 +321,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<UsuarioListarOutput> buscarUsuarios() {
+    public List<UsuarioListarOutputDTO> buscarUsuarios() {
         logger.info("Buscando todos os usuários");
         List<Usuario> usuarios = usuarioRepository.findAll();
         logger.info("Total de usuários encontrados: {}", usuarios.size());
 
-        List<UsuarioListarOutput> resultado = usuarios.stream().map(UsuarioMapper::of).toList();
+        List<UsuarioListarOutputDTO> resultado = usuarios.stream().map(UsuarioMapper::of).toList();
         logger.debug("Usuários mapeados para saída: {}", resultado);
 
         return resultado;
@@ -362,7 +362,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioListarOutput atualizarUsuario(Integer id, UsuarioInputSegundaFase usuarioInputSegundaFase) {
+    public UsuarioListarOutputDTO atualizarUsuario(Integer id, UsuarioInputSegundaFaseDTO usuarioInputSegundaFase) {
         logger.info("Atualizando usuário com ID: {}", id);
         logger.debug("Dados recebidos para atualização: {}", usuarioInputSegundaFase);
 
@@ -382,7 +382,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioRepository.save(usuario);
         logger.info("Usuário salvo após atualização: ID={}, email={}", usuario.getIdUsuario(), usuario.getEmail());
 
-        UsuarioListarOutput usuarioListar = UsuarioMapper.of(usuario);
+        UsuarioListarOutputDTO usuarioListar = UsuarioMapper.of(usuario);
         logger.debug("Dados do usuário após atualização: {}", usuarioListar);
 
         return usuarioListar;
@@ -439,12 +439,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     }    // Implementação dos novos métodos para classificação de usuários
 
     @Override
-    public List<UsuarioClassificacaoOutput> buscarUsuariosNaoClassificados() {
+    public List<UsuarioClassificacaoOutputDTO> buscarUsuariosNaoClassificados() {
         logger.info("Buscando usuários não classificados");
         List<Usuario> usuarios = usuarioRepository.findAll();
 
         // Filtrar usuários com tipo NAO_CLASSIFICADO e mapear para DTO completo
-        List<UsuarioClassificacaoOutput> usuariosNaoClassificados = usuarios.stream()
+        List<UsuarioClassificacaoOutputDTO> usuariosNaoClassificados = usuarios.stream()
                 .filter(usuario -> usuario.getTipo() == TipoUsuario.NAO_CLASSIFICADO)
                 .map(usuario -> {
                     // Buscar telefones para este usuário
@@ -461,7 +461,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioListarOutput classificarUsuarioComoGratuidade(Integer id) {
+    public UsuarioListarOutputDTO classificarUsuarioComoGratuidade(Integer id) {
         logger.info("Classificando usuário ID {} como GRATUIDADE", id);
 
         Usuario usuario = usuarioRepository.findById(id)
@@ -484,7 +484,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioListarOutput classificarUsuarioComoValorSocial(Integer id) {
+    public UsuarioListarOutputDTO classificarUsuarioComoValorSocial(Integer id) {
         logger.info("Classificando usuário ID {} como VALOR_SOCIAL", id);
 
         Usuario usuario = usuarioRepository.findById(id)
@@ -522,16 +522,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<VoluntarioListagemOutput> listarVoluntarios() {
+    public List<VoluntarioListagemOutputDTO> listarVoluntarios() {
         logger.info("Listando todos os voluntários cadastrados");
 
         try {
             List<Voluntario> voluntarios = voluntarioRepository.findAll();
             logger.info("Total de voluntários encontrados: {}", voluntarios.size());
 
-            List<VoluntarioListagemOutput> resultado = voluntarios.stream()
+            List<VoluntarioListagemOutputDTO> resultado = voluntarios.stream()
                     .map(voluntario -> {
-                        VoluntarioListagemOutput output = new VoluntarioListagemOutput();
+                        VoluntarioListagemOutputDTO output = new VoluntarioListagemOutputDTO();
 
                         // Dados básicos do voluntário
                         output.setIdUsuario(voluntario.getFkUsuario());

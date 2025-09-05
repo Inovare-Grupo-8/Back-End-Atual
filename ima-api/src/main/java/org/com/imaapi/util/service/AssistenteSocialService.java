@@ -3,9 +3,8 @@ package org.com.imaapi.util.service;
 import lombok.RequiredArgsConstructor;
 import org.com.imaapi.domain.model.enums.Genero;
 import org.com.imaapi.domain.model.usuario.*;
-import org.com.imaapi.domain.model.usuario.input.AssistenteSocialInput;
-import org.com.imaapi.domain.model.usuario.input.EnderecoInput;
-import org.com.imaapi.domain.model.usuario.output.AssistenteSocialOutput;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.EnderecoInputDTO;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.AssistenteSocialOutputDTO;
 import org.com.imaapi.repository.FichaRepository;
 import org.com.imaapi.repository.TelefoneRepository;
 import org.com.imaapi.repository.UsuarioRepository;
@@ -28,9 +27,9 @@ public class AssistenteSocialService {
     private final EnderecoService enderecoService;
 
     @Transactional
-    public AssistenteSocialOutput cadastrarAssistenteSocial(AssistenteSocialInput input) {
+    public AssistenteSocialOutputDTO cadastrarAssistenteSocial(AssistenteSocialInput input) {
         // Create and set up Endereco
-        EnderecoInput enderecoInput = new EnderecoInput();
+        EnderecoInputDTO enderecoInput = new EnderecoInputDTO();
         enderecoInput.setCep(input.getCep());
         enderecoInput.setComplemento(input.getComplemento());
 
@@ -101,7 +100,7 @@ public class AssistenteSocialService {
     }
 
     @Transactional
-    public AssistenteSocialOutput atualizarAssistenteSocial(Integer idUsuario, AssistenteSocialInput input) {
+    public AssistenteSocialOutputDTO atualizarAssistenteSocial(Integer idUsuario, AssistenteSocialInput input) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Assistente Social não encontrado"));
         Ficha ficha = usuario.getFicha();
@@ -113,11 +112,11 @@ public class AssistenteSocialService {
         ficha.setProfissao(input.getProfissao());
 
         // Update endereco
-        EnderecoInput enderecoInput = new EnderecoInput();
-        enderecoInput.setCep(input.getCep());
-        enderecoInput.setComplemento(input.getComplemento());
+        EnderecoInputDTO enderecoInputDTO = new EnderecoInputDTO();
+        enderecoInputDTO.setCep(input.getCep());
+        enderecoInputDTO.setComplemento(input.getComplemento());
 
-        Endereco endereco = enderecoService.criarOuAtualizarEndereco(enderecoInput);
+        Endereco endereco = enderecoService.criarOuAtualizarEndereco(enderecoInputDTO);
         ficha.setEndereco(endereco);
 
         // Update telefone
@@ -179,16 +178,16 @@ public class AssistenteSocialService {
         return converterParaOutput(usuario);
     }
 
-    public AssistenteSocialOutput buscarAssistenteSocial(Integer idUsuario) {
+    public AssistenteSocialOutputDTO buscarAssistenteSocial(Integer idUsuario) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Assistente Social não encontrado"));
 
         return converterParaOutput(usuario);
     }
 
-    private AssistenteSocialOutput converterParaOutput(Usuario usuario) {
+    private AssistenteSocialOutputDTO converterParaOutput(Usuario usuario) {
 
-        AssistenteSocialOutput output = new AssistenteSocialOutput();
+        AssistenteSocialOutputDTO output = new AssistenteSocialOutputDTO();
         output.setIdUsuario(usuario.getIdUsuario());
         output.setNome(usuario.getFicha().getNome());
         output.setSobrenome(usuario.getFicha().getSobrenome());

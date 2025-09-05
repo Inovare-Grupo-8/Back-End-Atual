@@ -2,7 +2,7 @@ package org.com.imaapi.util.service.impl;
 
 import org.com.imaapi.domain.model.usuario.Ficha;
 import org.com.imaapi.domain.model.usuario.Usuario;
-import org.com.imaapi.domain.model.usuario.output.UsuarioDetalhesOutput;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.UsuarioDetalhesOutputDTO;
 import org.com.imaapi.repository.FichaRepository;
 import org.com.imaapi.repository.UsuarioRepository;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class AutenticacaoServiceImpl implements UserDetailsService {
                     .orElseThrow(() -> new UsernameNotFoundException("Ficha não encontrada para o usuário."));
 
 //            LOGGER.info("[AUTENTICAR_SERVICE] Ficha encontrada para o usuário: {}", username);
-            UsuarioDetalhesOutput userDetails = new UsuarioDetalhesOutput(usuario, ficha);
+            UsuarioDetalhesOutputDTO userDetails = new UsuarioDetalhesOutputDTO(usuario, ficha);
 //            LOGGER.info("[AUTENTICAR_SERVICE] UserDetails criado com sucesso para: {}, autoridades: {}",
 //                    username, userDetails.getAuthorities());
 

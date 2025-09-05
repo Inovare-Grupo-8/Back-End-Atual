@@ -1,11 +1,11 @@
 package org.com.imaapi.util.service.impl;
 
 import org.com.imaapi.domain.model.usuario.*;
-import org.com.imaapi.domain.model.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
-import org.com.imaapi.domain.model.usuario.input.VoluntarioDadosProfissionaisInput;
-import org.com.imaapi.domain.model.usuario.output.EnderecoOutput;
-import org.com.imaapi.domain.model.usuario.output.UsuarioDadosPessoaisOutput;
-import org.com.imaapi.domain.model.usuario.output.UsuarioOutput;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.UsuarioInputAtualizacaoDadosPessoaisDTO;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.VoluntarioDadosProfissionaisInputDTO;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.EnderecoOutputDTO;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.UsuarioDadosPessoaisOutputDTO;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.UsuarioOutputDTO;
 import org.com.imaapi.domain.model.especialidade.Especialidade;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
 import org.com.imaapi.domain.model.enums.Funcao;
@@ -50,7 +50,7 @@ public class PerfilServiceImpl implements PerfilService {
     private VoluntarioEspecialidadeRepository voluntarioEspecialidadeRepository;
 
     @Override
-    public UsuarioDadosPessoaisOutput buscarDadosPessoaisPorId(Integer usuarioId) {
+    public UsuarioDadosPessoaisOutputDTO buscarDadosPessoaisPorId(Integer usuarioId) {
         LOGGER.info("Buscando dados pessoais para o usuário com ID: {}", usuarioId);
         Usuario usuario = buscarUsuarioPorId(usuarioId);
         if (usuario == null) {
@@ -64,7 +64,7 @@ public class PerfilServiceImpl implements PerfilService {
             return null;
         }
 
-        UsuarioDadosPessoaisOutput dadosPessoais = new UsuarioDadosPessoaisOutput();
+        UsuarioDadosPessoaisOutputDTO dadosPessoais = new UsuarioDadosPessoaisOutputDTO();
         dadosPessoais.setNome(ficha.getNome());
         dadosPessoais.setSobrenome(ficha.getSobrenome());
         dadosPessoais.setCpf(ficha.getCpf());
@@ -117,7 +117,7 @@ public class PerfilServiceImpl implements PerfilService {
     }
 
     @Override
-    public UsuarioOutput atualizarDadosPessoais(Integer usuarioId, UsuarioInputAtualizacaoDadosPessoais dadosPessoais) {
+    public UsuarioOutputDTO atualizarDadosPessoais(Integer usuarioId, UsuarioInputAtualizacaoDadosPessoaisDTO dadosPessoais) {
         LOGGER.info("Atualizando dados pessoais para o usuário com ID: {}", usuarioId);
         Usuario usuario = buscarUsuarioPorId(usuarioId);
         if (usuario == null) {
@@ -205,7 +205,7 @@ public class PerfilServiceImpl implements PerfilService {
         usuarioRepository.save(usuario);
         LOGGER.info("Dados pessoais atualizados com sucesso para o usuário cgit om ID: {}", usuarioId);
 
-        return new UsuarioOutput(
+        return new UsuarioOutputDTO(
                 ficha.getNome(),
                 ficha.getCpf(),
                 usuario.getEmail(),
@@ -215,7 +215,7 @@ public class PerfilServiceImpl implements PerfilService {
     }
 
     @Override
-    public UsuarioDadosPessoaisOutput atualizarDadosPessoaisCompleto(Integer usuarioId, UsuarioInputAtualizacaoDadosPessoais dadosPessoais) {
+    public UsuarioDadosPessoaisOutputDTO atualizarDadosPessoaisCompleto(Integer usuarioId, UsuarioInputAtualizacaoDadosPessoaisDTO dadosPessoais) {
         LOGGER.info("Atualizando dados pessoais completos para o usuário com ID: {}", usuarioId);
         Usuario usuario = buscarUsuarioPorId(usuarioId);
         if (usuario == null) {
@@ -336,7 +336,7 @@ public class PerfilServiceImpl implements PerfilService {
 
         usuarioRepository.save(usuario);
         LOGGER.info("Dados pessoais completos atualizados com sucesso para o usuário com ID: {}", usuarioId);        // Retornar dados atualizados
-        UsuarioDadosPessoaisOutput output = new UsuarioDadosPessoaisOutput();
+        UsuarioDadosPessoaisOutputDTO output = new UsuarioDadosPessoaisOutputDTO();
         output.setNome(ficha.getNome());
         output.setSobrenome(ficha.getSobrenome());
         output.setCpf(ficha.getCpf());
@@ -373,7 +373,7 @@ public class PerfilServiceImpl implements PerfilService {
     }
 
     @Override
-    public EnderecoOutput buscarEnderecoPorId(Integer usuarioId) {
+    public EnderecoOutputDTO buscarEnderecoPorId(Integer usuarioId) {
         LOGGER.info("Buscando endereço para o usuário com ID: {}", usuarioId);
         Usuario usuario = buscarUsuarioPorId(usuarioId);
         if (usuario == null) {
@@ -388,7 +388,7 @@ public class PerfilServiceImpl implements PerfilService {
         }
 
         Endereco endereco = ficha.getEndereco();
-        EnderecoOutput enderecoOutput = new EnderecoOutput();
+        EnderecoOutputDTO enderecoOutput = new EnderecoOutputDTO();
         enderecoOutput.setCep(endereco.getCep());
         enderecoOutput.setNumero(endereco.getNumero());
         enderecoOutput.setComplemento(endereco.getComplemento());
@@ -419,7 +419,7 @@ public class PerfilServiceImpl implements PerfilService {
                 return false;
             }
 
-            EnderecoOutput enderecoApi = enderecoService.buscaEndereco(cep, numero, complemento).getBody();
+            EnderecoOutputDTO enderecoApi = enderecoService.buscaEndereco(cep, numero, complemento).getBody();
             if (enderecoApi == null) {
                 LOGGER.warn("Endereço não encontrado na API para o CEP: {}", cep);
                 return false;
@@ -466,7 +466,7 @@ public class PerfilServiceImpl implements PerfilService {
 
     @Override
     @Transactional
-    public boolean atualizarDadosProfissionais(Integer usuarioId, VoluntarioDadosProfissionaisInput dadosProfissionais) {
+    public boolean atualizarDadosProfissionais(Integer usuarioId, VoluntarioDadosProfissionaisInputDTO dadosProfissionais) {
         LOGGER.info("Atualizando dados profissionais para o voluntário com ID de usuário: {}", usuarioId);
         LOGGER.debug("Dados recebidos: {}", dadosProfissionais);
 
@@ -556,12 +556,12 @@ public class PerfilServiceImpl implements PerfilService {
         return usuarioRepository.findById(usuarioId).orElse(null);
     }
 
-    private UsuarioOutput converterParaUsuarioOutput(UsuarioDadosPessoaisOutput dadosPessoais) {
+    private UsuarioOutputDTO converterParaUsuarioOutput(UsuarioDadosPessoaisOutputDTO dadosPessoais) {
         if (dadosPessoais == null) {
             LOGGER.error("Erro: Dados pessoais não podem ser nulos.");
             throw new IllegalArgumentException("Dados pessoais não podem ser nulos.");
         }
-        return new UsuarioOutput(
+        return new UsuarioOutputDTO(
                 dadosPessoais.getNome(),
                 dadosPessoais.getCpf(),
                 dadosPessoais.getEmail(),

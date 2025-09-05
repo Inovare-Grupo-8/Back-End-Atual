@@ -2,7 +2,7 @@ package org.com.imaapi.domain.model.usuario;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.com.imaapi.domain.model.usuario.input.TelefoneInput;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.TelefoneInputDTO;
 
 import java.time.LocalDateTime;
 
@@ -56,13 +56,13 @@ public class Telefone {    @Id
         this.atualizadoEm = LocalDateTime.now();
     }
 
-    public static Telefone of(TelefoneInput telefoneInput, Ficha ficha) {
+    public static Telefone of(TelefoneInputDTO telefoneInputDTO, Ficha ficha) {
         Telefone telefone = new Telefone();
         telefone.setFicha(ficha);
-        telefone.setDdd(telefoneInput.getDdd());
-        telefone.setPrefixo(telefoneInput.getPrefixo());
-        telefone.setSufixo(telefoneInput.getSufixo());
-        telefone.setWhatsapp(telefoneInput.getWhatsapp());
+        telefone.setDdd(telefoneInputDTO.getDdd());
+        telefone.setPrefixo(telefoneInputDTO.getPrefixo());
+        telefone.setSufixo(telefoneInputDTO.getSufixo());
+        telefone.setWhatsapp(telefoneInputDTO.getWhatsapp());
         return telefone;
     }
 }

@@ -1,6 +1,6 @@
 package org.com.imaapi.util.service.impl;
 
-import org.com.imaapi.domain.model.usuario.output.UsuarioDetalhesOutput;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.UsuarioDetalhesOutputDTO;
 import org.com.imaapi.application.Usecase.Consulta.AvaliacaoConsulta;
 import org.com.imaapi.application.Usecase.Consulta.Consulta;
 import org.com.imaapi.application.Usecase.Consulta.FeedbackConsulta;
@@ -706,9 +706,9 @@ public class ConsultaServiceImpl implements ConsultaService {
             org.springframework.security.core.Authentication authentication =
                     org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
 
-            if (authentication != null && authentication.getPrincipal() instanceof UsuarioDetalhesOutput) {
-                UsuarioDetalhesOutput userDetails =
-                        (UsuarioDetalhesOutput) authentication.getPrincipal();
+            if (authentication != null && authentication.getPrincipal() instanceof UsuarioDetalhesOutputDTO) {
+                UsuarioDetalhesOutputDTO userDetails =
+                        (UsuarioDetalhesOutputDTO) authentication.getPrincipal();
 
                 Usuario usuario = new Usuario();
                 usuario.setIdUsuario(userDetails.getIdUsuario());

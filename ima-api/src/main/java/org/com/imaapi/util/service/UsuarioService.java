@@ -2,12 +2,12 @@ package org.com.imaapi.util.service;
 
 import org.com.imaapi.domain.model.usuario.Ficha;
 import org.com.imaapi.domain.model.usuario.Usuario;
-import org.com.imaapi.domain.model.usuario.input.UsuarioInputPrimeiraFase;
-import org.com.imaapi.domain.model.usuario.input.UsuarioInputSegundaFase;
-import org.com.imaapi.domain.model.usuario.output.UsuarioListarOutput;
-import org.com.imaapi.domain.model.usuario.output.UsuarioTokenOutput;
-import org.com.imaapi.domain.model.usuario.output.UsuarioClassificacaoOutput;
-import org.com.imaapi.domain.model.usuario.output.VoluntarioListagemOutput;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.UsuarioInputPrimeiraFaseDTO;
+import org.com.imaapi.domain.model.usuario.usuarioInputDTO.UsuarioInputSegundaFaseDTO;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.UsuarioListarOutputDTO;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.UsuarioTokenOutputDTO;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.UsuarioClassificacaoOutputDTO;
+import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.VoluntarioListagemOutputDTO;
 
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -15,15 +15,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioService {
-    Usuario cadastrarPrimeiraFase(UsuarioInputPrimeiraFase usuarioInputPrimeiraFase);
+    Usuario cadastrarPrimeiraFase(UsuarioInputPrimeiraFaseDTO usuarioInputPrimeiraFase);
     
-    Usuario cadastrarPrimeiraFaseVoluntario(UsuarioInputPrimeiraFase usuarioInputPrimeiraFase);    Usuario cadastrarSegundaFase(Integer idUsuario, UsuarioInputSegundaFase usuarioInputSegundaFase);
+    Usuario cadastrarPrimeiraFaseVoluntario(UsuarioInputPrimeiraFaseDTO usuarioInputPrimeiraFase);    Usuario cadastrarSegundaFase(Integer idUsuario, UsuarioInputSegundaFaseDTO usuarioInputSegundaFase);
     
-    Usuario cadastrarSegundaFaseVoluntario(Integer idUsuario, UsuarioInputSegundaFase usuarioInputSegundaFase);
+    Usuario cadastrarSegundaFaseVoluntario(Integer idUsuario, UsuarioInputSegundaFaseDTO usuarioInputSegundaFase);
 
-    UsuarioTokenOutput autenticar(Usuario usuario, Ficha ficha, String senha);
+    UsuarioTokenOutputDTO autenticar(Usuario usuario, Ficha ficha, String senha);
 
-    List<UsuarioListarOutput> buscarUsuarios();
+    List<UsuarioListarOutputDTO> buscarUsuarios();
 
     Optional<Usuario> buscaUsuario(Integer id);
 
@@ -33,7 +33,7 @@ public interface UsuarioService {
 
     Optional<Usuario> buscaUsuarioPorEmail(String email);
 
-    UsuarioListarOutput atualizarUsuario(Integer id, UsuarioInputSegundaFase usuarioInputSegundaFase);
+    UsuarioListarOutputDTO atualizarUsuario(Integer id, UsuarioInputSegundaFaseDTO usuarioInputSegundaFase);
 
     void deletarUsuario(Integer id);
       
@@ -41,11 +41,11 @@ public interface UsuarioService {
 
     String enviarCredenciaisVoluntario(String email, String nome, String senha);
 
-    List<UsuarioClassificacaoOutput> buscarUsuariosNaoClassificados();    UsuarioListarOutput classificarUsuarioComoGratuidade(Integer id);
+    List<UsuarioClassificacaoOutputDTO> buscarUsuariosNaoClassificados();    UsuarioListarOutputDTO classificarUsuarioComoGratuidade(Integer id);
 
-    UsuarioListarOutput classificarUsuarioComoValorSocial(Integer id);
+    UsuarioListarOutputDTO classificarUsuarioComoValorSocial(Integer id);
     
     void atualizarUltimoAcesso(Integer idUsuario);
 
-    List<VoluntarioListagemOutput> listarVoluntarios();
+    List<VoluntarioListagemOutputDTO> listarVoluntarios();
 }
