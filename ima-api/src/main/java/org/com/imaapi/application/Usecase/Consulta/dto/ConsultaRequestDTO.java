@@ -31,7 +31,7 @@ public class ConsultaRequestDTO {
     @NotNull(message = "Voluntário é obrigatório")
     private Integer idVoluntario;
 
-    // ✅ Construtor vazio para frameworks como Jackson
+
     public ConsultaRequestDTO() {}
 
     public ConsultaRequestDTO(LocalDateTime horario, StatusConsulta status, ModalidadeConsulta modalidade,
@@ -46,7 +46,7 @@ public class ConsultaRequestDTO {
         this.idVoluntario = idVoluntario;
     }
 
-    // ✅ Getters e Setters
+
     public LocalDateTime getHorario() {
         return horario;
     }

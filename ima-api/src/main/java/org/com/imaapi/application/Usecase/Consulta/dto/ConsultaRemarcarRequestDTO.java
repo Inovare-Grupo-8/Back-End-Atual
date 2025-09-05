@@ -29,7 +29,7 @@ public class ConsultaRemarcarRequestDTO {
         this.observacoes = observacoes;
     }
 
-    // ✅ Getters e Setters
+
 
     public LocalDateTime getNovoHorario() {
         return novoHorario;

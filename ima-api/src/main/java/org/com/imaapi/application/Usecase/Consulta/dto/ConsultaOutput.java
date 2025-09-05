@@ -31,7 +31,7 @@ public class ConsultaResponseDTO {
         this.idVoluntario = consulta.getVoluntario() != null ? consulta.getVoluntario().getId() : null;
     }
 
-    // ✅ Getters
+
     public Integer getIdConsulta() {
         return idConsulta;
     }
@@ -68,7 +68,7 @@ public class ConsultaResponseDTO {
         return idVoluntario;
     }
 
-    // ✅ Setters (opcional)
+
     public void setIdConsulta(Integer idConsulta) {
         this.idConsulta = idConsulta;
     }
