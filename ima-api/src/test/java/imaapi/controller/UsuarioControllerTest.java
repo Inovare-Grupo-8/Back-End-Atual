@@ -4,7 +4,7 @@ import org.com.imaapi.controller.UsuarioController;
 import org.com.imaapi.domain.model.usuario.Usuario;
 import org.com.imaapi.domain.model.usuario.input.UsuarioInputSegundaFase;
 import org.com.imaapi.domain.model.usuario.output.UsuarioListarOutput;
-import org.com.imaapi.service.UsuarioService;
+import org.com.imaapi.util.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

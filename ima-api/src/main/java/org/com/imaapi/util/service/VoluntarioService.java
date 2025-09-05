@@ -1,0 +1,11 @@
+package org.com.imaapi.util.service;
+
+import org.com.imaapi.domain.model.usuario.input.VoluntarioInput;
+
+public interface VoluntarioService {
+    public void cadastrarVoluntario(VoluntarioInput voluntarioInput);
+
+    public void atualizarVoluntario(VoluntarioInput voluntarioInput);
+
+    public void excluirVoluntario(Integer id);
+}

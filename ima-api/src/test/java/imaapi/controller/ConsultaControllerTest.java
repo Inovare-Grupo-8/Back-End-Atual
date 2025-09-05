@@ -1,9 +1,9 @@
 package imaapi.controller;
 
 import org.com.imaapi.controller.ConsultaController;
-import org.com.imaapi.domain.model.consulta.input.ConsultaInput;
-import org.com.imaapi.domain.model.consulta.output.ConsultaOutput;
-import org.com.imaapi.service.ConsultaService;
+import org.com.imaapi.application.Usecase.Consulta.dto.ConsultaRequestDTO;
+import org.com.imaapi.application.Usecase.Consulta.output.ConsultaOutput;
+import org.com.imaapi.util.service.ConsultaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -30,18 +30,18 @@ public class ConsultaControllerTest {
 
     @Test
     public void testCriarEventoComSucesso() {
-        ConsultaInput consultaInput = new ConsultaInput();
+        ConsultaRequestDTO consultaInput = new ConsultaRequestDTO();
         ConsultaOutput consultaOutput = new ConsultaOutput();
         ResponseEntity<ConsultaOutput> expectedResponse = ResponseEntity.ok(consultaOutput);
-        Mockito.when(consultaService.criarEvento(any(ConsultaInput.class))).thenReturn(expectedResponse);
+        Mockito.when(consultaService.criarEvento(any(ConsultaRequestDTO.class))).thenReturn(expectedResponse);
         ResponseEntity<ConsultaOutput> response = consultaController.criarEvento(consultaInput);
         assertEquals(expectedResponse, response);
     }
 
     @Test
     public void testCriarEventoComErroValidacao() {
-        ConsultaInput consultaInput = new ConsultaInput();
-        Mockito.when(consultaService.criarEvento(any(ConsultaInput.class)))
+        ConsultaRequestDTO consultaInput = new ConsultaRequestDTO();
+        Mockito.when(consultaService.criarEvento(any(ConsultaRequestDTO.class)))
                 .thenThrow(new IllegalArgumentException("Erro de validação"));
         try {
             consultaController.criarEvento(consultaInput);
@@ -52,16 +52,16 @@ public class ConsultaControllerTest {
 
     @Test
     public void testCriarEventoRetornaNull() {
-        ConsultaInput consultaInput = new ConsultaInput();
-        Mockito.when(consultaService.criarEvento(any(ConsultaInput.class))).thenReturn(null);
+        ConsultaRequestDTO consultaInput = new ConsultaRequestDTO();
+        Mockito.when(consultaService.criarEvento(any(ConsultaRequestDTO.class))).thenReturn(null);
         ResponseEntity<ConsultaOutput> response = consultaController.criarEvento(consultaInput);
         assertEquals(null, response);
     }
 
     @Test
     public void testCriarEventoComErroInterno() {
-        ConsultaInput consultaInput = new ConsultaInput();
-        Mockito.when(consultaService.criarEvento(any(ConsultaInput.class)))
+        ConsultaRequestDTO consultaInput = new ConsultaRequestDTO();
+        Mockito.when(consultaService.criarEvento(any(ConsultaRequestDTO.class)))
                 .thenThrow(new RuntimeException("Erro interno"));
         try {
             consultaController.criarEvento(consultaInput);
@@ -72,9 +72,9 @@ public class ConsultaControllerTest {
 
     @Test
     public void testCriarEventoComRespostaNaoEsperada() {
-        ConsultaInput consultaInput = new ConsultaInput();
+        ConsultaRequestDTO consultaInput = new ConsultaRequestDTO();
         ResponseEntity<ConsultaOutput> unexpectedResponse = ResponseEntity.badRequest().build();
-        Mockito.when(consultaService.criarEvento(any(ConsultaInput.class))).thenReturn(unexpectedResponse);
+        Mockito.when(consultaService.criarEvento(any(ConsultaRequestDTO.class))).thenReturn(unexpectedResponse);
         ResponseEntity<ConsultaOutput> response = consultaController.criarEvento(consultaInput);
         assertEquals(unexpectedResponse, response);
     }

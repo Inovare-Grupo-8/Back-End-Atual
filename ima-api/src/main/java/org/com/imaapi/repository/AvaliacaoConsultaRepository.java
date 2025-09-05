@@ -1,6 +1,6 @@
 package org.com.imaapi.repository;
 
-import org.com.imaapi.domain.model.consulta.AvaliacaoConsulta;
+import org.com.imaapi.application.Usecase.Consulta.AvaliacaoConsulta;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
