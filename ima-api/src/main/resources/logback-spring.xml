@@ -7,11 +7,11 @@
     <!-- Application-specific logging configuration -->
     <logger name="org.com.imaapi.config.AutenticacaoProvider" level="DEBUG"/>
     <logger name="org.com.imaapi.config.LoggingPasswordEncoder" level="DEBUG"/>
-    <logger name="org.com.imaapi.service.impl.AutenticacaoServiceImpl" level="DEBUG"/>
-    <logger name="org.com.imaapi.service.impl.UsuarioServiceImpl" level="DEBUG"/>
+    <logger name="org.com.imaapi.util.service.impl.AutenticacaoServiceImpl" level="DEBUG"/>
+    <logger name="org.com.imaapi.util.service.impl.UsuarioServiceImpl" level="DEBUG"/>
     <logger name="org.com.imaapi.controller.UsuarioController" level="DEBUG"/>
-    <logger name="org.com.imaapi.model.usuario.UsuarioMapper" level="DEBUG"/>
-    <logger name="org.com.imaapi.model.usuario.output.UsuarioDetalhesOutput" level="DEBUG"/>
+    <logger name="org.com.imaapi.domain.model.UsuarioMapper" level="DEBUG"/>
+    <logger name="org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutputDTO" level="DEBUG"/>
     
     <!-- Spring Security Logging -->
     <logger name="org.springframework.security" level="DEBUG"/>

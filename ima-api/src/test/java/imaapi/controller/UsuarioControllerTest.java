@@ -1,13 +1,10 @@
 package imaapi.controller;
 
 import org.com.imaapi.controller.UsuarioController;
-import org.com.imaapi.model.usuario.Usuario;
-import org.com.imaapi.model.usuario.input.UsuarioAutenticacaoInput;
-import org.com.imaapi.model.usuario.input.UsuarioInputPrimeiraFase;
-import org.com.imaapi.model.usuario.input.UsuarioInputSegundaFase;
-import org.com.imaapi.model.usuario.output.UsuarioListarOutput;
-import org.com.imaapi.model.usuario.output.UsuarioTokenOutput;
-import org.com.imaapi.service.UsuarioService;
+import org.com.imaapi.domain.model.Usuario;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFaseDTO;
+import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutputDTO;
+import org.com.imaapi.util.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,10 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,9 +45,9 @@ public class UsuarioControllerTest {
 
     @Test
     public void testCompletarCadastroUsuario() {        Integer id = 1;
-        UsuarioInputSegundaFase usuarioInputSegundaFase = new UsuarioInputSegundaFase();
+        UsuarioInputSegundaFaseDTO usuarioInputSegundaFase = new UsuarioInputSegundaFaseDTO();
         Usuario usuario = new Usuario();
-        Mockito.when(usuarioService.cadastrarSegundaFase(eq(id), any(UsuarioInputSegundaFase.class))).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarSegundaFase(eq(id), any(UsuarioInputSegundaFaseDTO.class))).thenReturn(usuario);
 
         ResponseEntity<Usuario> response = usuarioController.completarCadastroUsuario(id, usuarioInputSegundaFase);
 
@@ -64,11 +57,11 @@ public class UsuarioControllerTest {
 
     @Test
     public void testAtualizarUsuario() {        Integer id = 1;
-        UsuarioInputSegundaFase usuarioInputSegundaFase = new UsuarioInputSegundaFase();
-        UsuarioListarOutput usuarioAtualizado = new UsuarioListarOutput();
-        Mockito.when(usuarioService.atualizarUsuario(eq(id), any(UsuarioInputSegundaFase.class))).thenReturn(usuarioAtualizado);
+        UsuarioInputSegundaFaseDTO usuarioInputSegundaFase = new UsuarioInputSegundaFaseDTO();
+        UsuarioListarOutputDTO usuarioAtualizado = new UsuarioListarOutputDTO();
+        Mockito.when(usuarioService.atualizarUsuario(eq(id), any(UsuarioInputSegundaFaseDTO.class))).thenReturn(usuarioAtualizado);
 
-        ResponseEntity<UsuarioListarOutput> response = usuarioController.atualizarUsuario(id, usuarioInputSegundaFase);
+        ResponseEntity<UsuarioListarOutputDTO> response = usuarioController.atualizarUsuario(id, usuarioInputSegundaFase);
 
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
         assertEquals(usuarioAtualizado, response.getBody());
@@ -76,10 +69,10 @@ public class UsuarioControllerTest {
 
     @Test
     public void testAtualizarUsuarioNaoEncontrado() {        Integer id = 1;
-        UsuarioInputSegundaFase usuarioInputSegundaFase = new UsuarioInputSegundaFase();
-        Mockito.when(usuarioService.atualizarUsuario(eq(id), any(UsuarioInputSegundaFase.class))).thenReturn(null);
+        UsuarioInputSegundaFaseDTO usuarioInputSegundaFase = new UsuarioInputSegundaFaseDTO();
+        Mockito.when(usuarioService.atualizarUsuario(eq(id), any(UsuarioInputSegundaFaseDTO.class))).thenReturn(null);
 
-        ResponseEntity<UsuarioListarOutput> response = usuarioController.atualizarUsuario(id, usuarioInputSegundaFase);
+        ResponseEntity<UsuarioListarOutputDTO> response = usuarioController.atualizarUsuario(id, usuarioInputSegundaFase);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -120,9 +113,9 @@ public class UsuarioControllerTest {
 
     @Test
     public void testCompletarCadastroVoluntario() {        Integer id = 1;
-        UsuarioInputSegundaFase usuarioInputSegundaFase = new UsuarioInputSegundaFase();
+        UsuarioInputSegundaFaseDTO usuarioInputSegundaFase = new UsuarioInputSegundaFaseDTO();
         Usuario usuario = new Usuario();
-        Mockito.when(usuarioService.cadastrarSegundaFaseVoluntario(eq(id), any(UsuarioInputSegundaFase.class))).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarSegundaFaseVoluntario(eq(id), any(UsuarioInputSegundaFaseDTO.class))).thenReturn(usuario);
 
         ResponseEntity<Usuario> response = usuarioController.completarCadastroVoluntario(id, usuarioInputSegundaFase);
 
