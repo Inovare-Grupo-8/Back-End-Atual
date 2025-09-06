@@ -1,6 +1,6 @@
 package imaapi.model.output;
 
-import org.com.imaapi.domain.model.usuario.Usuario;
+import org.com.imaapi.domain.model.Usuario;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

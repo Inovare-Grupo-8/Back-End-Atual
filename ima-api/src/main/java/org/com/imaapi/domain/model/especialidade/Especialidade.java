@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 @Data
 @Entity(name = "EspecialidadeModel")
 @Table(name = "especialidade")
-public class Especialidade {    @Id
+public class Especialidade {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_especialidade")
     private Integer idEspecialidade;

@@ -1,6 +1,6 @@
 package imaapi.model.input;
 
-import org.com.imaapi.domain.model.usuario.usuarioInputDTO.UsuarioInputPrimeiraFaseDTO;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFaseDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

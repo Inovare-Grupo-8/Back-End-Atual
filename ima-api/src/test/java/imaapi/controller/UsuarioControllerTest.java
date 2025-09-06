@@ -1,9 +1,9 @@
 package imaapi.controller;
 
 import org.com.imaapi.controller.UsuarioController;
-import org.com.imaapi.domain.model.usuario.Usuario;
-import org.com.imaapi.domain.model.usuario.usuarioInputDTO.UsuarioInputSegundaFaseDTO;
-import org.com.imaapi.domain.model.usuario.UsuarioOutputDTO.UsuarioListarOutputDTO;
+import org.com.imaapi.domain.model.Usuario;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFaseDTO;
+import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutputDTO;
 import org.com.imaapi.util.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
