@@ -1,6 +1,6 @@
 package imaapi.model.input;
 
-import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFaseDTO;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFase;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +9,7 @@ public class UsuarioInputPrimeiraFaseTest {
 
     @Test
     void emailDeveSerValido() {
-        UsuarioInputPrimeiraFaseDTO usuarioInputPrimeiraFase = new UsuarioInputPrimeiraFaseDTO();
+        UsuarioInputPrimeiraFase usuarioInputPrimeiraFase = new UsuarioInputPrimeiraFase();
         usuarioInputPrimeiraFase.setEmail("teste.teste.com");
 
         String email = usuarioInputPrimeiraFase.getEmail();
@@ -18,7 +18,7 @@ public class UsuarioInputPrimeiraFaseTest {
 
     @Test
     void nomeDeveSerValido() {
-        UsuarioInputPrimeiraFaseDTO usuarioInputPrimeiraFase = new UsuarioInputPrimeiraFaseDTO();
+        UsuarioInputPrimeiraFase usuarioInputPrimeiraFase = new UsuarioInputPrimeiraFase();
         usuarioInputPrimeiraFase.setNome(null);
 
         String nome = usuarioInputPrimeiraFase.getNome();
@@ -27,7 +27,7 @@ public class UsuarioInputPrimeiraFaseTest {
 
     @Test
     void senhaDeveConterCaracterEspecial() {
-        UsuarioInputPrimeiraFaseDTO usuarioInputPrimeiraFase = new UsuarioInputPrimeiraFaseDTO();
+        UsuarioInputPrimeiraFase usuarioInputPrimeiraFase = new UsuarioInputPrimeiraFase();
         usuarioInputPrimeiraFase.setSenha("senhaTeste");
 
         String senha = usuarioInputPrimeiraFase.getSenha();
@@ -36,7 +36,7 @@ public class UsuarioInputPrimeiraFaseTest {
 
     @Test
     void senhaMenorQueSeisCaracteresNaoEhValida() {
-        UsuarioInputPrimeiraFaseDTO usuario = new UsuarioInputPrimeiraFaseDTO();
+        UsuarioInputPrimeiraFase usuario = new UsuarioInputPrimeiraFase();
         usuario.setSenha("abc"); // apenas 3 caracteres
         assertTrue(usuario.getSenha().length() < 6, "Senha com menos de 6 caracteres deve ser inválida");
     }

@@ -1,9 +1,9 @@
 package org.com.imaapi.domain.model.validation;
 
-import org.com.imaapi.application.dto.usuario.input.TelefoneInputDTO;
+import org.com.imaapi.application.dto.usuario.input.TelefoneInput;
 
 public class TelefoneInputValidator {
-    public static void validar(TelefoneInputDTO input) {
+    public static void validar(TelefoneInput input) {
         if (input.getDdd() == null || input.getDdd().trim().isEmpty()) {
             throw new IllegalArgumentException("DDD é obrigatório");
         }

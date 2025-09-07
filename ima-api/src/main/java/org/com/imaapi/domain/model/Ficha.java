@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.com.imaapi.domain.model.enums.Genero;
-import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFaseDTO;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFase;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -80,7 +80,7 @@ public class Ficha {
     }    @PreUpdate
     public void preUpdate() {
         this.atualizadoEm = LocalDateTime.now();
-    }      public void atualizarDadosSegundaFase(UsuarioInputSegundaFaseDTO input) {
+    }      public void atualizarDadosSegundaFase(UsuarioInputSegundaFase input) {
         this.setDtNascim(input.getDataNascimento());
         
         // Trabalhar apenas com intervalos de renda (rendaMinima e rendaMaxima)

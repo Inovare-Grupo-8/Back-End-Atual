@@ -1,9 +1,9 @@
 package org.com.imaapi.domain.model.validation;
 
-import org.com.imaapi.application.dto.usuario.input.UsuarioLoginInputDTO;
+import org.com.imaapi.application.dto.usuario.input.UsuarioLoginInput;
 
 public class UsuarioLoginInputValidator {
-    public static void validar(UsuarioLoginInputDTO input) {
+    public static void validar(UsuarioLoginInput input) {
         if (input.getEmail() == null || input.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("Email não pode estar em branco");
         }

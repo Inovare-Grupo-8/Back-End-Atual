@@ -1,15 +1,15 @@
 package org.com.imaapi.domain.model;
 
 import org.com.imaapi.domain.model.enums.TipoUsuario;
-import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInputDTO;
-import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFaseDTO;
-import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFaseDTO;
-import org.com.imaapi.application.dto.usuario.input.VoluntarioInputDTO;
-import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutputDTO;
-import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutputDTO;
-import org.com.imaapi.application.dto.usuario.output.UsuarioPrimeiraFaseOutputDTO;
-import org.com.imaapi.application.dto.usuario.output.UsuarioTokenOutputDTO;
-import org.com.imaapi.application.dto.usuario.output.UsuarioClassificacaoOutputDTO;
+import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInput;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFase;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFase;
+import org.com.imaapi.application.dto.usuario.input.VoluntarioInput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioPrimeiraFaseOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioTokenOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioClassificacaoOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UsuarioMapper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioMapper.class);    public static Usuario of(UsuarioInputPrimeiraFaseDTO usuarioInputPrimeiraFase, UsuarioInputSegundaFaseDTO usuarioInputSegundaFase) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioMapper.class);    public static Usuario of(UsuarioInputPrimeiraFase usuarioInputPrimeiraFase, UsuarioInputSegundaFase usuarioInputSegundaFase) {
         Usuario usuario = new Usuario();
 
         Ficha ficha = new Ficha();
@@ -31,7 +31,7 @@ public class UsuarioMapper {
         usuario.setFicha(ficha);
 
         return usuario;
-    }public static Usuario of(UsuarioAutenticacaoInputDTO usuarioAutenticacaoInput) {
+    }public static Usuario of(UsuarioAutenticacaoInput usuarioAutenticacaoInput) {
 //        LOGGER.debug("[USUARIO_MAPPER] Criando Usuario a partir de UsuarioAutenticacaoInput para email: {}",
 //                usuarioAutenticacaoInput.getEmail());
                 
@@ -43,8 +43,8 @@ public class UsuarioMapper {
         return usuario;
     }
 
-    public static UsuarioTokenOutputDTO of(Usuario usuario, String token) {
-        UsuarioTokenOutputDTO usuarioTokenOutput = new UsuarioTokenOutputDTO();
+    public static UsuarioTokenOutput of(Usuario usuario, String token) {
+        UsuarioTokenOutput usuarioTokenOutput = new UsuarioTokenOutput();
         usuarioTokenOutput.setIdUsuario(usuario.getIdUsuario());
         usuarioTokenOutput.setNome(usuario.getFicha().getNome());
         usuarioTokenOutput.setEmail(usuario.getEmail());
@@ -53,8 +53,8 @@ public class UsuarioMapper {
         return usuarioTokenOutput;
     }
 
-    public static UsuarioListarOutputDTO of(Usuario usuario) {
-        UsuarioListarOutputDTO output = new UsuarioListarOutputDTO();
+    public static UsuarioListarOutput of(Usuario usuario) {
+        UsuarioListarOutput output = new UsuarioListarOutput();
         output.setIdUsuario(usuario.getIdUsuario());
         output.setNome(usuario.getFicha().getNome());
         output.setEmail(usuario.getEmail());
@@ -62,13 +62,13 @@ public class UsuarioMapper {
         return output;
     }
 
-    public static VoluntarioInputDTO of(UsuarioInputSegundaFaseDTO usuarioInputSegundaFase, Integer idUsuario) {
-        VoluntarioInputDTO voluntario = new VoluntarioInputDTO();
+    public static VoluntarioInput of(UsuarioInputSegundaFase usuarioInputSegundaFase, Integer idUsuario) {
+        VoluntarioInput voluntario = new VoluntarioInput();
         voluntario.setFkUsuario(idUsuario);
         voluntario.setFuncao(usuarioInputSegundaFase.getFuncao());
         return voluntario;
-    }    public static UsuarioPrimeiraFaseOutputDTO ofPrimeiraFase(Usuario usuario) {
-        UsuarioPrimeiraFaseOutputDTO output = new UsuarioPrimeiraFaseOutputDTO();
+    }    public static UsuarioPrimeiraFaseOutput ofPrimeiraFase(Usuario usuario) {
+        UsuarioPrimeiraFaseOutput output = new UsuarioPrimeiraFaseOutput();
         output.setIdUsuario(usuario.getIdUsuario());
         output.setNome(usuario.getFicha().getNome());
         output.setSobrenome(usuario.getFicha().getSobrenome());
@@ -78,21 +78,21 @@ public class UsuarioMapper {
         return output;
     }
   
-  public static UsuarioDetalhesOutputDTO ofDetalhes(Usuario usuario, Ficha ficha) {
+  public static UsuarioDetalhesOutput ofDetalhes(Usuario usuario, Ficha ficha) {
 //        LOGGER.info("[USUARIO_MAPPER] Criando UsuarioDetalhesOutput para autenticação do usuário: {}", usuario.getEmail());
 //        LOGGER.debug("[USUARIO_MAPPER] Ficha associada: ID={}", ficha != null ? ficha.getIdFicha() : "null");
 //        LOGGER.debug("[USUARIO_MAPPER] Tipo do usuário: {}", usuario.getTipo());
         
-        UsuarioDetalhesOutputDTO details = new UsuarioDetalhesOutputDTO(usuario, ficha);
+        UsuarioDetalhesOutput details = new UsuarioDetalhesOutput(usuario, ficha);
 //        LOGGER.debug("[USUARIO_MAPPER] Autoridades concedidas: {}", details.getAuthorities());
         
         return details;
-    }    public static UsuarioClassificacaoOutputDTO ofClassificacao(Usuario usuario) {
+    }    public static UsuarioClassificacaoOutput ofClassificacao(Usuario usuario) {
         return ofClassificacao(usuario, null);
     }
 
-    public static UsuarioClassificacaoOutputDTO ofClassificacao(Usuario usuario, List<Telefone> telefones) {
-        UsuarioClassificacaoOutputDTO output = new UsuarioClassificacaoOutputDTO();
+    public static UsuarioClassificacaoOutput ofClassificacao(Usuario usuario, List<Telefone> telefones) {
+        UsuarioClassificacaoOutput output = new UsuarioClassificacaoOutput();
         
         // Dados básicos do usuário
         output.setId(usuario.getIdUsuario());
@@ -125,8 +125,8 @@ public class UsuarioMapper {
             
             // Telefones
             if (telefones != null && !telefones.isEmpty()) {
-                List<UsuarioClassificacaoOutputDTO.TelefoneOutput> telefonesOutput = telefones.stream()
-                    .map(telefone -> new UsuarioClassificacaoOutputDTO.TelefoneOutput(
+                List<UsuarioClassificacaoOutput.TelefoneOutput> telefonesOutput = telefones.stream()
+                    .map(telefone -> new UsuarioClassificacaoOutput.TelefoneOutput(
                         formatarNumeroTelefone(telefone),
                         telefone.getWhatsapp() != null && telefone.getWhatsapp() ? "WhatsApp" : "Telefone"
                     ))
@@ -155,7 +155,7 @@ public class UsuarioMapper {
         return numero.toString();
     }
 
-    public static List<UsuarioClassificacaoOutputDTO> ofClassificacaoList(List<Usuario> usuarios) {
+    public static List<UsuarioClassificacaoOutput> ofClassificacaoList(List<Usuario> usuarios) {
         return usuarios.stream()
                 .map(usuario -> ofClassificacao(usuario))
                 .collect(Collectors.toList());

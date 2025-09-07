@@ -2,8 +2,8 @@ package imaapi.controller;
 
 import org.com.imaapi.controller.UsuarioController;
 import org.com.imaapi.domain.model.Usuario;
-import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFaseDTO;
-import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutputDTO;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFase;
+import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutput;
 import org.com.imaapi.util.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,9 +45,9 @@ public class UsuarioControllerTest {
 
     @Test
     public void testCompletarCadastroUsuario() {        Integer id = 1;
-        UsuarioInputSegundaFaseDTO usuarioInputSegundaFase = new UsuarioInputSegundaFaseDTO();
+        UsuarioInputSegundaFase usuarioInputSegundaFase = new UsuarioInputSegundaFase();
         Usuario usuario = new Usuario();
-        Mockito.when(usuarioService.cadastrarSegundaFase(eq(id), any(UsuarioInputSegundaFaseDTO.class))).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarSegundaFase(eq(id), any(UsuarioInputSegundaFase.class))).thenReturn(usuario);
 
         ResponseEntity<Usuario> response = usuarioController.completarCadastroUsuario(id, usuarioInputSegundaFase);
 
@@ -57,11 +57,11 @@ public class UsuarioControllerTest {
 
     @Test
     public void testAtualizarUsuario() {        Integer id = 1;
-        UsuarioInputSegundaFaseDTO usuarioInputSegundaFase = new UsuarioInputSegundaFaseDTO();
-        UsuarioListarOutputDTO usuarioAtualizado = new UsuarioListarOutputDTO();
-        Mockito.when(usuarioService.atualizarUsuario(eq(id), any(UsuarioInputSegundaFaseDTO.class))).thenReturn(usuarioAtualizado);
+        UsuarioInputSegundaFase usuarioInputSegundaFase = new UsuarioInputSegundaFase();
+        UsuarioListarOutput usuarioAtualizado = new UsuarioListarOutput();
+        Mockito.when(usuarioService.atualizarUsuario(eq(id), any(UsuarioInputSegundaFase.class))).thenReturn(usuarioAtualizado);
 
-        ResponseEntity<UsuarioListarOutputDTO> response = usuarioController.atualizarUsuario(id, usuarioInputSegundaFase);
+        ResponseEntity<UsuarioListarOutput> response = usuarioController.atualizarUsuario(id, usuarioInputSegundaFase);
 
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
         assertEquals(usuarioAtualizado, response.getBody());
@@ -69,10 +69,10 @@ public class UsuarioControllerTest {
 
     @Test
     public void testAtualizarUsuarioNaoEncontrado() {        Integer id = 1;
-        UsuarioInputSegundaFaseDTO usuarioInputSegundaFase = new UsuarioInputSegundaFaseDTO();
-        Mockito.when(usuarioService.atualizarUsuario(eq(id), any(UsuarioInputSegundaFaseDTO.class))).thenReturn(null);
+        UsuarioInputSegundaFase usuarioInputSegundaFase = new UsuarioInputSegundaFase();
+        Mockito.when(usuarioService.atualizarUsuario(eq(id), any(UsuarioInputSegundaFase.class))).thenReturn(null);
 
-        ResponseEntity<UsuarioListarOutputDTO> response = usuarioController.atualizarUsuario(id, usuarioInputSegundaFase);
+        ResponseEntity<UsuarioListarOutput> response = usuarioController.atualizarUsuario(id, usuarioInputSegundaFase);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -113,9 +113,9 @@ public class UsuarioControllerTest {
 
     @Test
     public void testCompletarCadastroVoluntario() {        Integer id = 1;
-        UsuarioInputSegundaFaseDTO usuarioInputSegundaFase = new UsuarioInputSegundaFaseDTO();
+        UsuarioInputSegundaFase usuarioInputSegundaFase = new UsuarioInputSegundaFase();
         Usuario usuario = new Usuario();
-        Mockito.when(usuarioService.cadastrarSegundaFaseVoluntario(eq(id), any(UsuarioInputSegundaFaseDTO.class))).thenReturn(usuario);
+        Mockito.when(usuarioService.cadastrarSegundaFaseVoluntario(eq(id), any(UsuarioInputSegundaFase.class))).thenReturn(usuario);
 
         ResponseEntity<Usuario> response = usuarioController.completarCadastroVoluntario(id, usuarioInputSegundaFase);
 

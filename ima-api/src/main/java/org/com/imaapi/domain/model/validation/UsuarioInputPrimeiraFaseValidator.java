@@ -1,9 +1,9 @@
 package org.com.imaapi.domain.model.validation;
 
-import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFaseDTO;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFase;
 
 public class UsuarioInputPrimeiraFaseValidator {
-    public static void validar(UsuarioInputPrimeiraFaseDTO input) {
+    public static void validar(UsuarioInputPrimeiraFase input) {
         if (input.getNome() == null || input.getNome().trim().isEmpty() || input.getNome().length() < 3 || input.getNome().length() > 50) {
             throw new IllegalArgumentException("Nome não pode estar em branco e deve ter entre 3 e 50 caracteres");
         }
