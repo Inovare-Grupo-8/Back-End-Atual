@@ -1,5 +1,9 @@
-package org.com.imaapi.domain.model;
+package org.com.imaapi.domain.model.mapper;
 
+import org.com.imaapi.domain.model.Endereco;
+import org.com.imaapi.domain.model.Ficha;
+import org.com.imaapi.domain.model.Telefone;
+import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
 import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInput;
 import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFase;
