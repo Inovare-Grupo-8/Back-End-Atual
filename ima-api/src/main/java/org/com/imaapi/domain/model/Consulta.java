@@ -1,9 +1,8 @@
-package org.com.imaapi.application.dto.consulta;
+package org.com.imaapi.domain.model;
 
 import org.com.imaapi.domain.model.enums.ModalidadeConsulta;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.model.especialidade.Especialidade;
-import org.com.imaapi.domain.model.Usuario;
 
 import java.time.LocalDateTime;
 

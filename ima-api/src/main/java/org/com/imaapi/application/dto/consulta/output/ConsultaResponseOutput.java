@@ -1,6 +1,6 @@
 package org.com.imaapi.application.dto.consulta.output;
 
-import org.com.imaapi.application.dto.consulta.Consulta;
+import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.model.enums.ModalidadeConsulta;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 

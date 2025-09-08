@@ -1,6 +1,7 @@
 
 package org.com.imaapi.application.useCase.consulta;
 
+import org.com.imaapi.application.useCaseImpl.CriarConsultaUseCaseImpl;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.com.imaapi.domain.repository.EspecialidadeRepository;

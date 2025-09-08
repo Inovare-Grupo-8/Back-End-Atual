@@ -1,4 +1,5 @@
-package org.com.imaapi.application.dto.consulta;
+package org.com.imaapi.domain.model;
+
 import java.time.LocalDateTime;
 
 public class FeedbackConsulta {
