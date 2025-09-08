@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.com.imaapi.domain.model.enums.ModalidadeConsulta;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 
-public class ConsultaRequestInput {
+public class ConsultaInput {
 
     @NotNull(message = "O horário da consulta é obrigatório")
     @Future(message = "A consulta precisa ser agendada para uma data futura")
@@ -32,10 +32,10 @@ public class ConsultaRequestInput {
     private Integer idVoluntario;
 
 
-    public ConsultaRequestInput() {}
+    public ConsultaInput() {}
 
-    public ConsultaRequestInput(LocalDateTime horario, StatusConsulta status, ModalidadeConsulta modalidade,
-                                String local, String observacoes, Integer idEspecialidade, Integer idAssistido, Integer idVoluntario) {
+    public ConsultaInput(LocalDateTime horario, StatusConsulta status, ModalidadeConsulta modalidade,
+                         String local, String observacoes, Integer idEspecialidade, Integer idAssistido, Integer idVoluntario) {
         this.horario = horario;
         this.status = status;
         this.modalidade = modalidade;
