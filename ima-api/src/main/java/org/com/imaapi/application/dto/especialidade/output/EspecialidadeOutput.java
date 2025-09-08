@@ -3,6 +3,7 @@ import lombok.Data;
 
 @Data
 public class EspecialidadeOutput {
+    //dto criado para consultar
     private Integer id;
     private String nome;
 }
