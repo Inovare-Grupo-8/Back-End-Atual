@@ -6,7 +6,7 @@ import org.com.imaapi.domain.model.enums.ModalidadeConsulta;
 import java.time.LocalDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ConsultaRemarcarRequestInput {
+public class ConsultaRemarcarInput {
 
     @NotNull(message = "O novo horário da consulta é obrigatório")
     @Future(message = "O novo horário deve ser uma data e hora futuras")
@@ -21,8 +21,8 @@ public class ConsultaRemarcarRequestInput {
     private String observacoes;
 
 
-    public ConsultaRemarcarRequestInput(LocalDateTime novoHorario, ModalidadeConsulta modalidade,
-                                        String local, String observacoes) {
+    public ConsultaRemarcarInput(LocalDateTime novoHorario, ModalidadeConsulta modalidade,
+                                 String local, String observacoes) {
         this.novoHorario = novoHorario;
         this.modalidade = modalidade;
         this.local = local;
