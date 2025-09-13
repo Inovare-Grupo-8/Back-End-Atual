@@ -35,9 +35,7 @@ public class ConsultaRemarcarInput {
         return novoHorario;
     }
 
-    public void setNovoHorario(LocalDateTime novoHorario) {
-        this.novoHorario = novoHorario;
-    }
+    public void setNovoHorario(LocalDateTime novoHorario) { this.novoHorario = novoHorario; }
 
     public ModalidadeConsulta getModalidade() {
         return modalidade;

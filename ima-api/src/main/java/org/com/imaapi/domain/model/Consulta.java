@@ -4,18 +4,40 @@ import org.com.imaapi.domain.model.enums.ModalidadeConsulta;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.model.Especialidade;
 
+import jakarta.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Consulta {
+@Entity
+@Table(name = "consulta")
+public class Consulta implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idConsulta;
+
     private LocalDateTime horario;
+
+    @Enumerated(EnumType.STRING)
     private StatusConsulta status;
+
+    @Enumerated(EnumType.STRING)
     private ModalidadeConsulta modalidade;
+
     private String local;
     private String observacoes;
+
+    @ManyToOne
+    @JoinColumn(name = "especialidade_id")
     private Especialidade especialidade;
+
+    @ManyToOne
+    @JoinColumn(name = "assistido_id")
     private Usuario assistido;
+
+    @ManyToOne
+    @JoinColumn(name = "voluntario_id")
     private Usuario voluntario;
+
     private String feedbackStatus = "PENDENTE";
     private String avaliacaoStatus = "PENDENTE";
 
