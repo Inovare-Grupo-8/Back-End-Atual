@@ -1,5 +1,5 @@
 package org.com.imaapi.application.useCase.consulta;
 
-public class AdicionarAvaliacaoConsultaUseCase {
-
+public interface AdicionarAvaliacaoConsultaUseCase {
+	void adicionarAvaliacao(Integer consultaId, String avaliacao);
 }

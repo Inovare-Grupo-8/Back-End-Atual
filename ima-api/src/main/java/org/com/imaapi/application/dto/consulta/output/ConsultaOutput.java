@@ -1,6 +1,6 @@
 package org.com.imaapi.application.dto.consulta.output;
 
-import org.com.imaapi.domain.model.especialidade.Especialidade;
+import org.com.imaapi.domain.model.Especialidade;
 import org.com.imaapi.domain.model.Usuario;
 
 import java.time.LocalDateTime;
