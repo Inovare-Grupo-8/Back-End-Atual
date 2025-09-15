@@ -1,7 +1,6 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.useCase.consulta.AdicionarAvaliacaoConsultaUseCase;
-import org.com.imaapi.application.dto.consulta.input.ConsultaAvaliacaoInput;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
