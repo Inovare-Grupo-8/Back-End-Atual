@@ -3,7 +3,8 @@ package org.com.imaapi.domain.model.enums;
 public enum StatusConsulta {
     AGENDADA("Agendada"),
     REALIZADA("Realizada"),
-    CANCELADA("Cancelada");
+    CANCELADA("Cancelada"),
+    REAGENDADA("Reagendada");
 
     private final String value;
 

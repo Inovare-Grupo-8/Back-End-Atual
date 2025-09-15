@@ -1,6 +1,10 @@
 package org.com.imaapi.application.useCase;
 
+import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ConsultaService implements ConsultaService {

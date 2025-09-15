@@ -1,6 +1,6 @@
 package org.com.imaapi.domain.repository;
 
-import org.com.imaapi.application.usecase.consulta.Consulta;
+import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

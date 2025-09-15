@@ -1,9 +1,9 @@
 package org.com.imaapi.domain.model.validation;
 
-import org.com.imaapi.application.dto.usuario.input.UsuarioInputAtualizacaoDadosPessoaisDTO;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
 
 public class UsuarioInputAtualizacaoDadosPessoaisValidator {
-    public static void validar(UsuarioInputAtualizacaoDadosPessoaisDTO input) {
+    public static void validar(UsuarioInputAtualizacaoDadosPessoais input) {
         if (input.getNome() == null || input.getNome().trim().isEmpty()) {
             throw new IllegalArgumentException("Nome é obrigatório");
         }

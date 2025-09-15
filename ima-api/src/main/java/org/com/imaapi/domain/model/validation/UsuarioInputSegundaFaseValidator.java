@@ -1,10 +1,10 @@
 package org.com.imaapi.domain.model.validation;
 
-import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFaseDTO;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFase;
 import java.time.LocalDate;
 
 public class UsuarioInputSegundaFaseValidator {
-    public static void validar(UsuarioInputSegundaFaseDTO input) {
+    public static void validar(UsuarioInputSegundaFase input) {
         if (input.getDataNascimento() == null) {
             throw new IllegalArgumentException("Data de nascimento não pode ser nula");
         }
