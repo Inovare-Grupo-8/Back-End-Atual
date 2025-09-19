@@ -31,7 +31,6 @@ public class CriarConsultaUseCaseImpl implements CriarConsultaUseCase {
     @Override
     public ConsultaOutput criarConsulta(ConsultaInput input) {
         logger.info("Criando consulta para input: {}", input);
-        // ...
         return null;
     }
 }
