@@ -3,7 +3,7 @@ package org.com.imaapi.domain.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
-import org.com.imaapi.model.enums.persistence.TipoUsuarioConverter;
+import org.com.imaapi.domain.model.persistence.converter.TipoUsuarioConverter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
