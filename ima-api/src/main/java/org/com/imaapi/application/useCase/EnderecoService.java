@@ -1,8 +1,11 @@
 package org.com.imaapi.application.usecase;
 
 
+import org.com.imaapi.application.dto.usuario.output.EnderecoOutput;
+import org.com.imaapi.domain.model.Endereco;
+
 @Service
-public class EnderecoService implements EnderecoService {
+public class EnderecoService implements EnderecoServiceImpl {
     private static final String ViaCepApi = "https://viacep.com.br/ws/%s/json/";
     private static final Logger LOGGER = LoggerFactory.getLogger(EnderecoService.class);
 
