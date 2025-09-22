@@ -1,5 +1,7 @@
 package org.com.imaapi.application.usecase;
 
+import org.com.imaapi.application.dto.usuario.output.UsuarioDadosPessoaisOutput;
+
 @Service
 @Transactional
 public class PerfilService implements PerfilService {
@@ -567,7 +569,7 @@ public class PerfilService implements PerfilService {
         // Adicionar especialidades adicionais
         if (especialidadesAdicionais != null && !especialidadesAdicionais.isEmpty()) {
             for (String nomeEspecialidade : especialidadesAdicionais) {
-                if (!nomeEspecialidade.equals(especialidadePrincipal)) {
+                if (!nomeEspecalidade.equals(especialidadePrincipal)) {
                     Especialidade especialidade = especialidadeRepository.findByNome(nomeEspecialidade)
                             .orElseGet(() -> {
                                 Especialidade novaEspecialidade = new Especialidade();
