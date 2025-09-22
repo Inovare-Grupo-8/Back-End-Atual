@@ -1,336 +1,223 @@
 package org.com.imaapi.infrastructure.controller;
 
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFase;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFase;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
+import org.com.imaapi.application.dto.usuario.input.UsuarioLoginInput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioPrimeiraFaseOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutput;
+import org.com.imaapi.application.useCase.usuario.*;
+import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioTokenOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioClassificacaoOutput;
+import org.com.imaapi.application.dto.usuario.output.VoluntarioListagemOutput;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UsuarioRepositoryAdapter usuarioService;w
-
+    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private CadastrarUsuarioPrimeiraFaseUseCase cadastrarUsuarioPrimeiraFaseUseCase;
+    @Autowired private CadastrarUsuarioSegundaFaseUseCase cadastrarUsuarioSegundaFaseUseCase;
+    @Autowired private BuscarUsuarioPorIdUseCase buscarUsuarioPorIdUseCase;
+    @Autowired private BuscarTodosUsuariosUseCase buscarTodosUsuariosUseCase;
+    @Autowired private AtualizarUsuarioUseCase atualizarUsuarioUseCase;
+    @Autowired private DeletarUsuarioUseCase deletarUsuarioUseCase;
+    @Autowired private AtualizarUltimoAcessoUseCase atualizarUltimoAcessoUseCase;
+    @Autowired private AutenticarUsuarioUseCase autenticarUsuarioUseCase;
+    @Autowired private BuscarDadosPrimeiraFaseUseCase buscarDadosPrimeiraFaseUseCase;
+    @Autowired private BuscarUsuarioPorEmailUseCase buscarUsuarioPorEmailUseCase;
+    @Autowired private BuscarUsuarioPorNomeUseCase buscarUsuarioPorNomeUseCase;
+    @Autowired private BuscarUsuariosNaoClassificadosUseCase buscarUsuariosNaoClassificadosUseCase;
+    @Autowired private CadastrarUsuarioOAuthUseCase cadastrarUsuarioOAuthUseCase;
+    @Autowired private CadastrarVoluntarioPrimeiraFaseUseCase cadastrarVoluntarioPrimeiraFaseUseCase;
+    @Autowired private CadastrarVoluntarioSegundaFaseUseCase cadastrarVoluntarioSegundaFaseUseCase;
+    @Autowired private ClassificarUsuarioComoGratuidadeUseCase classificarUsuarioComoGratuidadeUseCase;
+    @Autowired private ClassificarUsuarioComoValorSocialUseCase classificarUsuarioComoValorSocialUseCase;
+    @Autowired private EnviarCredenciaisVoluntarioUseCase enviarCredenciaisVoluntarioUseCase;
+    @Autowired private ListarVoluntariosUseCase listarVoluntariosUseCase;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioController.class);
-
-    @PostMapping("/fase1")
-    public ResponseEntity<UsuarioPrimeiraFaseOutput> cadastrarUsuarioFase1(@RequestBody @Valid UsuarioInputPrimeiraFase usuarioInputPrimeiraFase) {
-        Usuario usuario = usuarioService.cadastrarPrimeiraFase(usuarioInputPrimeiraFase);
-        UsuarioPrimeiraFaseOutput output = UsuarioMapper.ofPrimeiraFase(usuario);
-        return new ResponseEntity<>(output, HttpStatus.CREATED);
+    
+    @PostMapping("/primeira-fase")
+    public ResponseEntity<UsuarioPrimeiraFaseOutput> cadastrarPrimeiraFase(@Valid @RequestBody UsuarioInputPrimeiraFase input) {
+        LOGGER.info("Iniciando cadastro de usuário (primeira fase) para email: {}", input.getEmail());
+        UsuarioPrimeiraFaseOutput output = cadastrarUsuarioPrimeiraFaseUseCase.executar(input);
+        LOGGER.info("Usuário cadastrado com sucesso (primeira fase) para email: {}", input.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(output);
     }
 
-    @PatchMapping("/fase2/{idUsuario}")
-    public ResponseEntity<Usuario> completarCadastroUsuario(@PathVariable Integer idUsuario, @RequestBody @Valid UsuarioInputSegundaFase usuarioInputSegundaFase) {
-        Usuario usuario = usuarioService.cadastrarSegundaFase(idUsuario, usuarioInputSegundaFase);
-        return ResponseEntity.ok(usuario);
+    @PostMapping("/voluntario/primeira-fase")
+    public ResponseEntity<UsuarioPrimeiraFaseOutput> cadastrarVoluntarioPrimeiraFase(@Valid @RequestBody UsuarioInputPrimeiraFase input) {
+        LOGGER.info("Iniciando cadastro de voluntário (primeira fase) para email: {}", input.getEmail());
+        UsuarioPrimeiraFaseOutput output = cadastrarVoluntarioPrimeiraFaseUseCase.executar(input);
+        LOGGER.info("Voluntário cadastrado com sucesso (primeira fase) para email: {}", input.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(output);
     }
 
-    @PostMapping("/voluntario/fase1")
-    public ResponseEntity<UsuarioPrimeiraFaseOutput> cadastrarVoluntarioFase1(@RequestBody @Valid UsuarioInputPrimeiraFase usuarioInputPrimeiraFase) {
-        Usuario usuario = usuarioService.cadastrarPrimeiraFaseVoluntario(usuarioInputPrimeiraFase);
-        UsuarioPrimeiraFaseOutput output = UsuarioMapper.ofPrimeiraFase(usuario);
-        return new ResponseEntity<>(output, HttpStatus.CREATED);
+    @PostMapping("/segunda-fase")
+    public ResponseEntity<UsuarioOutput> cadastrarSegundaFase(@RequestParam Integer idUsuario, @Valid @RequestBody UsuarioInputSegundaFase input) {
+        LOGGER.info("Iniciando cadastro de usuário (segunda fase) para idUsuario: {}", idUsuario);
+        UsuarioOutput output = cadastrarUsuarioSegundaFaseUseCase.executar(idUsuario, input);
+        LOGGER.info("Usuário cadastrado com sucesso (segunda fase) para idUsuario: {}", idUsuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(output);
     }
 
-    @PatchMapping("/voluntario/fase2/{idUsuario}")
-    public ResponseEntity<Usuario> completarCadastroVoluntario(
-            @PathVariable Integer idUsuario,
-            @RequestBody @Valid UsuarioInputSegundaFase usuarioInputSegundaFase) {
-        try {
-            Usuario usuario = usuarioService.cadastrarSegundaFaseVoluntario(idUsuario, usuarioInputSegundaFase);
-            return ResponseEntity.ok(usuario);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping("/voluntario/enviar-credenciais")
-    public ResponseEntity<String> enviarCredenciaisVoluntario(@RequestBody Map<String, String> dados) {
-        try {
-            String email = dados.get("email");
-            String nome = dados.get("nome");
-            String senha = dados.get("senha");
-
-            if (email == null || nome == null || senha == null) {
-                return ResponseEntity.badRequest().body("Dados incompletos");
-            }
-
-            String resultado = usuarioService.enviarCredenciaisVoluntario(email, nome, senha);
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            LOGGER.error("Erro ao enviar credenciais: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao enviar credenciais: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<UsuarioTokenOutput> login(@RequestBody @Valid UsuarioAutenticacaoInput usuarioAutenticacaoInput) {
-        LOGGER.info("Requisição de login recebida para email: {}", usuarioAutenticacaoInput.getEmail());
-        LOGGER.debug("Dados de login: email={}, senha(tamanho)={}",
-                usuarioAutenticacaoInput.getEmail(),
-                usuarioAutenticacaoInput.getSenha() != null ? usuarioAutenticacaoInput.getSenha().length() : 0);
-
-        try {
-            Optional<Usuario> usuarioOpt = usuarioService.buscaUsuarioPorEmail(usuarioAutenticacaoInput.getEmail());
-
-            if (usuarioOpt.isEmpty()) {
-                LOGGER.warn("Usuário não encontrado para email: {}", usuarioAutenticacaoInput.getEmail());
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-
-            Usuario usuario = usuarioOpt.get();
-            LOGGER.debug("Usuário encontrado: ID={}, senha(hash)={}, ficha={}",
-                    usuario.getIdUsuario(), usuario.getSenha(),
-                    usuario.getFicha() != null ? usuario.getFicha().getIdFicha() : "null");
-
-            boolean senhaCorreta = passwordEncoder.matches(usuarioAutenticacaoInput.getSenha(), usuario.getSenha());
-            LOGGER.info("Verificação de senha para {}: {}",
-                    usuarioAutenticacaoInput.getEmail(), senhaCorreta ? "SUCESSO" : "FALHA");
-
-            if (!senhaCorreta) {
-                LOGGER.warn("Senha inválida para email: {}", usuarioAutenticacaoInput.getEmail());
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-            Ficha ficha = usuario.getFicha();
-            if (ficha == null) {
-                LOGGER.error("Ficha não encontrada para o usuário: {}", usuarioAutenticacaoInput.getEmail());
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(null);
-            }
-            LOGGER.debug("Ficha encontrada para o usuário: ID={}", ficha.getIdFicha());
-            try {
-                LOGGER.info("Iniciando processo de autenticação via UsuarioService para: {}",
-                        usuarioAutenticacaoInput.getEmail());
-                UsuarioTokenOutput usuarioTokenOutput = usuarioService.autenticar(usuario, ficha, usuarioAutenticacaoInput.getSenha());
-
-                if (usuarioTokenOutput == null) {
-                    LOGGER.warn("Falha na autenticação para email (token nulo): {}",
-                            usuarioAutenticacaoInput.getEmail());
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-                }
-
-                LOGGER.info("Login bem-sucedido para email: {}", usuarioAutenticacaoInput.getEmail());
-                return ResponseEntity.ok(usuarioTokenOutput);
-            } catch (Exception e) {
-                LOGGER.error("Erro durante autenticação para {}: {}",
-                        usuarioAutenticacaoInput.getEmail(), e.getMessage(), e);
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .build();
-            }
-        } catch (Exception e) {
-            LOGGER.error("Erro ao processar login para {}: {}", usuarioAutenticacaoInput.getEmail(), e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<UsuarioListarOutput>> listarUsuarios() {
-        List<UsuarioListarOutput> usuarios = usuarioService.buscarUsuarios();
-        return ResponseEntity.ok(usuarios);
-    }
-
-    @GetMapping("/voluntarios")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<VoluntarioListagemOutput>> listarVoluntarios() {
-        try {
-            List<VoluntarioListagemOutput> voluntarios = usuarioService.listarVoluntarios();
-            return ResponseEntity.ok(voluntarios);
-        } catch (Exception e) {
-            LOGGER.error("Erro ao listar voluntários: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @PostMapping("/voluntario/segunda-fase")
+    public ResponseEntity<UsuarioOutput> cadastrarVoluntarioSegundaFase(@RequestParam Integer idUsuario, @Valid @RequestBody UsuarioInputSegundaFase input) {
+        LOGGER.info("Iniciando cadastro de voluntário (segunda fase) para idUsuario: {}", idUsuario);
+        UsuarioOutput output = cadastrarVoluntarioSegundaFaseUseCase.executar(idUsuario, input);
+        LOGGER.info("Voluntário cadastrado com sucesso (segunda fase) para idUsuario: {}", idUsuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(output);
     }
 
     @GetMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Usuario> buscarUsuario(@PathVariable Integer id) {
-        return usuarioService.buscaUsuario(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UsuarioOutput> buscarPorId(@PathVariable Integer id) {
+        LOGGER.info("Buscando usuário por id: {}", id);
+        return buscarUsuarioPorIdUseCase.executar(id)
+                .map(usuario -> {
+                    LOGGER.info("Usuário encontrado para id: {}", id);
+                    return ResponseEntity.ok(usuario);
+                })
+                .orElseGet(() -> {
+                    LOGGER.warn("Usuário não encontrado para id: {}", id);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
-    @GetMapping("/por-email")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Usuario> buscarUsuarioPorEmail(@RequestParam String email) {
-        return usuarioService.buscaUsuarioPorEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping
+    public ResponseEntity<java.util.List<UsuarioListarOutput>> listarTodos() {
+        LOGGER.info("Listando todos os usuários");
+        java.util.List<UsuarioListarOutput> lista = buscarTodosUsuariosUseCase.executar();
+        LOGGER.info("Total de usuários encontrados: {}", lista.size());
+        return ResponseEntity.ok(lista);
     }
 
-    @GetMapping("/por-nome")
-    public ResponseEntity<Usuario> buscarUsuarioPorNome(@RequestParam String nome) {
-        return usuarioService.buscaUsuarioPorNome(nome)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UsuarioOutput> buscarPorEmail(@PathVariable String email) {
+        LOGGER.info("Buscando usuário por email: {}", email);
+        return buscarUsuarioPorEmailUseCase.executar(email)
+                .map(usuario -> {
+                    LOGGER.info("Usuário encontrado para email: {}", email);
+                    return ResponseEntity.ok(usuario);
+                })
+                .orElseGet(() -> {
+                    LOGGER.warn("Usuário não encontrado para email: {}", email);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
-    @PutMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<UsuarioListarOutput> atualizarUsuario(
-            @PathVariable Integer id,
-            @RequestBody @Valid UsuarioInputSegundaFase usuarioInputSegundaFase) {
-        UsuarioListarOutput usuarioAtualizado = usuarioService.atualizarUsuario(id, usuarioInputSegundaFase);
-        return usuarioAtualizado != null ?
-                ResponseEntity.ok(usuarioAtualizado) :
-                ResponseEntity.notFound().build();
-    }
-
-    @DeleteMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable Integer id) {
-        usuarioService.deletarUsuario(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/verificar-cadastro")
-    public ResponseEntity<UsuarioPrimeiraFaseOutput> verificarCadastro(
-            @RequestParam(required = false) Integer idUsuario,
-            @RequestParam(required = false) String email) {
-        try {
-            Usuario usuario;
-            if (idUsuario != null) {
-                usuario = usuarioService.buscarDadosPrimeiraFase(idUsuario);
-            } else if (email != null && !email.isEmpty()) {
-                usuario = usuarioService.buscarDadosPrimeiraFase(email);
-            } else {
-                return ResponseEntity.badRequest().build();
-            }
-
-            UsuarioPrimeiraFaseOutput output = UsuarioMapper.ofPrimeiraFase(usuario);
-            return ResponseEntity.ok(output);
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/validar-cep/{cep}")
-    public ResponseEntity<?> validarCep(@PathVariable String cep) {
-        try {
-            ResponseEntity<EnderecoOutput> response = enderecoService.buscaEndereco(cep, null, null);
-            if (response.getBody() == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(response.getBody());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    @GetMapping("/nome/{termo}")
+    public ResponseEntity<UsuarioOutput> buscarPorNome(@PathVariable String termo) {
+        LOGGER.info("Buscando usuário por nome: {}", termo);
+        return buscarUsuarioPorNomeUseCase.executar(termo)
+                .map(usuario -> {
+                    LOGGER.info("Usuário encontrado para nome: {}", termo);
+                    return ResponseEntity.ok(usuario);
+                })
+                .orElseGet(() -> {
+                    LOGGER.warn("Usuário não encontrado para nome: {}", termo);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
     @GetMapping("/nao-classificados")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<UsuarioClassificacaoOutput>> listarUsuariosNaoClassificados() {
-        List<UsuarioClassificacaoOutput> usuariosNaoClassificados = usuarioService.buscarUsuariosNaoClassificados();
-        return ResponseEntity.ok(usuariosNaoClassificados);
+    public ResponseEntity<java.util.List<UsuarioClassificacaoOutput>> listarNaoClassificados() {
+        LOGGER.info("Listando usuários não classificados");
+        java.util.List<UsuarioClassificacaoOutput> lista = buscarUsuariosNaoClassificadosUseCase.executar();
+        LOGGER.info("Total de usuários não classificados: {}", lista.size());
+        return ResponseEntity.ok(lista);
     }
 
-    @PatchMapping("/{id}/classificar/aprovar")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<UsuarioListarOutput> aprovarUsuario(@PathVariable Integer id) {
-        try {
-            UsuarioListarOutput usuarioClassificado = usuarioService.classificarUsuarioComoGratuidade(id);
-            return ResponseEntity.ok(usuarioClassificado);
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @GetMapping("/voluntarios")
+    public ResponseEntity<java.util.List<VoluntarioListagemOutput>> listarVoluntarios() {
+        LOGGER.info("Listando voluntários");
+        java.util.List<VoluntarioListagemOutput> lista = listarVoluntariosUseCase.executar();
+        LOGGER.info("Total de voluntários encontrados: {}", lista.size());
+        return ResponseEntity.ok(lista);
     }
 
-    @PatchMapping("/{id}/classificar/rejeitar")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<UsuarioListarOutput> rejeitarUsuario(@PathVariable Integer id) {
-        try {
-            UsuarioListarOutput usuarioClassificado = usuarioService.classificarUsuarioComoValorSocial(id);
-            return ResponseEntity.ok(usuarioClassificado);
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioListarOutput> atualizar(@PathVariable Integer id, @Valid @RequestBody UsuarioInputSegundaFase input) {
+        LOGGER.info("Atualizando usuário id: {}", id);
+        UsuarioListarOutput output = atualizarUsuarioUseCase.executar(id, input);
+        LOGGER.info("Usuário atualizado com sucesso id: {}", id);
+        return ResponseEntity.ok(output);
     }
 
-    @PostMapping("/classificar-usuarios")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Map<String, Integer>> classificarUsuariosEmLote(
-            @RequestBody Map<String, List<Integer>> request) {
-        try {
-            List<Integer> aprovados = request.getOrDefault("aprovados", new ArrayList<>());
-            List<Integer> reprovados = request.getOrDefault("reprovados", new ArrayList<>());
-
-            int totalAprovados = 0;
-            int totalReprovados = 0;
-
-            for (Integer id : aprovados) {
-                try {
-                    usuarioService.classificarUsuarioComoGratuidade(id);
-                    totalAprovados++;
-                } catch (Exception e) {
-                    LOGGER.error("Erro ao aprovar usuário {}: {}", id, e.getMessage());
-                }
-            }
-
-            for (Integer id : reprovados) {
-                try {
-                    usuarioService.classificarUsuarioComoValorSocial(id);
-                    totalReprovados++;
-                } catch (Exception e) {
-                    LOGGER.error("Erro ao reprovar usuário {}: {}", id, e.getMessage());
-                }
-            }
-
-            Map<String, Integer> resultado = new HashMap<>();
-            resultado.put("aprovados", totalAprovados);
-            resultado.put("reprovados", totalReprovados);
-
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            LOGGER.error("Erro ao processar classificação em lote: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        LOGGER.info("Deletando usuário id: {}", id);
+        deletarUsuarioUseCase.executar(id);
+        LOGGER.info("Usuário deletado com sucesso id: {}", id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/estatisticas")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Map<String, Object>> getEstatisticasUsuarios() {
-        try {
-            List<UsuarioListarOutput> usuarios = usuarioService.buscarUsuarios();
-            List<UsuarioClassificacaoOutput> naoClassificados = usuarioService.buscarUsuariosNaoClassificados();
-
-            Map<String, Object> estatisticas = new HashMap<>();
-            estatisticas.put("totalUsuarios", usuarios.size());
-            estatisticas.put("usuariosNaoClassificados", naoClassificados.size());
-
-            return ResponseEntity.ok(estatisticas);
-        } catch (Exception e) {
-            LOGGER.error("Erro ao buscar estatísticas: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @PatchMapping("/{id}/ultimo-acesso")
+    public ResponseEntity<Void> atualizarUltimoAcesso(@PathVariable Integer id) {
+        LOGGER.info("Atualizando último acesso do usuário id: {}", id);
+        atualizarUltimoAcessoUseCase.executar(id);
+        LOGGER.info("Último acesso atualizado para usuário id: {}", id);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{idUsuario}/ultimo-acesso")
-    @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<Void> atualizarUltimoAcesso(@PathVariable Integer idUsuario) {
-        try {
-            usuarioService.atualizarUltimoAcesso(idUsuario);
-            return ResponseEntity.ok().build();
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            LOGGER.error("Erro ao atualizar último acesso: {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+    @PostMapping("/autenticar")
+    public ResponseEntity<UsuarioTokenOutput> autenticar(@Valid @RequestBody UsuarioAutenticacaoInput input) {
+        LOGGER.info("Autenticando usuário: {}", input.getEmail());
+        UsuarioTokenOutput token = autenticarUsuarioUseCase.executar(input);
+        LOGGER.info("Usuário autenticado com sucesso: {}", input.getEmail());
+        return ResponseEntity.ok(token);
+    }
+
+    @GetMapping("/primeira-fase/{id}")
+    public ResponseEntity<UsuarioPrimeiraFaseOutput> buscarDadosPrimeiraFasePorId(@PathVariable Integer id) {
+        LOGGER.info("Buscando dados da primeira fase para usuário id: {}", id);
+        return ResponseEntity.ok(buscarDadosPrimeiraFaseUseCase.executarPorId(id));
+    }
+
+    @GetMapping("/primeira-fase/email/{email}")
+    public ResponseEntity<UsuarioPrimeiraFaseOutput> buscarDadosPrimeiraFasePorEmail(@PathVariable String email) {
+        LOGGER.info("Buscando dados da primeira fase para email: {}", email);
+        return ResponseEntity.ok(buscarDadosPrimeiraFaseUseCase.executarPorEmail(email));
+    }
+
+    @PostMapping("/oauth")
+    public ResponseEntity<Void> cadastrarOAuth(@RequestBody Object usuarioOAuth) {
+        LOGGER.info("Chamada para cadastro OAuth recebida, funcionalidade não implementada.");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    }
+
+    @PostMapping("/classificar/gratuidade/{id}")
+    public ResponseEntity<UsuarioListarOutput> classificarComoGratuidade(@PathVariable Integer id) {
+        LOGGER.info("Classificando usuário como gratuidade id: {}", id);
+        UsuarioListarOutput output = classificarUsuarioComoGratuidadeUseCase.executar(id);
+        LOGGER.info("Usuário classificado como gratuidade id: {}", id);
+        return ResponseEntity.ok(output);
+    }
+
+    @PostMapping("/classificar/valor-social/{id}")
+    public ResponseEntity<UsuarioListarOutput> classificarComoValorSocial(@PathVariable Integer id) {
+        LOGGER.info("Classificando usuário como valor social id: {}", id);
+        UsuarioListarOutput output = classificarUsuarioComoValorSocialUseCase.executar(id);
+        LOGGER.info("Usuário classificado como valor social id: {}", id);
+        return ResponseEntity.ok(output);
+    }
+
+    @PostMapping("/voluntario/credenciais")
+    public ResponseEntity<String> enviarCredenciaisVoluntario(@RequestParam String email, @RequestParam String nome, @RequestParam String senha) {
+        LOGGER.info("Enviando credenciais para voluntário: {} - {}", nome, email);
+        String resultado = enviarCredenciaisVoluntarioUseCase.executar(email, nome, senha);
+        LOGGER.info("Credenciais enviadas para voluntário: {} - {}", nome, email);
+        return ResponseEntity.ok(resultado);
     }
 }
