@@ -1,5 +1,6 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
+import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.application.useCase.consulta.AdicionarAvaliacaoConsultaUseCase;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public class AdicionarAvaliacaoConsultaUseCaseImpl implements AdicionarAvaliacao
     }
 
     @Override
-    public void adicionarAvaliacao(Integer consultaId, ConsultaAvaliacaoInput input) {
+    public ConsultaOutput adicionarAvaliacao(Integer consultaId, String avaliação) {
         // Implementação da lógica de avaliação
         logger.info("Adicionando avaliação à consulta {}", consultaId);
         // ...
