@@ -10,17 +10,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFase;
 import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFase;
-import org.com.imaapi.application.dto.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
-import org.com.imaapi.application.dto.usuario.input.UsuarioLoginInput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioOutput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioPrimeiraFaseOutput;
-import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutput;
 import org.com.imaapi.application.useCase.usuario.*;
 import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioTokenOutput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioClassificacaoOutput;
 import org.com.imaapi.application.dto.usuario.output.VoluntarioListagemOutput;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -96,7 +95,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<java.util.List<UsuarioListarOutput>> listarTodos() {
+    public ResponseEntity<List<UsuarioListarOutput>> listarTodos() {
         LOGGER.info("Listando todos os usuários");
         java.util.List<UsuarioListarOutput> lista = buscarTodosUsuariosUseCase.executar();
         LOGGER.info("Total de usuários encontrados: {}", lista.size());
@@ -132,7 +131,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/nao-classificados")
-    public ResponseEntity<java.util.List<UsuarioClassificacaoOutput>> listarNaoClassificados() {
+    public ResponseEntity<List<UsuarioClassificacaoOutput>> listarNaoClassificados() {
         LOGGER.info("Listando usuários não classificados");
         java.util.List<UsuarioClassificacaoOutput> lista = buscarUsuariosNaoClassificadosUseCase.executar();
         LOGGER.info("Total de usuários não classificados: {}", lista.size());

@@ -60,37 +60,83 @@ public class PerfilController {
     }
 
     @PostMapping("/{tipo}/foto")
-    public ResponseEntity<?> uploadFoto(
-            @RequestParam Integer usuarioId,
-            @PathVariable String tipo,
-            @RequestParam("file") MultipartFile file) {
+    @Operation(summary = "Upload de foto do perfil", 
+               description = "Realiza o upload de uma foto para o perfil do usuário com validações de tipo e tamanho")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Foto enviada com sucesso",
+                    content = @Content(schema = @Schema(implementation = FotoUploadOutput.class))),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos ou arquivo com problema",
+                    content = @Content(schema = @Schema(implementation = FotoUploadOutput.class))),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor",
+                    content = @Content(schema = @Schema(implementation = FotoUploadOutput.class)))
+    })
+    public ResponseEntity<FotoUploadOutput> uploadFoto(
+            @Parameter(description = "ID do usuário") @RequestParam Integer usuarioId,
+            @Parameter(description = "Tipo do usuário (assistido, voluntario, assistente_social)") @PathVariable String tipo,
+            @Parameter(description = "Arquivo de imagem (máximo 1MB, formatos: JPEG, PNG, GIF, WEBP)") @RequestParam("file") MultipartFile file) {
+        
         LOGGER.info("Iniciando upload de foto para usuário ID: {}, tipo: {}", usuarioId, tipo);
         
-        if (file.isEmpty()) {
-            LOGGER.warn("Arquivo vazio recebido para usuário ID: {}", usuarioId);
-            return ResponseEntity.badRequest().body("O arquivo não pode estar vazio.");
-        }
-
-        // Validação do tipo MIME
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            LOGGER.warn("Tipo de arquivo inválido recebido: {} para usuário ID: {}", contentType, usuarioId);
-            return ResponseEntity.badRequest().body("O arquivo deve ser uma imagem.");
+        // Criar DTO de input
+        FotoUploadInput input = new FotoUploadInput(usuarioId, tipo, file);
+        
+        // Validações usando método utilitário
+        FotoUploadOutput validationError = validarFotoInput(input, usuarioId);
+        if (validationError != null) {
+            return ResponseEntity.badRequest().body(validationError);
         }
 
         try {
-            if (file.getSize() > 1048576) { // 1MB em bytes
-                LOGGER.warn("Arquivo muito grande ({} bytes) recebido para usuário ID: {}", file.getSize(), usuarioId);
-                return ResponseEntity.badRequest().body("O tamanho máximo permitido é 1MB.");
-            }
-
             String fotoUrl = perfilService.salvarFoto(usuarioId, tipo, file);
+            
             LOGGER.info("Foto salva com sucesso para usuário ID: {}, URL: {}", usuarioId, fotoUrl);
-            return ResponseEntity.ok(Map.of("message", "Foto salva com sucesso.", "url", fotoUrl));
+            
+            // Criar resposta usando DTO de output
+            FotoUploadOutput output = FotoUploadOutput.sucesso(
+                    "Foto salva com sucesso.",
+                    fotoUrl,
+                    file.getOriginalFilename(),
+                    Long.valueOf(file.getSize()),
+                    file.getContentType()
+            );
+            
+            return ResponseEntity.ok(output);
+            
         } catch (IOException e) {
             LOGGER.error("Erro ao salvar foto para usuário ID: {}: {}", usuarioId, e.getMessage(), e);
-            return ResponseEntity.status(500).body("Erro ao salvar a foto.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(FotoUploadOutput.erro("Erro interno ao salvar a foto."));
+        } catch (Exception e) {
+            LOGGER.error("Erro inesperado ao processar upload para usuário ID: {}: {}", usuarioId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(FotoUploadOutput.erro("Erro inesperado ao processar o upload."));
         }
+    }
+
+    /**
+     * Valida os dados de entrada para upload de foto
+     * @param input DTO com os dados do upload
+     * @return FotoUploadOutput com erro se houver problemas, null se válido
+     */
+    private FotoUploadOutput validarFotoInput(FotoUploadInput input, Integer usuarioId) {
+        if (input.isArquivoVazio()) {
+            LOGGER.warn("Arquivo vazio recebido para usuário ID: {}", usuarioId);
+            return FotoUploadOutput.erro("O arquivo não pode estar vazio.");
+        }
+
+        if (!input.isTipoValido()) {
+            LOGGER.warn("Tipo de arquivo inválido recebido: {} para usuário ID: {}", 
+                    input.getArquivo().getContentType(), usuarioId);
+            return FotoUploadOutput.erro("O arquivo deve ser uma imagem válida (JPEG, PNG, GIF, WEBP).");
+        }
+
+        if (!input.isTamanhoValido()) {
+            LOGGER.warn("Arquivo muito grande ({} bytes) recebido para usuário ID: {}", 
+                    input.getArquivo().getSize(), usuarioId);
+            return FotoUploadOutput.erro("O tamanho máximo permitido é 1MB.");
+        }
+
+        return null; // Validação passou
     }
 
     @PatchMapping("/voluntario/dados-profissionais")
