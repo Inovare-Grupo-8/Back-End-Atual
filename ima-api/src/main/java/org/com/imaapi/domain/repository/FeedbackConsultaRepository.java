@@ -1,6 +1,6 @@
 package org.com.imaapi.domain.repository;
 
-import org.com.imaapi.application.usecase.consulta.FeedbackConsulta;
+import org.com.imaapi.domain.model.FeedbackConsulta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

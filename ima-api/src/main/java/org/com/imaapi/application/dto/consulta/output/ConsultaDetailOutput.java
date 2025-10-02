@@ -1,16 +1,14 @@
 package org.com.imaapi.application.dto.consulta.output;
 
-import jakarta.persistence.Id;
+import org.com.imaapi.domain.model.Especialidade;
 import org.com.imaapi.domain.model.enums.ModalidadeConsulta;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
-import org.com.imaapi.domain.model.especialidade.Especialidade;
 import org.com.imaapi.domain.model.Usuario;
 
 import java.time.LocalDateTime;
 
 public class ConsultaDetailOutput {
-    @Id
-    private Integer id;
+    private Integer idConsulta;
     private LocalDateTime horario;
     private StatusConsulta status;
     private ModalidadeConsulta modalidade;
@@ -29,8 +27,8 @@ public class ConsultaDetailOutput {
     }
 
 
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public Integer getIdConsulta() { return idConsulta; }
+    public void setIdConsulta(Integer idConsulta) { this.idConsulta = idConsulta; }
 
     public LocalDateTime getHorario() { return horario; }
     public void setHorario(LocalDateTime horario) { this.horario = horario; }
@@ -89,7 +87,7 @@ public class ConsultaDetailOutput {
         dto.setObservacoes(observacoes);
 
         if (especialidade != null) {
-            dto.setEspecialidadeId(especialidade.getId());
+            dto.setEspecialidadeId(especialidade.getIdEspecialidade());
             dto.setEspecialidadeNome(especialidade.getNome());
         }
 

@@ -27,9 +27,9 @@ public class ConsultaResponseOutput {
         this.modalidade = consulta.getModalidade();
         this.local = consulta.getLocal();
         this.observacoes = consulta.getObservacoes();
-        this.idEspecialidade = consulta.getEspecialidade() != null ? consulta.getEspecialidade().getId() : null;
-        this.idAssistido = consulta.getAssistido() != null ? consulta.getAssistido().getId() : null;
-        this.idVoluntario = consulta.getVoluntario() != null ? consulta.getVoluntario().getId() : null;
+        this.idEspecialidade = consulta.getEspecialidade() != null ? consulta.getEspecialidade().getIdEspecialidade() : null;
+        this.idAssistido = consulta.getAssistido() != null ? consulta.getAssistido().getIdUsuario() : null;
+        this.idVoluntario = consulta.getVoluntario() != null ? consulta.getVoluntario().getIdUsuario() : null;
     }
 
 

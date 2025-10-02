@@ -3,6 +3,7 @@ package org.com.imaapi.application.useCaseImpl.consulta;
 import org.com.imaapi.application.useCase.consulta.CriarConsultaUseCase;
 import org.com.imaapi.application.dto.consulta.input.ConsultaInput;
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.com.imaapi.domain.repository.EspecialidadeRepository;
@@ -18,19 +19,81 @@ public class CriarConsultaUseCaseImpl implements CriarConsultaUseCase {
     private final ConsultaRepository consultaRepository;
     private final UsuarioRepository usuarioRepository;
     private final EspecialidadeRepository especialidadeRepository;
+    private final ConsultaUtil consultaUtil;
 
     @Autowired
     public CriarConsultaUseCaseImpl(ConsultaRepository consultaRepository,
                                     UsuarioRepository usuarioRepository,
-                                    EspecialidadeRepository especialidadeRepository) {
+                                    EspecialidadeRepository especialidadeRepository,
+                                    ConsultaUtil consultaUtil) {
         this.consultaRepository = consultaRepository;
         this.usuarioRepository = usuarioRepository;
         this.especialidadeRepository = especialidadeRepository;
+        this.consultaUtil = consultaUtil;
     }
 
     @Override
     public ConsultaOutput criarConsulta(ConsultaInput input) {
-        logger.info("Criando consulta para input: {}", input);
-        return null;
+        logger.info("Iniciando criação de consulta");
+
+        try {
+            // Validações de entrada
+            validarInput(input);
+
+            Consulta consulta = new Consulta();
+            consulta.setHorario(input.getHorario());
+            consulta.setStatus(input.getStatus());
+            consulta.setModalidade(input.getModalidade());
+            consulta.setLocal(input.getLocal());
+            consulta.setObservacoes(input.getObservacoes());
+
+            // Buscar entidades pelos IDs com mensagens específicas
+            consulta.setEspecialidade(especialidadeRepository.findById(input.getIdEspecialidade())
+                    .orElseThrow(() -> new RuntimeException(
+                        String.format("Especialidade com ID %d não encontrada", input.getIdEspecialidade()))));
+
+            consulta.setAssistido(usuarioRepository.findById(input.getIdAssistido())
+                    .orElseThrow(() -> new RuntimeException(
+                        String.format("Assistido com ID %d não encontrado", input.getIdAssistido()))));
+
+            consulta.setVoluntario(usuarioRepository.findById(input.getIdVoluntario())
+                    .orElseThrow(() -> new RuntimeException(
+                        String.format("Voluntário com ID %d não encontrado", input.getIdVoluntario()))));
+
+            Consulta consultaSalva = consultaRepository.save(consulta);
+            logger.info("Consulta criada com sucesso: ID = {}", consultaSalva.getIdConsulta());
+
+            return consultaUtil.mapConsultaToOutput(consultaSalva);
+
+        } catch (Exception e) {
+            logger.error("Erro ao criar consulta: {}", e.getMessage());
+            throw new RuntimeException("Erro ao criar consulta", e);
+        }
+    }
+
+    // Valida os dados de entrada para criação da consulta
+    private void validarInput(ConsultaInput input) {
+        if (input == null) {
+            throw new IllegalArgumentException("ConsultaInput é obrigatório");
+        }
+
+        // Usar métodos do ConsultaUtil para validações
+        consultaUtil.validarId(input.getIdEspecialidade());
+        consultaUtil.validarId(input.getIdAssistido());
+        consultaUtil.validarId(input.getIdVoluntario());
+
+        if (input.getHorario() == null) {
+            throw new IllegalArgumentException("Horário da consulta é obrigatório");
+        }
+
+        if (input.getStatus() == null) {
+            throw new IllegalArgumentException("Status da consulta é obrigatório");
+        }
+
+        if (input.getModalidade() == null) {
+            throw new IllegalArgumentException("Modalidade da consulta é obrigatória");
+        }
+
+        logger.debug("Validação de entrada concluída com sucesso");
     }
 }

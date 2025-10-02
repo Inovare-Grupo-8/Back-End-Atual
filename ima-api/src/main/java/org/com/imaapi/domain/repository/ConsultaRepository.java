@@ -40,4 +40,5 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Integer> {
 
     List<Consulta> findByAssistido_IdUsuarioOrVoluntario_IdUsuario(Integer idAssistido, Integer idVoluntario);
 
+    List<Consulta> findByAssistido_IdUsuarioOrVoluntario_IdUsuarioAndHorarioBetween(Integer userId, Integer userId1, LocalDateTime inicio, LocalDateTime fim);
 }
