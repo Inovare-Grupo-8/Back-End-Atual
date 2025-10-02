@@ -71,9 +71,7 @@ public class CriarConsultaUseCaseImpl implements CriarConsultaUseCase {
         }
     }
 
-    /**
-     * Valida os dados de entrada para criação da consulta
-     */
+    // Valida os dados de entrada para criação da consulta
     private void validarInput(ConsultaInput input) {
         if (input == null) {
             throw new IllegalArgumentException("ConsultaInput é obrigatório");

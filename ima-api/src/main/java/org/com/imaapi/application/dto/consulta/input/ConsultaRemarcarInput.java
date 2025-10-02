@@ -20,6 +20,8 @@ public class ConsultaRemarcarInput {
 
     private String observacoes;
 
+    // Construtor padrão necessário para JSON deserialization
+    public ConsultaRemarcarInput() {}
 
     public ConsultaRemarcarInput(LocalDateTime novoHorario, ModalidadeConsulta modalidade,
                                  String local, String observacoes) {
