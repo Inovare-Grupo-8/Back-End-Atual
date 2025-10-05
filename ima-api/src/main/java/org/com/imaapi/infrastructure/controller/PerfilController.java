@@ -1,8 +1,40 @@
 package org.com.imaapi.infrastructure.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.com.imaapi.application.dto.usuario.input.FotoUploadInput;
+import org.com.imaapi.application.dto.usuario.output.FotoUploadOutput;
+import org.com.imaapi.application.dto.usuario.input.EnderecoInput;
+import org.com.imaapi.application.dto.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
+import org.com.imaapi.application.dto.usuario.input.VoluntarioDadosProfissionaisInput;
+import org.com.imaapi.application.dto.usuario.output.AssistenteSocialOutput;
+import org.com.imaapi.application.dto.usuario.output.EnderecoOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioDadosPessoaisOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioOutput;
+import org.com.imaapi.application.useCaseImpl.AssistenteSocialServiceImpl;
+import org.com.imaapi.application.useCaseImpl.PerfilServiceImpl;
+import org.com.imaapi.domain.repository.UsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/perfil")
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH, RequestMethod.OPTIONS})
+@CrossOrigin(origins = "*")
+@Tag(name = "Perfil", description = "Operações relacionadas ao gerenciamento de perfis de usuários")
 public class PerfilController {
 
     @Autowired
@@ -96,7 +128,7 @@ public class PerfilController {
                     "Foto salva com sucesso.",
                     fotoUrl,
                     file.getOriginalFilename(),
-                    Long.valueOf(file.getSize()),
+                    file.getSize(),
                     file.getContentType()
             );
             

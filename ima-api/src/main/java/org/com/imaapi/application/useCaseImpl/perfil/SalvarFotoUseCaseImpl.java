@@ -1,41 +1,40 @@
 package org.com.imaapi.application.useCaseImpl.perfil;
 
 import org.com.imaapi.application.useCase.perfil.SalvarFotoUseCase;
+import org.com.imaapi.domain.model.Usuario;
+import org.com.imaapi.domain.repository.UsuarioRepository;
+import org.com.imaapi.infrastructure.service.FotoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
+@Service
+@Transactional
 public class SalvarFotoUseCaseImpl implements SalvarFotoUseCase {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SalvarFotoUseCaseImpl.class);
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    
+    @Autowired
+    private FotoService fotoService;
 
     @Override
-    public String salvarFoto(String tipoUsuario, Integer usuarioId, MultipartFile file) throws IOException {
-        Path uploadPath = Paths.get("uploads/");
+    public String salvarFoto(Integer usuarioId, String tipo, MultipartFile file) throws IOException {
+        LOGGER.info("Salvando foto para o usuário com ID: {}", usuarioId);
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
+        String fotoUrl = fotoService.salvarFoto(tipo, usuarioId, file);
+        usuario.setFotoUrl(fotoUrl);
+        usuarioRepository.save(usuario);
 
-        String originalFilename = file.getOriginalFilename();
-        String fileExtension = "";
-
-        if (originalFilename != null && originalFilename.contains(".")) {
-            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-
-        String fileName = String.format("%s_user_%d%s", tipoUsuario, usuarioId, fileExtension);
-        Path filePath = uploadPath.resolve(fileName);
-
-        if (Files.exists(filePath)) {
-            Files.delete(filePath);
-        }
-
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-        return "/uploads/" + fileName;
+        LOGGER.info("Foto salva com sucesso para o usuário com ID: {}", usuarioId);
+        return fotoUrl;
     }
-
 }

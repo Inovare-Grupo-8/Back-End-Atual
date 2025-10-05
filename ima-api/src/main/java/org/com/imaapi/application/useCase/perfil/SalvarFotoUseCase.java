@@ -5,5 +5,5 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface SalvarFotoUseCase {
-    public String salvarFoto(String tipoUsuario, Integer usuarioId, MultipartFile file) throws IOException;
+    String salvarFoto(Integer usuarioId, String tipo, MultipartFile file) throws IOException;
 }
