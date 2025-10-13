@@ -1,18 +1,19 @@
 package org.com.imaapi.application.useCaseImpl.perfil;
 
 import org.com.imaapi.application.useCase.perfil.AtualizarEnderecoUseCase;
-import org.com.imaapi.application.useCase.EnderecoService;
 import org.com.imaapi.application.dto.usuario.output.EnderecoOutput;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Endereco;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.com.imaapi.domain.repository.EnderecoRepository;
+import org.com.imaapi.infrastructure.gateway.ViaCepClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.ResponseEntity;
 
 @Service
 @Transactional
@@ -21,12 +22,12 @@ public class AtualizarEnderecoUseCaseImpl implements AtualizarEnderecoUseCase {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-    
+
     @Autowired
     private EnderecoRepository enderecoRepository;
     
     @Autowired
-    private EnderecoService enderecoService;
+    private ViaCepClient viaCepClient;
 
     @Override
     public boolean atualizarEnderecoPorUsuarioId(Integer usuarioId, String cep, String numero, String complemento) {
@@ -44,11 +45,13 @@ public class AtualizarEnderecoUseCaseImpl implements AtualizarEnderecoUseCase {
                 return false;
             }
 
-            EnderecoOutput enderecoApi = enderecoService.buscaEndereco(cep, numero, complemento).getBody();
-            if (enderecoApi == null) {
+            ResponseEntity<EnderecoOutput> enderecoApiResponse = viaCepClient.buscaEndereco(cep, numero, complemento);
+            if (enderecoApiResponse == null || enderecoApiResponse.getBody() == null) {
                 LOGGER.warn("Endereço não encontrado na API para o CEP: {}", cep);
                 return false;
             }
+            
+            EnderecoOutput enderecoApi = enderecoApiResponse.getBody();
 
             Endereco endereco = ficha.getEndereco();
             if (endereco == null) {
@@ -73,5 +76,10 @@ public class AtualizarEnderecoUseCaseImpl implements AtualizarEnderecoUseCase {
             LOGGER.error("Erro ao atualizar endereço para o usuário com ID: {}", usuarioId, e);
             return false;
         }
+    }
+    
+    @Override
+    public boolean atualizarEndereco(Integer usuarioId, String cep, String numero, String complemento) {
+        return atualizarEnderecoPorUsuarioId(usuarioId, cep, numero, complemento);
     }
 }
