@@ -104,4 +104,8 @@ public class Usuario {    @Id
     public void atualizarTipo(TipoUsuario tipo) {
         this.setTipo(tipo);
     }
+
+    public boolean getClassificacao() {
+        return false;
+    }
 }
