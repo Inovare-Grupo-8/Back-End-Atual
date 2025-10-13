@@ -8,21 +8,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.com.imaapi.application.dto.usuario.input.FotoUploadInput;
-import org.com.imaapi.application.dto.usuario.output.FotoUploadOutput;
+import lombok.RequiredArgsConstructor;
 import org.com.imaapi.application.dto.usuario.input.EnderecoInput;
+import org.com.imaapi.application.dto.usuario.input.FotoUploadInput;
 import org.com.imaapi.application.dto.usuario.input.UsuarioInputAtualizacaoDadosPessoais;
 import org.com.imaapi.application.dto.usuario.input.VoluntarioDadosProfissionaisInput;
-import org.com.imaapi.application.dto.usuario.output.AssistenteSocialOutput;
-import org.com.imaapi.application.dto.usuario.output.EnderecoOutput;
-import org.com.imaapi.application.dto.usuario.output.UsuarioDadosPessoaisOutput;
-import org.com.imaapi.application.dto.usuario.output.UsuarioOutput;
-import org.com.imaapi.application.useCaseImpl.AssistenteSocialServiceImpl;
-import org.com.imaapi.application.useCaseImpl.PerfilServiceImpl;
-import org.com.imaapi.domain.repository.UsuarioRepository;
+import org.com.imaapi.application.dto.usuario.output.*;
+import org.com.imaapi.application.useCase.perfil.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,22 +28,26 @@ import java.util.Map;
 @RestController
 @RequestMapping("/perfil")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 @Tag(name = "Perfil", description = "Operações relacionadas ao gerenciamento de perfis de usuários")
 public class PerfilController {
 
-    @Autowired
-    private PerfilServiceImpl perfilService;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private AssistenteSocialServiceImpl assistenteSocialService;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(PerfilController.class);
+    
+    private final BuscarDadosPessoaisUseCase buscarDadosPessoaisUseCase;
+    private final AtualizarDadosPessoaisUseCase atualizarDadosPessoaisUseCase;
+    private final BuscarEnderecoUseCase buscarEnderecoUseCase;
+    private final AtualizarEnderecoUseCase atualizarEnderecoUseCase;
+    private final SalvarFotoUseCase salvarFotoUseCase;
+    private final AtualizarDadosProfissionaisUseCase atualizarDadosProfissionaisUseCase;
+    private final CriarDisponibilidadeUseCase criarDisponibilidadeUseCase;
+    private final AtualizarDisponibilidadeUseCase atualizarDisponibilidadeUseCase;
+    private final AtualizarDadosPessoaisCompletoUseCase atualizarDadosPessoaisCompletoUseCase;
 
     @GetMapping("/{tipo}/dados-pessoais")
     public ResponseEntity<UsuarioDadosPessoaisOutput> buscarDadosPessoais(
             @RequestParam Integer usuarioId, @PathVariable String tipo) {
-        UsuarioDadosPessoaisOutput usuarioOutput = perfilService.buscarDadosPessoaisPorId(usuarioId);
+        UsuarioDadosPessoaisOutput usuarioOutput = buscarDadosPessoaisUseCase.buscarDadosPessoais(usuarioId);
         if (usuarioOutput == null) {
             return ResponseEntity.notFound().build();
         }
@@ -61,7 +59,7 @@ public class PerfilController {
             @RequestParam Integer usuarioId,
             @PathVariable String tipo,
             @RequestBody UsuarioInputAtualizacaoDadosPessoais usuarioInputAtualizacaoDadosPessoais) {
-        UsuarioOutput usuarioOutput = perfilService.atualizarDadosPessoais(usuarioId, usuarioInputAtualizacaoDadosPessoais);
+        UsuarioOutput usuarioOutput = atualizarDadosPessoaisUseCase.atualizarDadosPessoais(usuarioId, usuarioInputAtualizacaoDadosPessoais);
         if (usuarioOutput == null) {
             return ResponseEntity.status(404).body(null);
         }
@@ -71,7 +69,7 @@ public class PerfilController {
     @GetMapping("/{tipo}/endereco")
     public ResponseEntity<EnderecoOutput> buscarEndereco(
             @RequestParam Integer usuarioId, @PathVariable String tipo) {
-        EnderecoOutput enderecoOutput = perfilService.buscarEnderecoPorId(usuarioId);
+        EnderecoOutput enderecoOutput = buscarEnderecoUseCase.buscarEndereco(usuarioId);
         if (enderecoOutput == null) {
             return ResponseEntity.notFound().build();
         }
@@ -83,7 +81,7 @@ public class PerfilController {
             @RequestParam Integer usuarioId,
             @PathVariable String tipo,
             @RequestBody @Valid EnderecoInput enderecoInput) {
-        boolean atualizado = perfilService.atualizarEnderecoPorUsuarioId(
+        boolean atualizado = atualizarEnderecoUseCase.atualizarEndereco(
                 usuarioId, enderecoInput.getCep(), enderecoInput.getNumero(), enderecoInput.getComplemento());
         if (!atualizado) {
             return ResponseEntity.notFound().build();
@@ -97,7 +95,7 @@ public class PerfilController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Foto enviada com sucesso",
                     content = @Content(schema = @Schema(implementation = FotoUploadOutput.class))),
-        @ApiResponse(responseCode = "400", description = "Dados inválidos ou arquivo com problema",
+            @ApiResponse(responseCode = "400", description = "Dados inválidos ou arquivo com problema",
                     content = @Content(schema = @Schema(implementation = FotoUploadOutput.class))),
         @ApiResponse(responseCode = "500", description = "Erro interno do servidor",
                     content = @Content(schema = @Schema(implementation = FotoUploadOutput.class)))
@@ -119,7 +117,7 @@ public class PerfilController {
         }
 
         try {
-            String fotoUrl = perfilService.salvarFoto(usuarioId, tipo, file);
+            String fotoUrl = salvarFotoUseCase.salvarFoto(usuarioId, tipo, file);
             
             LOGGER.info("Foto salva com sucesso para usuário ID: {}, URL: {}", usuarioId, fotoUrl);
             
@@ -145,11 +143,6 @@ public class PerfilController {
         }
     }
 
-    /**
-     * Valida os dados de entrada para upload de foto
-     * @param input DTO com os dados do upload
-     * @return FotoUploadOutput com erro se houver problemas, null se válido
-     */
     private FotoUploadOutput validarFotoInput(FotoUploadInput input, Integer usuarioId) {
         if (input.isArquivoVazio()) {
             LOGGER.warn("Arquivo vazio recebido para usuário ID: {}", usuarioId);
@@ -175,7 +168,7 @@ public class PerfilController {
     public ResponseEntity<Void> atualizarDadosProfissionais(
             @RequestParam Integer usuarioId,
             @RequestBody @Valid VoluntarioDadosProfissionaisInput dadosProfissionais) {
-        boolean atualizado = perfilService.atualizarDadosProfissionais(usuarioId, dadosProfissionais);
+        boolean atualizado = atualizarDadosProfissionaisUseCase.atualizarDadosProfissionais(usuarioId, dadosProfissionais);
         if (!atualizado) {
             return ResponseEntity.notFound().build();
         }
@@ -186,7 +179,7 @@ public class PerfilController {
     public ResponseEntity<Void> criarDisponibilidade(
             @RequestParam Integer usuarioId,
             @RequestBody Map<String, Object> disponibilidade) {
-        boolean criado = perfilService.criarDisponibilidade(usuarioId, disponibilidade);
+        boolean criado = criarDisponibilidadeUseCase.criarDisponibilidade(usuarioId, disponibilidade);
         if (!criado) {
             return ResponseEntity.notFound().build();
         }
@@ -197,26 +190,26 @@ public class PerfilController {
     public ResponseEntity<Void> atualizarDisponibilidade(
             @RequestParam Integer usuarioId,
             @RequestBody Map<String, Object> disponibilidade) {
-        boolean atualizado = perfilService.atualizarDisponibilidade(usuarioId, disponibilidade);
+        boolean atualizado = atualizarDisponibilidadeUseCase.atualizarDisponibilidade(usuarioId, disponibilidade);
         if (!atualizado) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/assistente-social")
-    public ResponseEntity<AssistenteSocialOutput> buscarPerfilAssistenteSocial(@RequestParam Integer usuarioId) {
-        try {
-            AssistenteSocialOutput perfil = assistenteSocialService.buscarAssistenteSocial(usuarioId);
-            if (perfil == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(perfil);
-        } catch (Exception e) {
-            LOGGER.error("Erro ao buscar perfil do assistente social: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//    @GetMapping("/assistente-social")
+//    public ResponseEntity<AssistenteSocialOutput> buscarPerfilAssistenteSocial(@RequestParam Integer usuarioId) {
+//        try {
+//            AssistenteSocialOutput perfil = buscarDadosPessoaisUseCase.buscarAssistenteSocial(usuarioId);
+//            if (perfil == null) {
+//                return ResponseEntity.notFound().build();
+//            }
+//            return ResponseEntity.ok(perfil);
+//        } catch (Exception e) {
+//            LOGGER.error("Erro ao buscar perfil do assistente social: {}", e.getMessage(), e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 
     @PatchMapping("/assistente-social/dados-profissionais")
     @ResponseBody
@@ -225,7 +218,7 @@ public class PerfilController {
             @RequestBody @Valid VoluntarioDadosProfissionaisInput dadosProfissionais) {
         try {
             LOGGER.info("Atualizando dados profissionais para assistente social com ID: {}", usuarioId);
-            boolean atualizado = perfilService.atualizarDadosProfissionais(usuarioId, dadosProfissionais);
+            boolean atualizado = atualizarDadosProfissionaisUseCase.atualizarDadosProfissionais(usuarioId, dadosProfissionais);
             if (!atualizado) {
                 LOGGER.warn("Assistente social não encontrado com ID: {}", usuarioId);
                 return ResponseEntity.notFound().build();
@@ -238,14 +231,14 @@ public class PerfilController {
         }
     }    
   
-  @PatchMapping("/assistente-social/dados-pessoais")
+    @PatchMapping("/assistente-social/dados-pessoais")
     @ResponseBody
     public ResponseEntity<UsuarioDadosPessoaisOutput> atualizarDadosPessoaisAssistenteSocial(
             @RequestParam Integer usuarioId,
             @RequestBody @Valid UsuarioInputAtualizacaoDadosPessoais dadosPessoais) {
         try {
             LOGGER.info("Atualizando dados pessoais para assistente social com ID: {}", usuarioId);
-            UsuarioDadosPessoaisOutput dadosAtualizados = perfilService.atualizarDadosPessoaisCompleto(usuarioId, dadosPessoais);
+            UsuarioDadosPessoaisOutput dadosAtualizados = atualizarDadosPessoaisCompletoUseCase.atualizarDadosPessoaisCompleto(usuarioId, dadosPessoais);
             if (dadosAtualizados == null) {
                 LOGGER.warn("Assistente social não encontrado com ID: {}", usuarioId);
                 return ResponseEntity.notFound().build();

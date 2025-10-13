@@ -1,14 +1,36 @@
 package org.com.imaapi.domain.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
+
+@Entity
+@Table(name = "avaliacao_consulta")
 public class AvaliacaoConsulta {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_avaliacao")
     private Integer idAvaliacao;
+    
+    @ManyToOne
+    @JoinColumn(name = "id_consulta")
     private Consulta consulta;
+    
+    @Column(name = "nota")
     private Integer nota;
+    
+    @Column(name = "dt_avaliacao")
     private LocalDateTime dtAvaliacao;
+    
+    @Column(name = "criado_em")
     private LocalDateTime criadoEm;
+    
+    @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
+    
+    @Version
+    @Column(name = "versao")
     private Integer versao;
 
     public AvaliacaoConsulta() {}
@@ -69,6 +91,7 @@ public class AvaliacaoConsulta {
         this.versao = versao;
     }
 
+    @PrePersist
     public void prePersist() {
         if (this.criadoEm == null) {
             this.criadoEm = LocalDateTime.now();
@@ -81,6 +104,7 @@ public class AvaliacaoConsulta {
         }
     }
 
+    @PreUpdate
     public void preUpdate() {
         this.atualizadoEm = LocalDateTime.now();
     }

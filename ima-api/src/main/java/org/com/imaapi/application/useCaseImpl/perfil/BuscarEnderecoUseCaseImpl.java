@@ -15,8 +15,12 @@ import org.springframework.stereotype.Service;
 public class BuscarEnderecoUseCaseImpl implements BuscarEnderecoUseCase {
     private static final Logger LOGGER = LoggerFactory.getLogger(BuscarEnderecoUseCaseImpl.class);
 
+    private final UsuarioRepository usuarioRepository;
+    
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    public BuscarEnderecoUseCaseImpl(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Override
     public EnderecoOutput buscarEnderecoPorId(Integer usuarioId) {
@@ -45,7 +49,13 @@ public class BuscarEnderecoUseCaseImpl implements BuscarEnderecoUseCase {
 
         LOGGER.info("Endereço encontrado - CEP: {}, Número: {}, Cidade: {}",
                 endereco.getCep(), endereco.getNumero(), endereco.getCidade());
-
+                
         return enderecoOutput;
+    }
+    
+    @Override
+    public EnderecoOutput buscarEndereco(Integer usuarioId) {
+        LOGGER.info("Buscando endereço para o usuário com ID: {}", usuarioId);
+        return buscarEnderecoPorId(usuarioId);
     }
 }

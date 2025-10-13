@@ -3,7 +3,8 @@ package org.com.imaapi.domain.model.enums;
 public enum Periodo {
     DIA ("dia"),
     SEMANA ("semana"),
-    MES ("mês");
+    MES ("mês"),
+    ATUAL ("atual");
 
     private final String periodo;
 

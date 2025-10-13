@@ -3,41 +3,68 @@ package org.com.imaapi.application.useCaseImpl.usuario;
 import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFase;
 import org.com.imaapi.application.dto.usuario.output.UsuarioPrimeiraFaseOutput;
 import org.com.imaapi.application.useCase.usuario.CadastrarUsuarioPrimeiraFaseUseCase;
+import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Usuario;
+import org.com.imaapi.domain.model.enums.TipoUsuario;
+import org.com.imaapi.domain.repository.FichaRepository;
 import org.com.imaapi.domain.repository.UsuarioRepository;
-import org.springframework.beans.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuarioPrimeiraFaseUseCase {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CadastrarUsuarioPrimeiraFaseUseCaseImpl.class);
 
-    private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-    public CadastrarUsuarioPrimeiraFaseUseCaseImpl(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
+    @Autowired
+    private FichaRepository fichaRepository;
+
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional
-    public UsuarioPrimeiraFaseOutput executar(UsuarioInputPrimeiraFase usuarioInputPrimeiraFase) {
-        if (usuarioInputPrimeiraFase == null) {
-            return null;
+    public UsuarioPrimeiraFaseOutput executar(UsuarioInputPrimeiraFase input) {
+        LOGGER.info("Iniciando cadastro de usuário (primeira fase) para email: {}", input.getEmail());
+
+        // Verificar se o usuário já existe
+        if (usuarioRepository.findByEmail(input.getEmail()).isPresent()) {
+            LOGGER.warn("Usuário com email {} já existe", input.getEmail());
+            throw new IllegalArgumentException("Usuário com este email já existe");
         }
 
-        String email = usuarioInputPrimeiraFase.getEmail();
-        if (email == null || email.isBlank()) {
-            return null;
-        }
+        // Criar ficha
+        Ficha ficha = new Ficha();
+        ficha.setNome(input.getNome());
+        ficha.setSobrenome(input.getSobrenome());
+        ficha.setCpf(input.getCpf());
+        fichaRepository.save(ficha);
 
-        Usuario usuario = usuarioRepository.findByEmail(email).orElseGet(Usuario::new);
+        // Criar usuário
+        Usuario usuario = new Usuario();
+        usuario.setEmail(input.getEmail());
+//        usuario.setSenha(passwordEncoder.encode(input.getSenha()));
+        usuario.setTipo(TipoUsuario.GRATUIDADE);
+        usuario.setFicha(ficha);
+        usuarioRepository.save(usuario);
 
-        BeanUtils.copyProperties(usuarioInputPrimeiraFase, usuario);
+        LOGGER.info("Usuário cadastrado com sucesso (primeira fase) para email: {}", input.getEmail());
 
-        Usuario salvo = usuarioRepository.save(usuario);
-
+        // Criar output
         UsuarioPrimeiraFaseOutput output = new UsuarioPrimeiraFaseOutput();
-        BeanUtils.copyProperties(salvo, output);
+        output.setIdUsuario(usuario.getIdUsuario());
+        output.setNome(ficha.getNome());
+        output.setSobrenome(ficha.getSobrenome());
+        output.setEmail(usuario.getEmail());
+        output.setCpf(ficha.getCpf());
+        output.setDataNascimento(ficha.getDtNascim());
+
         return output;
     }
 }

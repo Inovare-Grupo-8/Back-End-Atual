@@ -1,6 +1,7 @@
 package org.com.imaapi.application.useCaseImpl.perfil;
 
 import org.com.imaapi.application.useCase.perfil.BuscarDadosPessoaisUseCase;
+import org.com.imaapi.application.dto.usuario.output.AssistenteSocialOutput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioDadosPessoaisOutput;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.Ficha;
@@ -29,6 +30,12 @@ public class BuscarDadosPessoaisUseCaseImpl implements BuscarDadosPessoaisUseCas
     @Autowired
     private VoluntarioRepository voluntarioRepository;
 
+    @Override
+    public UsuarioDadosPessoaisOutput buscarDadosPessoais(Integer usuarioId) {
+        LOGGER.info("Buscando dados pessoais para o usuário com ID: {}", usuarioId);
+        return buscarDadosPessoaisPorId(usuarioId);
+    }
+    
     @Override
     public UsuarioDadosPessoaisOutput buscarDadosPessoaisPorId(Integer usuarioId) {
         LOGGER.info("Buscando dados pessoais para o usuário com ID: {}", usuarioId);
@@ -94,5 +101,29 @@ public class BuscarDadosPessoaisUseCaseImpl implements BuscarDadosPessoaisUseCas
         }
 
         return dadosPessoais;
+    }
+    
+    @Override
+    public AssistenteSocialOutput buscarAssistenteSocial(Integer usuarioId) {
+        LOGGER.info("Buscando assistente social para o usuário com ID: {}", usuarioId);
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        if (usuario == null) {
+            LOGGER.warn("Usuário não encontrado para o ID: {}", usuarioId);
+            return null;
+        }
+        
+        // Verificar se o usuário é um assistente social
+        Voluntario voluntario = voluntarioRepository.findByUsuario_IdUsuario(usuarioId);
+        if (voluntario == null || !voluntario.getFuncao().equals("ASSISTENCIA_SOCIAL")) {
+            LOGGER.warn("Usuário com ID {} não é um assistente social", usuarioId);
+            return null;
+        }
+        
+        AssistenteSocialOutput assistenteSocial = new AssistenteSocialOutput();
+        assistenteSocial.setIdUsuario(voluntario.getIdVoluntario());
+        assistenteSocial.setNome(usuario.getFicha().getNome());
+        assistenteSocial.setSobrenome(usuario.getFicha().getSobrenome());
+        
+        return assistenteSocial;
     }
 }

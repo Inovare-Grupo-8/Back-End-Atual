@@ -1,5 +1,7 @@
 package org.com.imaapi.domain.model.validation;
 
+import org.com.imaapi.application.dto.usuario.input.AssistenteSocialInput;
+
 public class AssistenteSocialInputValidator {
     public static void validar(AssistenteSocialInput input) {
         if (input.getNome() == null || input.getNome().trim().isEmpty()) {

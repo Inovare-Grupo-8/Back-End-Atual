@@ -2,7 +2,6 @@ package org.com.imaapi.domain.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.com.imaapi.domain.model.especialidade.Especialidade;
 import java.time.LocalDateTime;
 
 @Entity
