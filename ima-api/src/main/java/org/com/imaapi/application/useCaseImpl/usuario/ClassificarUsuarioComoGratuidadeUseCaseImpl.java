@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CadastrarVoluntarioPrimeiraFaseUseCaseImpl implements CadastrarVoluntarioPrimeiraFaseUseCase {
+public class ClassificarUsuarioComoGratuidadeUseCaseImpl  implements CadastrarVoluntarioPrimeiraFaseUseCase {
 
     private final UsuarioRepository usuarioRepository;
 
-    public CadastrarVoluntarioPrimeiraFaseUseCaseImpl(UsuarioRepository usuarioRepository) {
+    public ClassificarUsuarioComoGratuidadeUseCaseImpl(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 

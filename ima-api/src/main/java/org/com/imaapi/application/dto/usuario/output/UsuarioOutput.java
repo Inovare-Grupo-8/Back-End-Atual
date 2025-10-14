@@ -31,4 +31,8 @@ public class UsuarioOutput {
         this.dataNascimento = dataNascimento;
         this.tipo = tipo;
     }
+
+    public UsuarioOutput() {
+
+    }
 }

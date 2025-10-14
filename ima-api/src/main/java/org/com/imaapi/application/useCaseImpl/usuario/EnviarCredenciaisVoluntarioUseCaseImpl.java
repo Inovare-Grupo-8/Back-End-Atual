@@ -1,13 +1,13 @@
 package org.com.imaapi.application.useCaseImpl.usuario;
 
+import org.com.imaapi.application.useCase.email.EnviarEmailUseCase;
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
-import org.com.imaapi.domain.service.EmailService;
 
 public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciaisVoluntarioUseCase {
 
-    private final EmailService emailService;
+    private final EnviarEmailUseCase emailService;
 
-    public EnviarCredenciaisVoluntarioUseCaseImpl(EmailService emailService) {
+    public EnviarCredenciaisVoluntarioUseCaseImpl(EnviarEmailUseCase EmailUseCase, EnviarEmailUseCase emailService) {
         this.emailService = emailService;
     }
 
@@ -29,7 +29,7 @@ public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciais
                 nome, email, senha
         );
 
-        emailService.enviarEmail(email, assunto, corpoEmail);
+        emailService= emailService(email, assunto, corpoEmail);
 
         return "Credenciais enviadas com sucesso.";
     }
