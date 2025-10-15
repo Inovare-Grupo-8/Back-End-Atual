@@ -25,7 +25,7 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
 
     @Autowired
     private FichaRepository fichaRepository;
-
+//
 //    @Autowired
 //    private PasswordEncoder passwordEncoder;
 
@@ -49,8 +49,8 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
         // Criar usuário
         Usuario usuario = new Usuario();
         usuario.setEmail(input.getEmail());
-//        usuario.setSenha(passwordEncoder.encode(input.getSenha()));
-        usuario.setTipo(TipoUsuario.GRATUIDADE);
+        usuario.setSenha(input.getSenha());
+        usuario.setTipo(TipoUsuario.ASSISTIDO);
         usuario.setFicha(ficha);
         usuarioRepository.save(usuario);
 

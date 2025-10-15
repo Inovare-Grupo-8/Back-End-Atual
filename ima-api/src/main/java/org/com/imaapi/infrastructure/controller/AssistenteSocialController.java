@@ -3,6 +3,8 @@ package org.com.imaapi.infrastructure.controller;
 import lombok.RequiredArgsConstructor;
 import org.com.imaapi.application.dto.usuario.input.AssistenteSocialInput;
 import org.com.imaapi.application.dto.usuario.output.AssistenteSocialOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,18 +15,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/assistentes-sociais")
 @RequiredArgsConstructor
 public class AssistenteSocialController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AssistenteSocialController.class);
 //
-//    private final AssistenteSocialServiceImpl assistenteSocialService;
+//    private final CadastrarAssistenteSocialUseCase cadastrarAssistenteSocialUseCase;
+//    private final BuscarAssistenteSocialUseCase buscarAssistenteSocialUseCase;
+//    private final AtualizarAssistenteSocialUseCase atualizarAssistenteSocialUseCase;
 //
 //    @PostMapping
 //    public ResponseEntity<AssistenteSocialOutput> cadastrar(@RequestBody AssistenteSocialInput input) {
-//        return ResponseEntity.ok(assistenteSocialService.cadastrarAssistenteSocial(input));
+//        LOGGER.info("Iniciando cadastro de assistente social para email: {}", input.getEmail());
+//        AssistenteSocialOutput output = cadastrarAssistenteSocialUseCase.executar(input);
+//        LOGGER.info("Assistente social cadastrado com sucesso para email: {}", input.getEmail());
+//        return ResponseEntity.status(HttpStatus.CREATED).body(output);
 //    }
 //
 //    @GetMapping("/perfil")
 //    public ResponseEntity<AssistenteSocialOutput> getPerfil(@AuthenticationPrincipal UserDetails userDetails) {
 //        Integer userId = Integer.parseInt(userDetails.getUsername());
-//        return ResponseEntity.ok(assistenteSocialService.buscarAssistenteSocial(userId));
+//        LOGGER.info("Buscando perfil do assistente social id: {}", userId);
+//        AssistenteSocialOutput output = buscarAssistenteSocialUseCase.executar(userId);
+//        LOGGER.info("Perfil do assistente social encontrado id: {}", userId);
+//        return ResponseEntity.ok(output);
 //    }
 //
 //    @PutMapping("/perfil")
@@ -32,7 +43,10 @@ public class AssistenteSocialController {
 //            @AuthenticationPrincipal UserDetails userDetails,
 //            @RequestBody AssistenteSocialInput input) {
 //        Integer userId = Integer.parseInt(userDetails.getUsername());
-//        return ResponseEntity.ok(assistenteSocialService.atualizarAssistenteSocial(userId, input));
+//        LOGGER.info("Atualizando perfil do assistente social id: {}", userId);
+//        AssistenteSocialOutput output = atualizarAssistenteSocialUseCase.executar(userId, input);
+//        LOGGER.info("Perfil do assistente social atualizado id: {}", userId);
+//        return ResponseEntity.ok(output);
 //    }
 //
 //    @PatchMapping("/perfil/completo")
@@ -41,11 +55,15 @@ public class AssistenteSocialController {
 //            @RequestBody AssistenteSocialInput input) {
 //        try {
 //            Integer userId = Integer.parseInt(userDetails.getUsername());
-//            AssistenteSocialOutput output = assistenteSocialService.atualizarAssistenteSocial(userId, input);
+//            LOGGER.info("Atualizando perfil completo do assistente social id: {}", userId);
+//            AssistenteSocialOutput output = atualizarAssistenteSocialUseCase.executar(userId, input);
+//            LOGGER.info("Perfil completo do assistente social atualizado id: {}", userId);
 //            return ResponseEntity.ok(output);
 //        } catch (NumberFormatException e) {
+//            LOGGER.error("Erro ao converter userId: {}", userDetails.getUsername());
 //            return ResponseEntity.badRequest().build();
 //        } catch (Exception e) {
+//            LOGGER.error("Erro interno ao atualizar perfil completo do assistente social", e);
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 //        }
 //    }

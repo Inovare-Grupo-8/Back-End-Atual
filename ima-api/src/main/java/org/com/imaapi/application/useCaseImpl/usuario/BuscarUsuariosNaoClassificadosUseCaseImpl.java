@@ -30,7 +30,7 @@ public class BuscarUsuariosNaoClassificadosUseCaseImpl implements BuscarUsuarios
     }
 
     private boolean isNaoClassificado(Usuario usuario) {
-        return usuario.getClassificacao() == null;
+        return !usuario.getClassificacao();
     }
 
     private UsuarioClassificacaoOutput toOutput(Usuario usuario) {

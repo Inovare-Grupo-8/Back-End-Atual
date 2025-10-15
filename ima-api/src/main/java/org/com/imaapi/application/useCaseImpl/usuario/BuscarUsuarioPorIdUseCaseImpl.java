@@ -4,7 +4,6 @@ import org.com.imaapi.application.dto.usuario.output.UsuarioOutput;
 import org.com.imaapi.application.useCase.usuario.BuscarUsuarioPorIdUseCase;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +30,12 @@ public class BuscarUsuarioPorIdUseCaseImpl implements BuscarUsuarioPorIdUseCase 
     }
 
     private UsuarioOutput toOutput(Usuario usuario) {
-        UsuarioOutput output = new UsuarioOutput();
-        BeanUtils.copyProperties(usuario, output);
-        return output;
+        return new UsuarioOutput(
+            usuario.getEmail(),
+            usuario.getSenha(),
+            usuario.getFotoUrl(),
+            usuario.getDataCadastro(),
+            usuario.getTipo()
+        );
     }
 }
