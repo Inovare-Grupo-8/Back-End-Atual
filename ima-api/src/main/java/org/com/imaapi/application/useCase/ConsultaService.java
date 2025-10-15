@@ -1,6 +1,14 @@
 package org.com.imaapi.application.useCase;
 
+import org.com.imaapi.application.dto.consulta.input.ConsultaInput;
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.domain.model.Consulta;
+import org.com.imaapi.domain.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

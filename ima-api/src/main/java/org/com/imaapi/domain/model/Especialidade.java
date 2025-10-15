@@ -44,4 +44,8 @@ public class Especialidade {
     public void preUpdate() {
         this.atualizadoEm = LocalDateTime.now();
     }
+
+    public Integer getId() {
+        return null;
+    }
 }

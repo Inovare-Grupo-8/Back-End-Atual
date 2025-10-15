@@ -1,10 +1,15 @@
 package org.com.imaapi.infrastructure.controller;
 
+import org.com.imaapi.domain.model.Disponibilidade;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/disponibilidade")
 public class DisponibilidadeController {
     @Autowired
-    private DisponibilidadeServiceImpl disponibilidadeService;
+    private Disponibilidade disponibilidadeService;
 
     @PostMapping
     public ResponseEntity<Void> criarDisponibilidade(

@@ -110,4 +110,16 @@ public class ConsultaInput {
     public void setIdVoluntario(Integer idVoluntario) {
         this.idVoluntario = idVoluntario;
     }
+
+    public Object getVoluntario() {
+        return null;
+    }
+
+    public Object getAssistido() {
+        return null;
+    }
+
+    public Object getEspecialidade() {
+        return null;
+    }
 }

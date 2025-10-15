@@ -1,60 +1,67 @@
 package org.com.imaapi.service.impl;
 
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.com.imaapi.application.dto.especialidade.input.EspecialidadeInput;
+import org.com.imaapi.application.dto.especialidade.output.EspecialidadeOutput;
+import org.com.imaapi.domain.model.Especialidade;
+import org.com.imaapi.domain.repository.EspecialidadeRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
-public class EspecialidadeService implements EspecialidadeService {
+public class EspecialidadeService {
 
     private final EspecialidadeRepository especialidadeRepository;
 
-    @Override
     @Transactional
-    public ResponseEntity<EspecialidadeDto> criar(EspecialidadeDto especialidadeDto) {
-        if (especialidadeRepository.existsByNome(especialidadeDto.getNome())) {
-            return ResponseEntity.<EspecialidadeDto>status(HttpStatus.CONFLICT).build();
+    public ResponseEntity<EspecialidadeOutput> criar(EspecialidadeInput especialidadeInput) {
+        if (especialidadeRepository.existsByNome(especialidadeInput.getNome())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
         Especialidade especialidade = new Especialidade();
-        especialidade.setNome(especialidadeDto.getNome());
+        especialidade.setNome(especialidadeInput.getNome());
 
         Especialidade savedEspecialidade = especialidadeRepository.save(especialidade);
-        return ResponseEntity.<EspecialidadeDto>status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(convertToDto(savedEspecialidade));
     }
 
-    @Override
     @Transactional
-    public ResponseEntity<EspecialidadeDto> atualizar(Integer id, EspecialidadeDto especialidadeDto) {
+    public ResponseEntity<EspecialidadeOutput> atualizar(Integer id, EspecialidadeInput especialidadeInput) {
         return especialidadeRepository.findById(id)
-                .<ResponseEntity<EspecialidadeDto>>map(especialidade -> {
-                    if (!especialidade.getNome().equals(especialidadeDto.getNome()) &&
-                            especialidadeRepository.existsByNome(especialidadeDto.getNome())) {
-                        return ResponseEntity.<EspecialidadeDto>status(HttpStatus.CONFLICT).build();
+                .map(especialidade -> {
+                    if (!especialidade.getNome().equals(especialidadeInput.getNome()) &&
+                            especialidadeRepository.existsByNome(especialidadeInput.getNome())) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT).build();
                     }
-                    especialidade.setNome(especialidadeDto.getNome());
+                    especialidade.setNome(especialidadeInput.getNome());
                     Especialidade updatedEspecialidade = especialidadeRepository.save(especialidade);
-                    return ResponseEntity.<EspecialidadeDto>ok(convertToDto(updatedEspecialidade));
+                    return ResponseEntity.ok(convertToDto(updatedEspecialidade));
                 })
-                .orElse(ResponseEntity.<EspecialidadeDto>notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @Override
-    public ResponseEntity<EspecialidadeDto> buscarPorId(Integer id) {
+    public ResponseEntity<EspecialidadeOutput> buscarPorId(Integer id) {
         return especialidadeRepository.findById(id)
-                .<ResponseEntity<EspecialidadeDto>>map(especialidade ->
-                        ResponseEntity.<EspecialidadeDto>ok(convertToDto(especialidade)))
-                .orElse(ResponseEntity.<EspecialidadeDto>notFound().build());
+                .map(especialidade -> ResponseEntity.ok(convertToDto(Especialidade)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @Override
-    public ResponseEntity<List<EspecialidadeDto>> listarTodas() {
-        List<EspecialidadeDto> especialidades = especialidadeRepository.findAll()
+    public ResponseEntity<List<EspecialidadeOutput>> listarTodas() {
+        List<EspecialidadeOutput> especialidades = especialidadeRepository.findAll()
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(especialidades);
     }
 
-    @Override
     @Transactional
     public ResponseEntity<Void> deletar(Integer id) {
         if (!especialidadeRepository.existsById(id)) {
@@ -64,8 +71,8 @@ public class EspecialidadeService implements EspecialidadeService {
         return ResponseEntity.noContent().build();
     }
 
-    private EspecialidadeDto convertToDto(Especialidade especialidade) {
-        EspecialidadeDto dto = new EspecialidadeDto();
+    private EspecialidadeOutput convertToDto(Especialidade especialidade) {
+        EspecialidadeOutput dto = new EspecialidadeOutput();
         dto.setId(especialidade.getIdEspecialidade());
         dto.setNome(especialidade.getNome());
         return dto;

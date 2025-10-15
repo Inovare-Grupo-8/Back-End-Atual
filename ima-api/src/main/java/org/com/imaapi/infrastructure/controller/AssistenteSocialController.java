@@ -1,5 +1,8 @@
 package org.com.imaapi.infrastructure.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+
 @RestController
 @RequestMapping("/assistentes-sociais")
 @RequiredArgsConstructor

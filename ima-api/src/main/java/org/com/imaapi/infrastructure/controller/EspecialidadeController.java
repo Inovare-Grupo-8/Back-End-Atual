@@ -1,5 +1,10 @@
 package org.com.imaapi.infrastructure.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/especialidade")
 @RequiredArgsConstructor
@@ -9,13 +14,13 @@ public class EspecialidadeController {
 
     @PostMapping
     @Operation(summary = "Criar uma nova especialidade")
-    public ResponseEntity<EspecialidadeDto> criar(@RequestBody EspecialidadeDto especialidadeDto) {
+    public <EspecialidadeDto> ResponseEntity<EspecialidadeDto> criar(@RequestBody EspecialidadeDto especialidadeDto) {
         return especialidadeService.criar(especialidadeDto);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar uma especialidade existente")
-    public ResponseEntity<EspecialidadeDto> atualizar(@PathVariable Integer id, @RequestBody EspecialidadeDto especialidadeDto) {
+    public <EspecialidadeDto> ResponseEntity<EspecialidadeDto> atualizar(@PathVariable Integer id, @RequestBody EspecialidadeDto especialidadeDto) {
         return especialidadeService.atualizar(id, especialidadeDto);
     }
 

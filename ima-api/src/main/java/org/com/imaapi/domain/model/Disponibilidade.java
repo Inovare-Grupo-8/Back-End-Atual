@@ -37,4 +37,8 @@ public class Disponibilidade {
     protected void onUpdate() {
         atualizadoEm = LocalDateTime.now();
     }
+
+    public boolean criarDisponibilidade(Integer usuarioId, Disponibilidade disponibilidade) {
+        return false;
+    }
 }

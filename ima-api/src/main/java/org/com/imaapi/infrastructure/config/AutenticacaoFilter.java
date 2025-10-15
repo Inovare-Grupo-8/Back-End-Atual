@@ -25,7 +25,7 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
 
     private final GerenciadorTokenJwt jwtTokenManager;
 
-    public AutenticacaoFilter(AutenticacaoServiceImpl autenticacaoService, GerenciadorTokenJwt tokenManager) {
+    public <AutenticacaoServiceImpl> AutenticacaoFilter(AutenticacaoServiceImpl autenticacaoService, GerenciadorTokenJwt tokenManager) {
         this.autenticacaoService = autenticacaoService;
         this.jwtTokenManager = tokenManager;
     }

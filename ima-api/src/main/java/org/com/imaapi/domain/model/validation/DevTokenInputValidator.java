@@ -1,5 +1,7 @@
 package org.com.imaapi.domain.model.validation;
 
+import org.com.imaapi.application.dto.usuario.input.DevTokenInput;
+
 public class DevTokenInputValidator {
     public static void validar(DevTokenInput input) {
         if (input.getEmail() == null || input.getEmail().trim().isEmpty()) {

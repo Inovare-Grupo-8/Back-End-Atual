@@ -146,4 +146,8 @@ public class Consulta implements Serializable {
     public void setAvaliacaoStatus(String avaliacaoStatus) {
         this.avaliacaoStatus = avaliacaoStatus;
     }
+
+
+
+
 }
