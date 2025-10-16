@@ -3,6 +3,7 @@ package org.com.imaapi.application.useCaseImpl.usuario;
 import org.com.imaapi.application.useCase.usuario.AutenticarUsuarioUseCase;
 import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioTokenOutput;
+import org.com.imaapi.application.useCase.usuario.AutenticarUsuarioUseCase;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.springframework.beans.BeanUtils;

@@ -1,5 +1,6 @@
 package org.com.imaapi.application.useCaseImpl.usuario;
 
+import org.com.imaapi.application.useCase.email.EnviarEmailUseCase;
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.useCaseImpl.email.EnviarEmaiUseCaseImpl;
 import org.com.imaapi.application.dto.email.EmailDto;
