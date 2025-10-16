@@ -6,10 +6,12 @@ import org.com.imaapi.application.useCase.usuario.CadastrarVoluntarioPrimeiraFas
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Primary
 public class CadastrarVoluntarioPrimeiraFaseUseCaseImpl implements CadastrarVoluntarioPrimeiraFaseUseCase {
 
     private final UsuarioRepository usuarioRepository;

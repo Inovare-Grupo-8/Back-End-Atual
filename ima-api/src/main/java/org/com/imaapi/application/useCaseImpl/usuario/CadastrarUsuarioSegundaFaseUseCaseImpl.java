@@ -1,4 +1,3 @@
-
 package org.com.imaapi.application.useCaseImpl.usuario;
 
 import org.com.imaapi.application.dto.usuario.input.UsuarioInputSegundaFase;
@@ -32,9 +31,13 @@ public class CadastrarUsuarioSegundaFaseUseCaseImpl implements CadastrarUsuarioS
                     BeanUtils.copyProperties(usuarioInputSegundaFase, usuario, "id", "email");
                     Usuario salvo = usuarioRepository.save(usuario);
 
-                    UsuarioOutput output = new UsuarioOutput();
-                    BeanUtils.copyProperties(salvo, output);
-                    return output;
+                    return new UsuarioOutput(
+                        usuario.getEmail(),
+                        usuario.getSenha(),
+                        usuario.getFotoUrl(),
+                        usuario.getDataCadastro(),
+                        usuario.getTipo()
+                    );
                 })
                 .orElse(null);
     }

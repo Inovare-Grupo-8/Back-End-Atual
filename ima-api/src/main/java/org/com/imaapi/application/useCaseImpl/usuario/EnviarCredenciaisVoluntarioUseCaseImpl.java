@@ -2,13 +2,17 @@ package org.com.imaapi.application.useCaseImpl.usuario;
 
 import org.com.imaapi.application.useCase.email.EnviarEmailUseCase;
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
+import org.com.imaapi.application.useCaseImpl.email.EnviarEmaiUseCaseImpl;
+import org.com.imaapi.application.dto.email.EmailDto;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciaisVoluntarioUseCase {
 
-    private final EnviarEmailUseCase emailService;
+    private final EnviarEmaiUseCaseImpl enviarEmaiUseCaseImpl;
 
-    public EnviarCredenciaisVoluntarioUseCaseImpl(EnviarEmailUseCase EmailUseCase, EnviarEmailUseCase emailService) {
-        this.emailService = emailService;
+    public EnviarCredenciaisVoluntarioUseCaseImpl(EnviarEmaiUseCaseImpl enviarEmaiUseCaseImpl) {
+        this.enviarEmaiUseCaseImpl = enviarEmaiUseCaseImpl;
     }
 
     @Override
@@ -24,12 +28,9 @@ public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciais
         }
 
         String assunto = "Seus dados de acesso";
-        String corpoEmail = String.format(
-                "Olá %s,\n\nSeu email é: %s\nSenha: %s\n\nAtenciosamente,\nEquipe IMAPI",
-                nome, email, senha
-        );
+        EmailDto emailDto = new EmailDto(email, nome, assunto, email, senha);
 
-        emailService= emailService(email, assunto, corpoEmail);
+        enviarEmaiUseCaseImpl.enviarEmail(emailDto);
 
         return "Credenciais enviadas com sucesso.";
     }

@@ -4,7 +4,6 @@ import org.com.imaapi.application.dto.usuario.output.UsuarioOutput;
 import org.com.imaapi.application.useCase.usuario.BuscarUsuarioPorEmailUseCase;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +26,12 @@ public class BuscarUsuarioPorEmailUseCaseImpl implements BuscarUsuarioPorEmailUs
         }
 
         return usuarioRepository.findByEmail(email)
-                .map(this::toOutput);
-    }
-
-    private UsuarioOutput toOutput(Usuario usuario) {
-        UsuarioOutput output = new UsuarioOutput();
-        BeanUtils.copyProperties(usuario, output);
-        return output;
+            .map(usuario -> new UsuarioOutput(
+                usuario.getEmail(),
+                usuario.getSenha(),
+                usuario.getFotoUrl(),
+                usuario.getDataCadastro(),
+                usuario.getTipo()
+            ));
     }
 }

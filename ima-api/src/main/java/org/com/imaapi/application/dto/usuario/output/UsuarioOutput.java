@@ -15,7 +15,9 @@ public class UsuarioOutput {
     private Integer id;
     private String nome;
     private String cpf;
-    private String email;    private String senha;    private LocalDate dataNascimento;
+    private String email;    
+    private String senha;    
+    private LocalDate dataNascimento;
     private Double rendaMinima;
     private Double rendaMaxima;
     private Genero genero;
@@ -23,6 +25,10 @@ public class UsuarioOutput {
     private Funcao funcao;
     private LocalDateTime dataCadastro;
     private EnderecoOutput endereco;
+    
+    public UsuarioOutput() {
+        // Construtor vazio necessário
+    }
 
     public UsuarioOutput(String nome, String cpf, String email, LocalDate dataNascimento, TipoUsuario tipo) {
         this.nome = nome;

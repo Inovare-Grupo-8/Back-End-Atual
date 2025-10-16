@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service("voluntarioListarVoluntariosUseCaseImpl")
 public class ListarVoluntariosUseCaseImpl implements ListarVoluntariosUseCase {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ListarVoluntariosUseCaseImpl.class);

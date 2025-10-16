@@ -11,7 +11,6 @@ import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +24,6 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
 
     @Autowired
     private FichaRepository fichaRepository;
-
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
 
     @Override
     public UsuarioPrimeiraFaseOutput executar(UsuarioInputPrimeiraFase input) {
@@ -49,8 +45,9 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
         // Criar usuário
         Usuario usuario = new Usuario();
         usuario.setEmail(input.getEmail());
-//        usuario.setSenha(passwordEncoder.encode(input.getSenha()));
-        usuario.setTipo(TipoUsuario.GRATUIDADE);
+        usuario.setSenha(input.getSenha());
+        // Ajuste: usar valor compatível com o CHECK do BD
+        usuario.setTipo(TipoUsuario.NAO_CLASSIFICADO);
         usuario.setFicha(ficha);
         usuarioRepository.save(usuario);
 
