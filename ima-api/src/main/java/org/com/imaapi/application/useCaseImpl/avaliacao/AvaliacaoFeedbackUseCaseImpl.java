@@ -11,7 +11,6 @@ import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.com.imaapi.domain.repository.FeedbackConsultaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +23,18 @@ import java.util.Optional;
 public class AvaliacaoFeedbackUseCaseImpl implements AvaliacaoFeedbackUseCase {
     private static final Logger LOGGER = LoggerFactory.getLogger(AvaliacaoFeedbackUseCaseImpl.class);
 
-    @Autowired
-    private AvaliacaoConsultaRepository avaliacaoRepository;
-    
-    @Autowired
-    private FeedbackConsultaRepository feedbackRepository;
-    
-    @Autowired
-    private ConsultaRepository consultaRepository;
+    private final AvaliacaoConsultaRepository avaliacaoRepository;
+    private final FeedbackConsultaRepository feedbackRepository;
+    private final ConsultaRepository consultaRepository;
+
+    public AvaliacaoFeedbackUseCaseImpl(
+            AvaliacaoConsultaRepository avaliacaoRepository,
+            FeedbackConsultaRepository feedbackRepository,
+            ConsultaRepository consultaRepository) {
+        this.avaliacaoRepository = avaliacaoRepository;
+        this.feedbackRepository = feedbackRepository;
+        this.consultaRepository = consultaRepository;
+    }
 
     @Override
     @Transactional
