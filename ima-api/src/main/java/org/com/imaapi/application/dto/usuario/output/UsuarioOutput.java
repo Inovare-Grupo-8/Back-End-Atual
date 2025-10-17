@@ -25,10 +25,6 @@ public class UsuarioOutput {
     private Funcao funcao;
     private LocalDateTime dataCadastro;
     private EnderecoOutput endereco;
-    
-    public UsuarioOutput() {
-        // Construtor vazio necessário
-    }
 
     public UsuarioOutput(String nome, String cpf, String email, LocalDate dataNascimento, TipoUsuario tipo) {
         this.nome = nome;
