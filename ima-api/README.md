@@ -1,5 +1,3 @@
-EMAIL=inovareconsultoria.tech@gmail.com;FILA_GRATUIDADE=fila_gratuitos;MEU_BD=jdbc:mysql://localhost:3306/maos_ami# IMA API
-
 Resumo
 - Backend REST para o projeto IMA: gerencia consultas, disponibilidade, voluntários, doações e usuários.
 - Implementado em Java com Spring Boot e Maven.
