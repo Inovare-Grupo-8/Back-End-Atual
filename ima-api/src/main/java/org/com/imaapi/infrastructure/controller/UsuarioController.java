@@ -206,9 +206,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/voluntario/credenciais")
-    public ResponseEntity<String> enviarCredenciaisVoluntario(@RequestParam String email, @RequestParam String nome, @RequestParam String senha) {
+    public ResponseEntity<String> enviarCredenciaisVoluntario(@RequestParam String email, @RequestParam String nome, @RequestParam String senha, @RequestParam Integer idUsuario) {
         LOGGER.info("Enviando credenciais para voluntário: {} - {}", nome, email);
-        String resultado = enviarCredenciaisVoluntarioUseCase.executar(email, nome, senha);
+        String resultado = enviarCredenciaisVoluntarioUseCase.executar(email, nome, senha, idUsuario);
         LOGGER.info("Credenciais enviadas para voluntário: {} - {}", nome, email);
         return ResponseEntity.ok(resultado);
     }

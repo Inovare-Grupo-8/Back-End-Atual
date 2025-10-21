@@ -3,6 +3,10 @@ package org.com.imaapi.application.useCaseImpl.usuario;
 import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFase;
 import org.com.imaapi.application.dto.usuario.output.UsuarioPrimeiraFaseOutput;
 import org.com.imaapi.application.useCase.usuario.CadastrarUsuarioPrimeiraFaseUseCase;
+import org.com.imaapi.application.useCase.email.EnviarEmailUseCase;
+import org.com.imaapi.application.useCase.email.GerarConteudoHtmlContinuarCadastroUseCase;
+import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
+import org.com.imaapi.application.dto.email.EmailDto;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
@@ -25,42 +29,69 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
     @Autowired
     private FichaRepository fichaRepository;
 
+    @Autowired
+    private EnviarEmailUseCase enviarEmailUseCase;
+
+    @Autowired
+    private GerarConteudoHtmlContinuarCadastroUseCase gerarConteudoHtmlContinuarCadastroUseCase;
+
+    @Autowired
+    private EnviarCredenciaisVoluntarioUseCase enviarCredenciaisVoluntarioUseCase;
+
     @Override
     public UsuarioPrimeiraFaseOutput executar(UsuarioInputPrimeiraFase input) {
         LOGGER.info("Iniciando cadastro de usuário (primeira fase) para email: {}", input.getEmail());
 
-        // Verificar se o usuário já existe
         if (usuarioRepository.findByEmail(input.getEmail()).isPresent()) {
             LOGGER.warn("Usuário com email {} já existe", input.getEmail());
             throw new IllegalArgumentException("Usuário com este email já existe");
         }
 
-        // Criar ficha
         Ficha ficha = new Ficha();
         ficha.setNome(input.getNome());
         ficha.setSobrenome(input.getSobrenome());
         ficha.setCpf(input.getCpf());
         fichaRepository.save(ficha);
 
-        // Criar usuário
         Usuario usuario = new Usuario();
         usuario.setEmail(input.getEmail());
         usuario.setSenha(input.getSenha());
-        // Ajuste: usar valor compatível com o CHECK do BD
         usuario.setTipo(TipoUsuario.NAO_CLASSIFICADO);
         usuario.setFicha(ficha);
         usuarioRepository.save(usuario);
 
         LOGGER.info("Usuário cadastrado com sucesso (primeira fase) para email: {}", input.getEmail());
 
-        // Criar output
         UsuarioPrimeiraFaseOutput output = new UsuarioPrimeiraFaseOutput();
         output.setIdUsuario(usuario.getIdUsuario());
         output.setNome(ficha.getNome());
         output.setSobrenome(ficha.getSobrenome());
         output.setEmail(usuario.getEmail());
         output.setCpf(ficha.getCpf());
-        output.setDataNascimento(ficha.getDtNascim());
+
+        try {
+            LOGGER.info("Iniciando envio de emails para o usuário: {}", input.getEmail());
+            
+            String nomeCompleto = ficha.getNome() + " " + ficha.getSobrenome();
+            
+            if (usuario.getTipo() == TipoUsuario.VOLUNTARIO) {
+                LOGGER.info("Enviando email com credenciais para voluntário: {}", input.getEmail());
+                
+                String resultadoCredenciais = enviarCredenciaisVoluntarioUseCase.executar(usuario.getEmail(), nomeCompleto, usuario.getSenha(), usuario.getIdUsuario());
+                LOGGER.info("Email com credenciais para voluntário enviado: {}", resultadoCredenciais);
+                
+            } else {
+                LOGGER.info("Enviando email para continuar cadastro do usuário não classificado: {}", input.getEmail());
+                
+                String dadosContinuarCadastro = nomeCompleto + "|" + usuario.getIdUsuario();
+                EmailDto emailContinuarCadastro = new EmailDto(usuario.getEmail(), dadosContinuarCadastro, "continuar cadastro", usuario.getEmail(), usuario.getSenha(), usuario.getIdUsuario());
+                String resultadoContinuarCadastro = enviarEmailUseCase.enviarEmail(emailContinuarCadastro);
+                LOGGER.info("Email para continuar cadastro enviado: {}", resultadoContinuarCadastro);
+            }
+            
+        } catch (Exception e) {
+            LOGGER.error("Erro ao enviar emails para o usuário: {}. Erro: {}", input.getEmail(), e.getMessage(), e);
+        }
 
         return output;
     }

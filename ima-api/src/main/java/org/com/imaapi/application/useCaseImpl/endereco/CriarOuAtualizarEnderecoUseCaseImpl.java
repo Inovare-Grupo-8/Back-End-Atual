@@ -79,8 +79,8 @@ public class CriarOuAtualizarEnderecoUseCaseImpl implements CriarOuAtualizarEnde
         }
         
         if (enderecoDetalhes == null) {
-            LOGGER.error("Não foi possível obter os dados do endereço para o CEP: {}", cep);
-            throw new RuntimeException("Não foi possível obter os dados do endereço");
+            LOGGER.error("Não foi possível obter os dados do endereço para o CEP: {}. Verifique se o CEP está correto.", cep);
+            throw new RuntimeException("CEP não encontrado ou inválido. Verifique se o CEP " + cep + " está correto e tente novamente.");
         }
         
         LOGGER.info("Dados obtidos com sucesso, retornando endereço");

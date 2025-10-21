@@ -71,8 +71,14 @@ public class BuscarEnderecoPorCepUseCaseImpl implements BuscarEnderecoPorCepUseC
         
         EnderecoOutput enderecoOutput = viaCepGateway.buscarPorCep(cep);
         
-        if (enderecoOutput == null || enderecoOutput.getCep() == null) {
-            throw new RuntimeException("Não consegui obter o endereço com esse CEP: " + cep);
+        if (enderecoOutput == null) {
+            LOGGER.error("CEP {} não encontrado na API ViaCEP. Verifique se o CEP está correto.", cep);
+            throw new RuntimeException("CEP não encontrado. Verifique se o CEP " + cep + " está correto e tente novamente.");
+        }
+        
+        if (enderecoOutput.getCep() == null || enderecoOutput.getCep().trim().isEmpty()) {
+            LOGGER.error("API ViaCEP retornou dados inválidos para o CEP: {}", cep);
+            throw new RuntimeException("Dados de endereço inválidos retornados pela API para o CEP: " + cep);
         }
         
         // 3. Ajusta dados retornados da API e usa CadastrarEnderecoUseCase

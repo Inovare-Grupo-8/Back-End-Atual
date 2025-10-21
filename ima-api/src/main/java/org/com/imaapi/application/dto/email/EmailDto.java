@@ -13,4 +13,5 @@ public class EmailDto {
     private String assunto;
     private String emailVoluntario;
     private String senha;
+    private Integer idUsuario;
 }

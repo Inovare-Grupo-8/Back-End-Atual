@@ -42,8 +42,15 @@ public class AutenticarUsuarioUseCaseImpl implements AutenticarUsuarioUseCase {
         usuarioRepository.save(usuario);
 
         UsuarioTokenOutput output = new UsuarioTokenOutput();
-        BeanUtils.copyProperties(usuario, output);
+        output.setIdUsuario(usuario.getIdUsuario());
+        output.setEmail(usuario.getEmail());
+        output.setTipo(usuario.getTipo());
         output.setToken(UUID.randomUUID().toString());
+        
+        // Incluir o nome da ficha se existir
+        if (usuario.getFicha() != null) {
+            output.setNome(usuario.getFicha().getNome());
+        }
 
         return output;
     }

@@ -11,5 +11,4 @@ public class UsuarioPrimeiraFaseOutput {
     private String sobrenome;
     private String email;
     private String cpf;
-    private LocalDate dataNascimento;
 }
