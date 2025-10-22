@@ -40,7 +40,7 @@ public class Voluntario {
     private Integer versao;
 
     @Setter
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "fk_usuario", referencedColumnName = "id_usuario", insertable = false, updatable = false)
     private Usuario usuario;
 
@@ -67,11 +67,6 @@ public class Voluntario {
             System.err.println("Warning: Invalid funcao value in database: " + this.funcao);
             return null;
         }
-    }
-
-    // Método para obter o valor string diretamente do banco de dados
-    public String getFuncaoString() {
-        return this.funcao;
     }
 
     @PrePersist

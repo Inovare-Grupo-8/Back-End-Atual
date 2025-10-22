@@ -5,6 +5,7 @@ import org.com.imaapi.application.useCase.email.GerarConteudoHtmlCredenciaisVolu
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.useCaseImpl.email.EnviarEmaiUseCaseImpl;
 import org.com.imaapi.application.dto.email.EmailDto;
+import org.com.imaapi.application.service.email.EmailQueueProducer;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,12 +13,15 @@ public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciais
 
     private final EnviarEmaiUseCaseImpl enviarEmaiUseCaseImpl;
     private final GerarConteudoHtmlCredenciaisVoluntarioUseCase gerarConteudoHtmlCredenciaisVoluntarioUseCase;
+    private final EmailQueueProducer emailQueueProducer;
 
     public EnviarCredenciaisVoluntarioUseCaseImpl(
             EnviarEmaiUseCaseImpl enviarEmaiUseCaseImpl,
-            GerarConteudoHtmlCredenciaisVoluntarioUseCase gerarConteudoHtmlCredenciaisVoluntarioUseCase) {
+            GerarConteudoHtmlCredenciaisVoluntarioUseCase gerarConteudoHtmlCredenciaisVoluntarioUseCase,
+            EmailQueueProducer emailQueueProducer) {
         this.enviarEmaiUseCaseImpl = enviarEmaiUseCaseImpl;
         this.gerarConteudoHtmlCredenciaisVoluntarioUseCase = gerarConteudoHtmlCredenciaisVoluntarioUseCase;
+        this.emailQueueProducer = emailQueueProducer;
     }
 
     @Override
@@ -40,8 +44,8 @@ public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciais
         String assunto = "credenciais voluntario"; 
         EmailDto emailDto = new EmailDto(email, dadosCredenciais, assunto, email, senha, idUsuario);
 
-        enviarEmaiUseCaseImpl.enviarEmail(emailDto);
+        emailQueueProducer.enviarEmailParaFila(emailDto);
 
-        return "Credenciais enviadas com sucesso.";
+        return "Credenciais enviadas para fila com sucesso.";
     }
 }

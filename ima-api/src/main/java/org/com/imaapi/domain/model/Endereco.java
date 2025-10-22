@@ -17,7 +17,7 @@ public class Endereco {
     @Column(name = "id_endereco")
     private Integer idEndereco;
 
-    @Column(name = "cep", length = 8)
+    @Column(name = "cep", length = 10)
     private String cep;
 
     @Column(name = "logradouro", length = 200)

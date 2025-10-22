@@ -7,6 +7,7 @@ import org.com.imaapi.application.useCase.email.EnviarEmailUseCase;
 import org.com.imaapi.application.useCase.email.GerarConteudoHtmlContinuarCadastroUseCase;
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.dto.email.EmailDto;
+import org.com.imaapi.application.service.email.EmailQueueProducer;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
@@ -31,6 +32,9 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
 
     @Autowired
     private EnviarEmailUseCase enviarEmailUseCase;
+
+    @Autowired
+    private EmailQueueProducer emailQueueProducer;
 
     @Autowired
     private GerarConteudoHtmlContinuarCadastroUseCase gerarConteudoHtmlContinuarCadastroUseCase;
@@ -81,12 +85,12 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
                 LOGGER.info("Email com credenciais para voluntário enviado: {}", resultadoCredenciais);
                 
             } else {
-                LOGGER.info("Enviando email para continuar cadastro do usuário não classificado: {}", input.getEmail());
+                LOGGER.info("Enviando email para continuar cadastro do usuário não classificado para fila: {}", input.getEmail());
                 
                 String dadosContinuarCadastro = nomeCompleto + "|" + usuario.getIdUsuario();
                 EmailDto emailContinuarCadastro = new EmailDto(usuario.getEmail(), dadosContinuarCadastro, "continuar cadastro", usuario.getEmail(), usuario.getSenha(), usuario.getIdUsuario());
-                String resultadoContinuarCadastro = enviarEmailUseCase.enviarEmail(emailContinuarCadastro);
-                LOGGER.info("Email para continuar cadastro enviado: {}", resultadoContinuarCadastro);
+                emailQueueProducer.enviarEmailParaFila(emailContinuarCadastro);
+                LOGGER.info("Email para continuar cadastro enviado para fila com sucesso");
             }
             
         } catch (Exception e) {

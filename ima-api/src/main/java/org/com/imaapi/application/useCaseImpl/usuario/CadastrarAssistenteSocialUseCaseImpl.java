@@ -9,6 +9,7 @@ import org.com.imaapi.domain.model.Voluntario;
 import org.com.imaapi.domain.model.enums.Funcao;
 import org.com.imaapi.domain.model.enums.Genero;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
+import org.com.imaapi.domain.repository.FichaRepository;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.com.imaapi.domain.repository.VoluntarioRepository;
 import org.slf4j.Logger;
@@ -31,6 +32,9 @@ public class CadastrarAssistenteSocialUseCaseImpl implements CadastrarAssistente
     
     @Autowired
     private VoluntarioRepository voluntarioRepository;
+    
+    @Autowired
+    private FichaRepository fichaRepository;
     
 //    @Autowired
 //    private PasswordEncoder passwordEncoder;
@@ -79,7 +83,10 @@ public class CadastrarAssistenteSocialUseCaseImpl implements CadastrarAssistente
             }
         }
         
-        usuario.setFicha(ficha);
+        // Salvar ficha primeiro (para evitar erro de entidade transiente)
+        Ficha fichaSalva = fichaRepository.save(ficha);
+        
+        usuario.setFicha(fichaSalva);
         
         // Salvar usuário
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
@@ -99,8 +106,8 @@ public class CadastrarAssistenteSocialUseCaseImpl implements CadastrarAssistente
         // Criar output
         AssistenteSocialOutput output = new AssistenteSocialOutput();
         output.setIdUsuario(usuarioSalvo.getIdUsuario());
-        output.setNome(ficha.getNome());
-        output.setSobrenome(ficha.getSobrenome());
+        output.setNome(fichaSalva.getNome());
+        output.setSobrenome(fichaSalva.getSobrenome());
         output.setEmail(usuarioSalvo.getEmail());
         
         LOGGER.info("Assistente social cadastrado com sucesso. ID: {}", usuarioSalvo.getIdUsuario());

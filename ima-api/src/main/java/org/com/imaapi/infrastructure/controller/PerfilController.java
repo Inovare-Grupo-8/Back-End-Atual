@@ -77,16 +77,16 @@ public class PerfilController {
     }
 
     @PutMapping("/{tipo}/endereco")
-    public ResponseEntity<Void> atualizarEndereco(
+    public ResponseEntity<EnderecoOutput> atualizarEndereco(
             @RequestParam Integer usuarioId,
             @PathVariable String tipo,
             @RequestBody @Valid EnderecoInput enderecoInput) {
-        boolean atualizado = atualizarEnderecoUseCase.atualizarEndereco(
+        EnderecoOutput enderecoAtualizado = atualizarEnderecoUseCase.atualizarEndereco(
                 usuarioId, enderecoInput.getCep(), enderecoInput.getNumero(), enderecoInput.getComplemento());
-        if (!atualizado) {
+        if (enderecoAtualizado == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(enderecoAtualizado);
     }
 
     @PostMapping("/{tipo}/foto")

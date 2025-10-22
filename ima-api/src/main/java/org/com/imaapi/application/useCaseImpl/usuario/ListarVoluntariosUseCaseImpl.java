@@ -26,12 +26,12 @@ public class ListarVoluntariosUseCaseImpl implements ListarVoluntariosUseCase {
 
     @Override
     public List<VoluntarioListagemOutput> executar() {
-        // Buscar todos os voluntários diretamente da tabela voluntario
-        List<Voluntario> voluntarios = voluntarioRepository.findAll();
-        
-        return voluntarios.stream()
-                .filter(voluntario -> voluntario.getUsuario() != null)
-                .map(voluntario -> toOutput(voluntario.getUsuario(), voluntario))
+        return usuarioRepository.findAll().stream()
+                .filter(usuario -> usuario.getTipo() == TipoUsuario.VOLUNTARIO)
+                .map(usuario -> {
+                    Voluntario voluntario = voluntarioRepository.findByUsuario_IdUsuario(usuario.getIdUsuario());
+                    return toOutput(usuario, voluntario);
+                })
                 .collect(Collectors.toList());
     }
     
@@ -45,8 +45,7 @@ public class ListarVoluntariosUseCaseImpl implements ListarVoluntariosUseCase {
         // Mapear dados do voluntário
         if (voluntario != null) {
             output.setIdVoluntario(voluntario.getIdVoluntario());
-            // Usar o método getFuncaoString para obter o valor string diretamente
-            output.setFuncao(voluntario.getFuncaoString());
+            output.setFuncao(voluntario.getFuncao() != null ? voluntario.getFuncao().toString() : null);
             output.setDataCadastro(voluntario.getDataCadastro());
         }
         
