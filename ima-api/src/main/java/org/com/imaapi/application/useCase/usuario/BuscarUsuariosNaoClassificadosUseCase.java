@@ -1,9 +1,9 @@
 package org.com.imaapi.application.useCase.usuario;
 
-import org.com.imaapi.application.dto.usuario.output.UsuarioClassificacaoOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioNaoClassificadoOutput;
 
 import java.util.List;
 
 public interface BuscarUsuariosNaoClassificadosUseCase {
-    List<UsuarioClassificacaoOutput> executar();
+    List<UsuarioNaoClassificadoOutput> executar();
 }

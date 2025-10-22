@@ -31,7 +31,15 @@ public class ClassificarUsuarioComoGratuidadeUseCaseImpl implements ClassificarU
                     Usuario salvo = usuarioRepository.save(usuario);
 
                     UsuarioListarOutput output = new UsuarioListarOutput();
-                    BeanUtils.copyProperties(salvo, output);
+                    output.setIdUsuario(salvo.getIdUsuario());
+                    output.setEmail(salvo.getEmail());
+                    output.setTipo(salvo.getTipo());
+                    
+                    // Incluir o nome da ficha se existir
+                    if (salvo.getFicha() != null) {
+                        output.setNome(salvo.getFicha().getNome());
+                    }
+                    
                     return output;
                 })
                 .orElse(null);

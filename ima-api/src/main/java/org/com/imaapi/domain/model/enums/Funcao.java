@@ -55,6 +55,7 @@ public enum Funcao {
 
         String normalizedInput = normalizeValue(value);
 
+        // Primeiro, tenta encontrar uma correspondência exata
         for (Funcao funcao : Funcao.values()) {
             String normalizedEnum = normalizeValue(funcao.value);
             String normalizedName = normalizeValue(funcao.name());
@@ -64,6 +65,50 @@ public enum Funcao {
                 return funcao;
             }
         }
-        throw new IllegalArgumentException("Função inválida: " + value);
+
+        // Se não encontrou correspondência exata, tenta mapeamentos específicos
+        // para adaptar valores comuns do banco de dados
+        switch (normalizedInput) {
+            case "psicologa":
+            case "psicologo":
+                return PSICOLOGIA;
+            case "advogada":
+            case "advogado":
+                return JURIDICA;
+            case "assistente_social":
+                return ASSISTENCIA_SOCIAL;
+            case "contadora":
+            case "contador":
+                return CONTABIL;
+            case "nutricionista":
+                return NUTRICAO;
+            case "fisioterapeuta":
+                return FISIOTERAPIA;
+            case "pediatra":
+                return PEDIATRIA;
+            case "psicopedagoga":
+            case "psicopedagogo":
+                return PSICOPEDAGOGIA;
+            case "quiroprata":
+            case "quiropraxista":
+                return QUIROPRAXIA;
+            default:
+                // Se ainda não encontrou, tenta uma busca parcial
+                for (Funcao funcao : Funcao.values()) {
+                    String normalizedEnum = normalizeValue(funcao.value);
+                    String normalizedName = normalizeValue(funcao.name());
+                    
+                    // Verifica se o input contém parte do nome do enum ou vice-versa
+                    if (normalizedInput.contains(normalizedEnum) || 
+                        normalizedEnum.contains(normalizedInput) ||
+                        normalizedInput.contains(normalizedName) || 
+                        normalizedName.contains(normalizedInput)) {
+                        return funcao;
+                    }
+                }
+                
+                // Se nada funcionou, lança exceção
+                throw new IllegalArgumentException("Função inválida: " + value);
+        }
     }
 }

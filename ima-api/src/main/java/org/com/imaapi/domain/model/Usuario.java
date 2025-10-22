@@ -16,7 +16,7 @@ public class Usuario {    @Id
     @Column(name = "id_usuario")
     private Integer idUsuario;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_ficha", unique = true, nullable = false)
     private Ficha ficha;
 

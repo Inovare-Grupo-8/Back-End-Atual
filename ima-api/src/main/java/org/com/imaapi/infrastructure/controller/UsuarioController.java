@@ -17,7 +17,7 @@ import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutput;
 import org.com.imaapi.application.useCase.usuario.*;
 import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioTokenOutput;
-import org.com.imaapi.application.dto.usuario.output.UsuarioClassificacaoOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioNaoClassificadoOutput;
 import org.com.imaapi.application.dto.usuario.output.VoluntarioListagemOutput;
 
 import java.util.List;
@@ -129,9 +129,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/nao-classificados")
-    public ResponseEntity<List<UsuarioClassificacaoOutput>> listarNaoClassificados() {
+    public ResponseEntity<List<UsuarioNaoClassificadoOutput>> listarNaoClassificados() {
         LOGGER.info("Listando usuários não classificados");
-        java.util.List<UsuarioClassificacaoOutput> lista = buscarUsuariosNaoClassificadosUseCase.executar();
+        java.util.List<UsuarioNaoClassificadoOutput> lista = buscarUsuariosNaoClassificadosUseCase.executar();
         LOGGER.info("Total de usuários não classificados: {}", lista.size());
         return ResponseEntity.ok(lista);
     }
