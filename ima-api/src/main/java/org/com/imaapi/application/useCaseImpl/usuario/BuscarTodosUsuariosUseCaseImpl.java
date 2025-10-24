@@ -5,6 +5,8 @@ import org.com.imaapi.application.useCase.usuario.BuscarTodosUsuariosUseCase;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.repository.UsuarioRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,13 @@ public class BuscarTodosUsuariosUseCaseImpl implements BuscarTodosUsuariosUseCas
         return usuarios.stream()
                 .map(this::toOutput)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UsuarioListarOutput> executarComPaginacao(Pageable pageable) {
+        Page<Usuario> usuarios = usuarioRepository.findAll(pageable);
+        return usuarios.map(this::toOutput);
     }
 
     private UsuarioListarOutput toOutput(Usuario usuario) {

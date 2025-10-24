@@ -8,6 +8,9 @@ import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Voluntario;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +37,34 @@ public class ListarVoluntariosUseCaseImpl implements ListarVoluntariosUseCase {
                 })
                 .collect(Collectors.toList());
     }
-    
+
+    @Override
+    public Slice<VoluntarioListagemOutput> executarComPaginacao(Pageable pageable) {
+        // Buscar todos os usuários voluntários (sem paginação no repository)
+        List<Usuario> todosVoluntarios = usuarioRepository.findAll().stream()
+                .filter(usuario -> usuario.getTipo() == TipoUsuario.VOLUNTARIO)
+                .collect(Collectors.toList());
+        
+        // Aplicar paginação manualmente
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), todosVoluntarios.size());
+        
+        List<Usuario> voluntariosPaginados = todosVoluntarios.subList(start, end);
+        
+        // Converter para output
+        List<VoluntarioListagemOutput> outputs = voluntariosPaginados.stream()
+                .map(usuario -> {
+                    Voluntario voluntario = voluntarioRepository.findByUsuario_IdUsuario(usuario.getIdUsuario());
+                    return toOutput(usuario, voluntario);
+                })
+                .collect(Collectors.toList());
+        
+        // Verificar se há próxima página
+        boolean hasNext = end < todosVoluntarios.size();
+        
+        return new SliceImpl<>(outputs, pageable, hasNext);
+    }
+
     private VoluntarioListagemOutput toOutput(Usuario usuario, Voluntario voluntario) {
         VoluntarioListagemOutput output = new VoluntarioListagemOutput();
         

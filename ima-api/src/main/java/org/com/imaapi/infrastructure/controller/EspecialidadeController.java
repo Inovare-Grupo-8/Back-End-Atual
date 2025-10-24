@@ -1,6 +1,7 @@
 package org.com.imaapi.infrastructure.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.com.imaapi.application.dto.especialidade.input.EspecialidadeInput;
 import org.com.imaapi.application.dto.especialidade.output.EspecialidadeOutput;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -51,6 +53,18 @@ public class EspecialidadeController {
     public ResponseEntity<EspecialidadeOutput> buscarPorId(@PathVariable Integer id) {
         EspecialidadeOutput especialidade = buscarEspecialidadePorIdUseCase.buscarEspecialidadePorId(id);
         return ResponseEntity.ok(especialidade);
+    }
+
+    @GetMapping("/paginado")
+    @Operation(summary = "Listar especialidades com paginação offset-based")
+    public ResponseEntity<List<EspecialidadeOutput>> listarComOffset(
+            @Parameter(description = "Número de registros a pular (offset)", example = "0")
+            @RequestParam(defaultValue = "0") int offset,
+            @Parameter(description = "Número máximo de registros a retornar", example = "10")
+            @RequestParam(defaultValue = "10") int limit) {
+        
+        List<EspecialidadeOutput> especialidades = listarEspecialidadesUseCase.listarEspecialidadesComOffset(offset, limit);
+        return ResponseEntity.ok(especialidades);
     }
 
     @GetMapping
