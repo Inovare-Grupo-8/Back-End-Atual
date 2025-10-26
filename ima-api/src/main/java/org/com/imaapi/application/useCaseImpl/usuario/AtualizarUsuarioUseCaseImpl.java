@@ -41,6 +41,8 @@ public class AtualizarUsuarioUseCaseImpl implements AtualizarUsuarioUseCase {
         UsuarioListarOutput output = new UsuarioListarOutput();
         // Copiar propriedades relevantes do UsuarioOutput para UsuarioListarOutput
         BeanUtils.copyProperties(usuarioOutput, output);
+        // Garantir que o id seja corretamente propagado para o output final
+        output.setIdUsuario(usuarioOutput.getId());
 
         return output;
     }
