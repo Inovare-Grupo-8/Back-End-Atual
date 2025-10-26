@@ -14,6 +14,9 @@ import org.com.imaapi.domain.model.Voluntario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.com.imaapi.domain.repository.TelefoneRepository;
 import org.com.imaapi.domain.repository.VoluntarioRepository;
+import org.com.imaapi.domain.repository.EnderecoRepository;
+import org.com.imaapi.domain.repository.FichaRepository;
+import org.com.imaapi.application.useCaseImpl.endereco.EnderecoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,16 +34,25 @@ public class CadastrarUsuarioSegundaFaseUseCaseImpl implements CadastrarUsuarioS
     private final CriarOuAtualizarEnderecoUseCase criarOuAtualizarEnderecoUseCase;
     private final TelefoneRepository telefoneRepository;
     private final VoluntarioRepository voluntarioRepository;
+    private final EnderecoRepository enderecoRepository;
+    private final EnderecoUtil enderecoUtil;
+    private final FichaRepository fichaRepository;
 
     public CadastrarUsuarioSegundaFaseUseCaseImpl(
             UsuarioRepository usuarioRepository,
             CriarOuAtualizarEnderecoUseCase criarOuAtualizarEnderecoUseCase,
             TelefoneRepository telefoneRepository,
-            VoluntarioRepository voluntarioRepository) {
+            VoluntarioRepository voluntarioRepository,
+            EnderecoRepository enderecoRepository,
+            EnderecoUtil enderecoUtil,
+            FichaRepository fichaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.criarOuAtualizarEnderecoUseCase = criarOuAtualizarEnderecoUseCase;
         this.telefoneRepository = telefoneRepository;
         this.voluntarioRepository = voluntarioRepository;
+        this.enderecoRepository = enderecoRepository;
+        this.enderecoUtil = enderecoUtil;
+        this.fichaRepository = fichaRepository;
     }
 
     @Override
@@ -91,10 +103,20 @@ public class CadastrarUsuarioSegundaFaseUseCaseImpl implements CadastrarUsuarioS
         EnderecoOutput enderecoOutput = null;
         if (usuarioInputSegundaFase.getEndereco() != null) {
             enderecoOutput = criarOuAtualizarEnderecoUseCase.criarOuAtualizarEndereco(usuarioInputSegundaFase.getEndereco());
-            // Associar endereço à ficha se necessário
+            // Associar endereço à ficha se necessário (persistir fk_endereco)
             if (enderecoOutput != null && ficha.getEndereco() == null) {
-                // Aqui você pode implementar a lógica para associar o endereço à ficha
-                LOGGER.info("Endereço processado para usuário ID: {}", idUsuario);
+                try {
+                    String cepFormatado = enderecoUtil.formatarCep(usuarioInputSegundaFase.getEndereco().getCep());
+                    String numero = usuarioInputSegundaFase.getEndereco().getNumero();
+                    enderecoRepository.findByCepAndNumero(cepFormatado, numero).ifPresent(enderecoEntity -> {
+                        ficha.setEndereco(enderecoEntity);
+                        // salvar ficha explicitamente para persistir a relação (ficha.fk_endereco)
+                        fichaRepository.save(ficha);
+                        LOGGER.info("Endereço associado à ficha e persistido (ficha.fk_endereco) para usuário ID: {}", idUsuario);
+                    });
+                } catch (Exception e) {
+                    LOGGER.warn("Não foi possível associar o endereço à ficha do usuário ID: {} - {}", idUsuario, e.getMessage());
+                }
             }
         }
 
