@@ -87,8 +87,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Wrap the standard password encoder with our logging version
-        return new LoggingPasswordEncoder(new BCryptPasswordEncoder());
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
