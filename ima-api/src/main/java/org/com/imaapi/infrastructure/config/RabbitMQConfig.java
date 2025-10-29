@@ -14,13 +14,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${email.queue.name:fila_email}")
+    @Value("${email.queue.name:email-queue}")
     private String emailQueueName;
     
-    @Value("${email.exchange.name:email}")
+    @Value("${email.exchange.name:email-exchange}")
     private String emailExchangeName;
     
-    @Value("${email.routing.key:email}")
+    @Value("${email.routing.key:email.send}")
     private String emailRoutingKey;
     
     @Bean

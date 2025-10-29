@@ -1,10 +1,11 @@
 package org.com.imaapi.application.useCaseImpl.usuario;
 
+import org.com.imaapi.application.useCase.email.EnviarEmailUseCase;
 import org.com.imaapi.application.useCase.email.GerarConteudoHtmlCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.useCaseImpl.email.EnviarEmaiUseCaseImpl;
 import org.com.imaapi.application.dto.email.EmailDto;
-import org.com.imaapi.application.useCaseImpl.email.EmailQueueProducerImpl;
+import org.com.imaapi.application.service.email.EmailQueueProducer;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,15 +13,15 @@ public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciais
 
     private final EnviarEmaiUseCaseImpl enviarEmaiUseCaseImpl;
     private final GerarConteudoHtmlCredenciaisVoluntarioUseCase gerarConteudoHtmlCredenciaisVoluntarioUseCase;
-    private final EmailQueueProducerImpl emailQueueProducerImpl;
+    private final EmailQueueProducer emailQueueProducer;
 
     public EnviarCredenciaisVoluntarioUseCaseImpl(
             EnviarEmaiUseCaseImpl enviarEmaiUseCaseImpl,
             GerarConteudoHtmlCredenciaisVoluntarioUseCase gerarConteudoHtmlCredenciaisVoluntarioUseCase,
-            EmailQueueProducerImpl emailQueueProducerImpl) {
+            EmailQueueProducer emailQueueProducer) {
         this.enviarEmaiUseCaseImpl = enviarEmaiUseCaseImpl;
         this.gerarConteudoHtmlCredenciaisVoluntarioUseCase = gerarConteudoHtmlCredenciaisVoluntarioUseCase;
-        this.emailQueueProducerImpl = emailQueueProducerImpl;
+        this.emailQueueProducer = emailQueueProducer;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciais
         String assunto = "credenciais voluntario"; 
         EmailDto emailDto = new EmailDto(email, dadosCredenciais, assunto, email, senha, idUsuario);
 
-        emailQueueProducerImpl.enviarEmailParaFila(emailDto);
+        emailQueueProducer.enviarEmailParaFila(emailDto);
 
         return "Credenciais enviadas para fila com sucesso.";
     }
