@@ -17,7 +17,7 @@ public class EmailQueueProducer {
     
     private final RabbitTemplate rabbitTemplate;
     
-    @Value("${email.queue.name:email-queue}")
+    @Value("${email.queue.name:fila_email}")
     private String emailQueueName;
     
     @Value("${email.exchange.name:email-exchange}")

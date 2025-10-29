@@ -16,7 +16,7 @@ public class EmailQueueConsumer {
     
     private final EnviarEmailUseCase enviarEmailUseCase;
     
-    @RabbitListener(queues = "${email.queue.name:email-queue}")
+    @RabbitListener(queues = "${email.queue.name:fila_email}")
     public void processarEmailDaFila(EmailQueueMessage message) {
         try {
             logger.info("Processando email da fila: destinatário={}, assunto={}", 
@@ -31,7 +31,6 @@ public class EmailQueueConsumer {
             logger.error("Erro ao processar email da fila: destinatário={}, assunto={}, erro={}", 
                         message.getDestinatario(), message.getAssunto(), e.getMessage(), e);
             
-            // Aqui você pode implementar lógica de retry ou dead letter queue
             throw new RuntimeException("Erro ao processar email da fila", e);
         }
     }
