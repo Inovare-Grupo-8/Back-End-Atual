@@ -8,6 +8,7 @@ import org.com.imaapi.application.useCase.email.GerarConteudoHtmlContinuarCadast
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.dto.email.EmailDto;
 import org.com.imaapi.application.service.email.EmailQueueProducer;
+import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
@@ -42,6 +43,9 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
     @Autowired
     private EnviarCredenciaisVoluntarioUseCase enviarCredenciaisVoluntarioUseCase;
 
+    @Autowired
+    private PasswordEncoderGateway passwordEncoderGateway;
+
     @Override
     public UsuarioPrimeiraFaseOutput executar(UsuarioInputPrimeiraFase input) {
         LOGGER.info("Iniciando cadastro de usuário (primeira fase) para email: {}", input.getEmail());
@@ -59,7 +63,7 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
 
         Usuario usuario = new Usuario();
         usuario.setEmail(input.getEmail());
-        usuario.setSenha(input.getSenha());
+        usuario.setSenha(passwordEncoderGateway.encode(input.getSenha()));
         usuario.setTipo(TipoUsuario.NAO_CLASSIFICADO);
         usuario.setFicha(ficha);
         usuarioRepository.save(usuario);

@@ -3,10 +3,9 @@ package org.com.imaapi.application.useCaseImpl.usuario;
 import org.com.imaapi.application.useCase.usuario.AutenticarUsuarioUseCase;
 import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioTokenOutput;
-import org.com.imaapi.application.useCase.usuario.AutenticarUsuarioUseCase;
+import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +16,11 @@ import java.util.UUID;
 public class AutenticarUsuarioUseCaseImpl implements AutenticarUsuarioUseCase {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoderGateway passwordEncoderGateway;
 
-    public AutenticarUsuarioUseCaseImpl(UsuarioRepository usuarioRepository) {
+    public AutenticarUsuarioUseCaseImpl(UsuarioRepository usuarioRepository,  PasswordEncoderGateway passwordEncoderGateway) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoderGateway = passwordEncoderGateway;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class AutenticarUsuarioUseCaseImpl implements AutenticarUsuarioUseCase {
         Usuario usuario = usuarioRepository.findByEmail(usuarioAutenticacaoInput.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado para o email informado"));
 
-        if (!usuario.getSenha().equals(usuarioAutenticacaoInput.getSenha())) {
+        if (!passwordEncoderGateway.matches(usuarioAutenticacaoInput.getSenha(), usuario.getSenha())) {
             throw new IllegalArgumentException("Email ou senha inválidos");
         }
 
