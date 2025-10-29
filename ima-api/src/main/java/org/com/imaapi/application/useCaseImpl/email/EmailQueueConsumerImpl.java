@@ -1,4 +1,4 @@
-package org.com.imaapi.application.service.email;
+package org.com.imaapi.application.useCaseImpl.email;
 
 import lombok.RequiredArgsConstructor;
 import org.com.imaapi.application.dto.email.EmailQueueMessage;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailQueueConsumer {
+public class EmailQueueConsumerImpl {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailQueueConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(EmailQueueConsumerImpl.class);
     
     private final EnviarEmailUseCase enviarEmailUseCase;
     

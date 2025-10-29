@@ -1,4 +1,4 @@
-package org.com.imaapi.application.service.email;
+package org.com.imaapi.application.useCaseImpl.email;
 
 import lombok.RequiredArgsConstructor;
 import org.com.imaapi.application.dto.email.EmailDto;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailQueueProducer {
+public class EmailQueueProducerImpl {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailQueueProducer.class);
+    private static final Logger logger = LoggerFactory.getLogger(EmailQueueProducerImpl.class);
     
     private final RabbitTemplate rabbitTemplate;
     
@@ -23,7 +23,7 @@ public class EmailQueueProducer {
     @Value("${email.exchange.name:email-exchange}")
     private String emailExchangeName;
     
-    @Value("${email.routing.key:email.send}")
+    @Value("${email.routing.key:email}")
     private String emailRoutingKey;
     
     public void enviarEmailParaFila(EmailDto emailDto) {

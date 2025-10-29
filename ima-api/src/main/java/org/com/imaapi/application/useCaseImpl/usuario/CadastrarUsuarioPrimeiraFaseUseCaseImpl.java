@@ -7,7 +7,7 @@ import org.com.imaapi.application.useCase.email.EnviarEmailUseCase;
 import org.com.imaapi.application.useCase.email.GerarConteudoHtmlContinuarCadastroUseCase;
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.dto.email.EmailDto;
-import org.com.imaapi.application.service.email.EmailQueueProducer;
+import org.com.imaapi.application.useCaseImpl.email.EmailQueueProducerImpl;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
@@ -34,7 +34,7 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
     private EnviarEmailUseCase enviarEmailUseCase;
 
     @Autowired
-    private EmailQueueProducer emailQueueProducer;
+    private EmailQueueProducerImpl emailQueueProducerImpl;
 
     @Autowired
     private GerarConteudoHtmlContinuarCadastroUseCase gerarConteudoHtmlContinuarCadastroUseCase;
@@ -89,7 +89,7 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
                 
                 String dadosContinuarCadastro = nomeCompleto + "|" + usuario.getIdUsuario();
                 EmailDto emailContinuarCadastro = new EmailDto(usuario.getEmail(), dadosContinuarCadastro, "continuar cadastro", usuario.getEmail(), usuario.getSenha(), usuario.getIdUsuario());
-                emailQueueProducer.enviarEmailParaFila(emailContinuarCadastro);
+                emailQueueProducerImpl.enviarEmailParaFila(emailContinuarCadastro);
                 LOGGER.info("Email para continuar cadastro enviado para fila com sucesso");
             }
             
