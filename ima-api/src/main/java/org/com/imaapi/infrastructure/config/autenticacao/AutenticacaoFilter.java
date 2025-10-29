@@ -32,29 +32,36 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String username = null;
-        String jwtToken = null;
+        String header = request.getHeader("Authorization");
 
-        String requestTokenHeader = request.getHeader("Authorization");
-
-        if (Objects.nonNull(requestTokenHeader) && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
-
-            try {
-                username = jwtTokenManager.getUsernameFromToken(jwtToken);
-            } catch (ExpiredJwtException exception) {
-
-                LOGGER.info("[FALHA AUTENTICACAO] - token expirado, usuario: {} - {}",
-                        exception.getClaims().getSubject(), exception.getMessage());
-
-                LOGGER.trace("[FALHA AUTENTICACAO] - stack trace: %s", exception);
-
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            }
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            addUsernameInContext(request, username, jwtToken);
+        String jwtToken = header.substring(7).trim();
+        if (jwtToken.isEmpty()) {
+            LOGGER.warn("[FALHA AUTENTICACAO] - Token vazio recebido no header Authorization.");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        try {
+            String username = jwtTokenManager.extrairUsernameFromToken(jwtToken);
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                addUsernameInContext(request, username, jwtToken);
+            }
+
+        } catch (ExpiredJwtException e) {
+            LOGGER.info("[TOKEN EXPIRADO] Usuário: {} - {}", e.getClaims().getSubject(), e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+
+        } catch (Exception e) {
+            LOGGER.error("[ERRO TOKEN] Token inválido ou malformado: {}", e.getMessage());
+            filterChain.doFilter(request, response);
+            return;
         }
 
         filterChain.doFilter(request, response);
@@ -63,7 +70,7 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
     private void addUsernameInContext(HttpServletRequest request, String username, String jwtToken) {
         UserDetails userDetails = autenticacaoService.loadUserByUsername(username);
 
-        if (jwtTokenManager.validateToken(jwtToken, userDetails)) {
+        if (jwtTokenManager.validarToken(userDetails.getUsername(), jwtToken)) {
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 

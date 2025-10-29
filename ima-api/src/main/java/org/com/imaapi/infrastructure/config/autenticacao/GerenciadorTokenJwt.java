@@ -5,17 +5,17 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.impl.lang.Function;
 import io.jsonwebtoken.security.Keys;
+import org.com.imaapi.application.dto.usuario.UsuarioAutenticado;
+import org.com.imaapi.domain.gateway.TokenProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.stream.Collectors;
+import java.util.List;
 
-public class GerenciadorTokenJwt {
+public class GerenciadorTokenJwt implements TokenProvider {
 
     @Value("${jwt.secret}")
     private String secret;
@@ -23,22 +23,21 @@ public class GerenciadorTokenJwt {
     @Value("${jwt.validity}")
     private long jwtTokenValidity;
 
-    public String getUsernameFromToken(String token) {
+    public String extrairUsernameFromToken(String token) {
         return getClaimForToken(token, Claims::getSubject);
     }
 
-    public Date getExpirationDateFromToken(String token) {
+    public Date extrairExpirationDateFromToken(String token) {
         return getClaimForToken(token, Claims::getExpiration);
     }
 
-    public String generateToken(final Authentication authentication) {
+    public String gerarToken(String username, List<String> authorities) {
 
-        final String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+        final String roles = String.join(",", authorities);
 
         return Jwts.builder()
-                .subject(getUsername(authentication))
-                .claim("authorities", authorities)
+                .subject(username)
+                .claim("authorities", roles)
                 .signWith(parseSecret())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtTokenValidity * 1000)).compact();
@@ -49,13 +48,13 @@ public class GerenciadorTokenJwt {
         return claimsResolver.apply(claims);
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
-        String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public boolean validarToken(String usuarioAutenticado, String token) {
+        String username = extrairUsernameFromToken(token);
+        return (username.equals(usuarioAutenticado) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
-        Date expiration = getExpirationDateFromToken(token);
+        Date expiration = extrairExpirationDateFromToken(token);
         return expiration.before(new Date(System.currentTimeMillis()));
     }
 
@@ -70,11 +69,4 @@ public class GerenciadorTokenJwt {
         return Keys.hmacShaKeyFor(this.secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    private String getUsername(Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof UserDetails userDetails) {
-            return userDetails.getUsername();
-        }
-        return authentication.getName();
-    }
 }

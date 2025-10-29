@@ -197,19 +197,19 @@ public class PerfilController {
         return ResponseEntity.noContent().build();
     }
 
-//    @GetMapping("/assistente-social")
-//    public ResponseEntity<AssistenteSocialOutput> buscarPerfilAssistenteSocial(@RequestParam Integer usuarioId) {
-//        try {
-//            AssistenteSocialOutput perfil = buscarDadosPessoaisUseCase.buscarAssistenteSocial(usuarioId);
-//            if (perfil == null) {
-//                return ResponseEntity.notFound().build();
-//            }
-//            return ResponseEntity.ok(perfil);
-//        } catch (Exception e) {
-//            LOGGER.error("Erro ao buscar perfil do assistente social: {}", e.getMessage(), e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
+    @GetMapping("/assistente-social")
+    public ResponseEntity<AssistenteSocialOutput> buscarPerfilAssistenteSocial(@RequestParam Integer usuarioId) {
+        try {
+            AssistenteSocialOutput perfil = buscarDadosPessoaisUseCase.buscarAssistenteSocial(usuarioId);
+            if (perfil == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(perfil);
+        } catch (Exception e) {
+            LOGGER.error("Erro ao buscar perfil do assistente social: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @PatchMapping("/assistente-social/dados-profissionais")
     @ResponseBody
