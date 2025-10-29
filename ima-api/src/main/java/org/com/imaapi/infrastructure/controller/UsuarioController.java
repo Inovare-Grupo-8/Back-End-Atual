@@ -218,7 +218,7 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/autenticar")
+    @PostMapping("/login")
     public ResponseEntity<UsuarioTokenOutput> autenticar(@Valid @RequestBody UsuarioAutenticacaoInput input) {
         LOGGER.info("Autenticando usuário: {}", input.getEmail());
         UsuarioTokenOutput token = autenticarUsuarioUseCase.executar(input);
