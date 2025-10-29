@@ -1,10 +1,10 @@
 package org.com.imaapi.infrastructure.config.autenticacao;
 
+import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.repository.FichaRepository;
 import org.com.imaapi.domain.repository.UsuarioRepository;
-import org.com.imaapi.infrastructure.model.usuario.UsuarioDetalhes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ public class AutenticacaoService implements UserDetailsService {
                     .orElseThrow(() -> new UsernameNotFoundException("Ficha não encontrada para o usuário."));
 
 //            LOGGER.info("[AUTENTICAR_SERVICE] Ficha encontrada para o usuário: {}", username);
-            return new UsuarioDetalhes(usuario, ficha);
+            return new UsuarioDetalhesOutput(usuario, ficha);
 //            LOGGER.info("[AUTENTICAR_SERVICE] UserDetails criado com sucesso para: {}, autoridades: {}",
 //                    username, userDetails.getAuthorities());
         } catch (Exception e) {

@@ -1,6 +1,6 @@
 package org.com.imaapi.infrastructure.config.autenticacao;
 
-import org.com.imaapi.infrastructure.model.usuario.UsuarioDetalhes;
+import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -30,7 +30,7 @@ public class AutenticacaoProvider implements AuthenticationProvider {
 //        LOGGER.info("[AUTENTICAR_PROVIDER] Tentando autenticar usuário: {}", username);
         
         try {
-            UsuarioDetalhes userDetails = (UsuarioDetalhes) this.autenticacaoService.loadUserByUsername(username);
+            UsuarioDetalhesOutput userDetails = (UsuarioDetalhesOutput) this.autenticacaoService.loadUserByUsername(username);
 //            LOGGER.debug("[AUTENTICAR_PROVIDER] UserDetails carregado para: {}", username);
 //            LOGGER.debug("[AUTENTICAR_PROVIDER] Senha fornecida (primeiros 4 caracteres): {}",
 //                    password.length() > 4 ? password.substring(0, 4) + "..." : "***");
