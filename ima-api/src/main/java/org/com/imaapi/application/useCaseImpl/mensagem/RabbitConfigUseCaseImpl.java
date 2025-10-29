@@ -9,6 +9,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -28,32 +29,32 @@ public class RabbitConfigUseCaseImpl implements RabbitConfigUseCase {
     @Value("${broker.queue.name2}")
     private String queueAgendamentoGratuidade;
 
-    @Bean
+    @Bean("mensagemExchange")
     public DirectExchange exchange() {
         return new DirectExchange(exchangeName);
     }
 
-    @Bean
+    @Bean("filaGratuidade")
     public Queue fila1() {
         return new Queue(queueGratuidade, true);
     }
     
-    @Bean
+    @Bean("filaAgendamentoGratuidade")
     public Queue fila2() {
         return new Queue(queueAgendamentoGratuidade, true);
     }
 
-    @Bean
-    public Binding binding1(Queue fila1, DirectExchange exchange) {
+    @Bean("bindingGratuidade")
+    public Binding binding1(@Qualifier("filaGratuidade") Queue fila1, @Qualifier("mensagemExchange") DirectExchange exchange) {
         return BindingBuilder.bind(fila1).to(exchange).with(this.queueGratuidade);
     }
 
-    @Bean
-    public Binding binding2(Queue fila2, DirectExchange exchange) {
+    @Bean("bindingAgendamentoGratuidade")
+    public Binding binding2(@Qualifier("filaAgendamentoGratuidade") Queue fila2, @Qualifier("mensagemExchange") DirectExchange exchange) {
         return BindingBuilder.bind(fila2).to(exchange).with(this.queueAgendamentoGratuidade);
     }
 
-    @Bean
+    @Bean("mensagemRabbitTemplate")
     @Override
     public RabbitTemplate getRabbitTemplate() {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);

@@ -1,11 +1,10 @@
 package org.com.imaapi.application.useCaseImpl.usuario;
 
-import org.com.imaapi.application.useCase.email.EnviarEmailUseCase;
 import org.com.imaapi.application.useCase.email.GerarConteudoHtmlCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.useCaseImpl.email.EnviarEmaiUseCaseImpl;
 import org.com.imaapi.application.dto.email.EmailDto;
-import org.com.imaapi.application.service.email.EmailQueueProducer;
+import org.com.imaapi.application.useCaseImpl.email.EmailQueueProducerImpl;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,15 +12,15 @@ public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciais
 
     private final EnviarEmaiUseCaseImpl enviarEmaiUseCaseImpl;
     private final GerarConteudoHtmlCredenciaisVoluntarioUseCase gerarConteudoHtmlCredenciaisVoluntarioUseCase;
-    private final EmailQueueProducer emailQueueProducer;
+    private final EmailQueueProducerImpl emailQueueProducerImpl;
 
     public EnviarCredenciaisVoluntarioUseCaseImpl(
             EnviarEmaiUseCaseImpl enviarEmaiUseCaseImpl,
             GerarConteudoHtmlCredenciaisVoluntarioUseCase gerarConteudoHtmlCredenciaisVoluntarioUseCase,
-            EmailQueueProducer emailQueueProducer) {
+            EmailQueueProducerImpl emailQueueProducerImpl) {
         this.enviarEmaiUseCaseImpl = enviarEmaiUseCaseImpl;
         this.gerarConteudoHtmlCredenciaisVoluntarioUseCase = gerarConteudoHtmlCredenciaisVoluntarioUseCase;
-        this.emailQueueProducer = emailQueueProducer;
+        this.emailQueueProducerImpl = emailQueueProducerImpl;
     }
 
     @Override
@@ -44,7 +43,7 @@ public class EnviarCredenciaisVoluntarioUseCaseImpl implements EnviarCredenciais
         String assunto = "credenciais voluntario"; 
         EmailDto emailDto = new EmailDto(email, dadosCredenciais, assunto, email, senha, idUsuario);
 
-        emailQueueProducer.enviarEmailParaFila(emailDto);
+        emailQueueProducerImpl.enviarEmailParaFila(emailDto);
 
         return "Credenciais enviadas para fila com sucesso.";
     }
