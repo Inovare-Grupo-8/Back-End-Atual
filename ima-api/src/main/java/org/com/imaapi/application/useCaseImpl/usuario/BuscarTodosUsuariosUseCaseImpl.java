@@ -41,10 +41,12 @@ public class BuscarTodosUsuariosUseCaseImpl implements BuscarTodosUsuariosUseCas
     private UsuarioListarOutput toOutput(Usuario usuario) {
         UsuarioListarOutput output = new UsuarioListarOutput();
         
+        // Mapear dados básicos do usuário
         output.setIdUsuario(usuario.getIdUsuario());
         output.setEmail(usuario.getEmail());
         output.setTipo(usuario.getTipo());
         
+        // Mapear nome da ficha se existir
         Ficha ficha = usuario.getFicha();
         if (ficha != null) {
             output.setNome(ficha.getNome());

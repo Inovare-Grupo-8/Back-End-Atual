@@ -14,6 +14,9 @@ import org.com.imaapi.domain.model.Voluntario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.com.imaapi.domain.repository.TelefoneRepository;
 import org.com.imaapi.domain.repository.VoluntarioRepository;
+import org.com.imaapi.domain.repository.EnderecoRepository;
+import org.com.imaapi.domain.repository.FichaRepository;
+import org.com.imaapi.application.useCaseImpl.endereco.EnderecoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,16 +34,25 @@ public class CadastrarVoluntarioSegundaFaseUseCaseImpl implements CadastrarVolun
     private final CriarOuAtualizarEnderecoUseCase criarOuAtualizarEnderecoUseCase;
     private final TelefoneRepository telefoneRepository;
     private final VoluntarioRepository voluntarioRepository;
+    private final org.com.imaapi.domain.repository.EnderecoRepository enderecoRepository;
+    private final org.com.imaapi.application.useCaseImpl.endereco.EnderecoUtil enderecoUtil;
+    private final org.com.imaapi.domain.repository.FichaRepository fichaRepository;
 
     public CadastrarVoluntarioSegundaFaseUseCaseImpl(
             UsuarioRepository usuarioRepository,
             CriarOuAtualizarEnderecoUseCase criarOuAtualizarEnderecoUseCase,
             TelefoneRepository telefoneRepository,
-            VoluntarioRepository voluntarioRepository) {
+            VoluntarioRepository voluntarioRepository,
+            EnderecoRepository enderecoRepository,
+            EnderecoUtil enderecoUtil,
+            FichaRepository fichaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.criarOuAtualizarEnderecoUseCase = criarOuAtualizarEnderecoUseCase;
         this.telefoneRepository = telefoneRepository;
         this.voluntarioRepository = voluntarioRepository;
+        this.enderecoRepository = enderecoRepository;
+        this.enderecoUtil = enderecoUtil;
+        this.fichaRepository = fichaRepository;
     }
 
     @Override
@@ -86,10 +98,19 @@ public class CadastrarVoluntarioSegundaFaseUseCaseImpl implements CadastrarVolun
         EnderecoOutput enderecoOutput = null;
         if (usuarioInputSegundaFase.getEndereco() != null) {
             enderecoOutput = criarOuAtualizarEnderecoUseCase.criarOuAtualizarEndereco(usuarioInputSegundaFase.getEndereco());
-            // Associar endereço à ficha se necessário
+            // Associar endereço à ficha se necessário (persistir fk_endereco)
             if (enderecoOutput != null && ficha.getEndereco() == null) {
-                // Aqui você pode implementar a lógica para associar o endereço à ficha
-                LOGGER.info("Endereço processado para voluntário ID: {}", idUsuario);
+                try {
+                    String cepFormatado = enderecoUtil.formatarCep(usuarioInputSegundaFase.getEndereco().getCep());
+                    String numero = usuarioInputSegundaFase.getEndereco().getNumero();
+                    enderecoRepository.findByCepAndNumero(cepFormatado, numero).ifPresent(enderecoEntity -> {
+                        ficha.setEndereco(enderecoEntity);
+                        fichaRepository.save(ficha);
+                        LOGGER.info("Endereço associado à ficha do voluntário idUsuario={}", idUsuario);
+                    });
+                } catch (Exception e) {
+                    LOGGER.warn("Não foi possível associar o endereço à ficha do voluntário id={}: {}", idUsuario, e.getMessage());
+                }
             }
         }
 
@@ -141,20 +162,23 @@ public class CadastrarVoluntarioSegundaFaseUseCaseImpl implements CadastrarVolun
 
     private Voluntario atualizarVoluntario(Usuario usuario, String funcao) {
         Voluntario voluntario = voluntarioRepository.findByUsuario_IdUsuario(usuario.getIdUsuario());
-        
+
         if (voluntario == null) {
-            LOGGER.warn("Voluntário não encontrado para usuário ID: {}", usuario.getIdUsuario());
-            return null;
+            // criar voluntário se não existir
+            voluntario = new Voluntario();
+            voluntario.setFkUsuario(usuario.getIdUsuario());
+            voluntario.setUsuario(usuario);
+            LOGGER.debug("Criando novo voluntário para usuario id={}", usuario.getIdUsuario());
         }
-        
+
         try {
             voluntario.setFuncao(org.com.imaapi.domain.model.enums.Funcao.valueOf(funcao));
             voluntario = voluntarioRepository.save(voluntario);
-            LOGGER.info("Função do voluntário atualizada para: {}", funcao);
+            LOGGER.info("Função do voluntário salva: {} para usuario id={}", funcao, usuario.getIdUsuario());
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Função inválida fornecida: {}", funcao);
         }
-        
+
         return voluntario;
     }
 

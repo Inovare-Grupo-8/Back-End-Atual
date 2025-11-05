@@ -7,7 +7,8 @@ import org.com.imaapi.application.useCase.email.EnviarEmailUseCase;
 import org.com.imaapi.application.useCase.email.GerarConteudoHtmlContinuarCadastroUseCase;
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
 import org.com.imaapi.application.dto.email.EmailDto;
-import org.com.imaapi.application.useCaseImpl.email.EmailQueueProducerImpl;
+import org.com.imaapi.application.service.email.EmailQueueProducer;
+import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
@@ -34,13 +35,16 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
     private EnviarEmailUseCase enviarEmailUseCase;
 
     @Autowired
-    private EmailQueueProducerImpl emailQueueProducerImpl;
+    private EmailQueueProducer emailQueueProducer;
 
     @Autowired
     private GerarConteudoHtmlContinuarCadastroUseCase gerarConteudoHtmlContinuarCadastroUseCase;
 
     @Autowired
     private EnviarCredenciaisVoluntarioUseCase enviarCredenciaisVoluntarioUseCase;
+
+    @Autowired
+    private PasswordEncoderGateway passwordEncoderGateway;
 
     @Override
     public UsuarioPrimeiraFaseOutput executar(UsuarioInputPrimeiraFase input) {
@@ -59,7 +63,7 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
 
         Usuario usuario = new Usuario();
         usuario.setEmail(input.getEmail());
-        usuario.setSenha(input.getSenha());
+        usuario.setSenha(passwordEncoderGateway.encode(input.getSenha()));
         usuario.setTipo(TipoUsuario.NAO_CLASSIFICADO);
         usuario.setFicha(ficha);
         usuarioRepository.save(usuario);
@@ -89,7 +93,7 @@ public class CadastrarUsuarioPrimeiraFaseUseCaseImpl implements CadastrarUsuario
                 
                 String dadosContinuarCadastro = nomeCompleto + "|" + usuario.getIdUsuario();
                 EmailDto emailContinuarCadastro = new EmailDto(usuario.getEmail(), dadosContinuarCadastro, "continuar cadastro", usuario.getEmail(), usuario.getSenha(), usuario.getIdUsuario());
-                emailQueueProducerImpl.enviarEmailParaFila(emailContinuarCadastro);
+                emailQueueProducer.enviarEmailParaFila(emailContinuarCadastro);
                 LOGGER.info("Email para continuar cadastro enviado para fila com sucesso");
             }
             
