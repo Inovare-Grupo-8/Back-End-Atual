@@ -10,6 +10,7 @@ import org.com.imaapi.domain.model.Voluntario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.com.imaapi.domain.repository.TelefoneRepository;
 import org.com.imaapi.domain.repository.VoluntarioRepository;
+import org.com.imaapi.domain.repository.VoluntarioEspecialidadeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class BuscarDadosPessoaisUseCaseImpl implements BuscarDadosPessoaisUseCas
     
     @Autowired
     private VoluntarioRepository voluntarioRepository;
+    
+    @Autowired
+    private VoluntarioEspecialidadeRepository voluntarioEspecialidadeRepository;
 
     @Override
     public UsuarioDadosPessoaisOutput buscarDadosPessoais(Integer usuarioId) {
@@ -92,6 +96,20 @@ public class BuscarDadosPessoaisUseCaseImpl implements BuscarDadosPessoaisUseCas
             dadosPessoais.setBio(voluntario.getBiografiaProfissional());
             if (voluntario.getFuncao() != null) {
                 dadosPessoais.setEspecialidade(voluntario.getFuncao().getValue());
+            }
+            // Buscar especialidade(s) associadas ao voluntário (especialidade principal)
+            try {
+                var especialidades = voluntarioEspecialidadeRepository.findByVoluntario(voluntario);
+                if (especialidades != null && !especialidades.isEmpty()) {
+                    var principal = especialidades.stream()
+                            .filter(e -> Boolean.TRUE.equals(e.getPrincipal()))
+                            .findFirst();
+                    if (principal.isPresent()) {
+                        dadosPessoais.setEspecialidade(principal.get().getEspecialidade().getNome());
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.debug("Erro ao carregar especialidades do voluntário: {}", e.getMessage());
             }
         }
 

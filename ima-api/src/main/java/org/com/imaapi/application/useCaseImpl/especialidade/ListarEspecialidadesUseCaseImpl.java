@@ -40,4 +40,26 @@ public class ListarEspecialidadesUseCaseImpl implements ListarEspecialidadesUseC
                 .map(especialidadeUtil::converterParaEspecialidadeOutput)
                 .collect(Collectors.toList());
     }
+    
+    @Override
+    public List<EspecialidadeOutput> listarEspecialidadesComOffset(int offset, int limit) {
+        LOGGER.info("Listando especialidades com offset: {} e limit: {}", offset, limit);
+        
+        // Buscar todas as especialidades
+        List<Especialidade> todasEspecialidades = especialidadeRepository.findAll();
+        
+        // Aplicar offset e limit manualmente
+        List<Especialidade> especialidadesPaginadas = todasEspecialidades.stream()
+                .skip(offset)
+                .limit(limit)
+                .collect(Collectors.toList());
+        
+        LOGGER.info("Retornando {} especialidades de um total de {}", 
+                   especialidadesPaginadas.size(), todasEspecialidades.size());
+        
+        // Converter para output e retornar
+        return especialidadesPaginadas.stream()
+                .map(especialidadeUtil::converterParaEspecialidadeOutput)
+                .collect(Collectors.toList());
+    }
 }

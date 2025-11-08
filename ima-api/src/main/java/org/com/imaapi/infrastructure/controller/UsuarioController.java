@@ -5,7 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -17,7 +21,7 @@ import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutput;
 import org.com.imaapi.application.useCase.usuario.*;
 import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioTokenOutput;
-import org.com.imaapi.application.dto.usuario.output.UsuarioClassificacaoOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioNaoClassificadoOutput;
 import org.com.imaapi.application.dto.usuario.output.VoluntarioListagemOutput;
 
 import java.util.List;
@@ -100,6 +104,29 @@ public class UsuarioController {
         return ResponseEntity.ok(lista);
     }
 
+    @GetMapping("/paginado")
+    public ResponseEntity<Page<UsuarioListarOutput>> listarTodosPaginado(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "idUsuario") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        
+        LOGGER.info("Listando usuários com paginação - página: {}, tamanho: {}, ordenação: {} {}", 
+                   page, size, sortBy, sortDir);
+        
+        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
+                   Sort.by(sortBy).descending() : 
+                   Sort.by(sortBy).ascending();
+        
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<UsuarioListarOutput> usuarios = buscarTodosUsuariosUseCase.executarComPaginacao(pageable);
+        
+        LOGGER.info("Total de usuários encontrados: {}, página atual: {}, total de páginas: {}", 
+                   usuarios.getTotalElements(), usuarios.getNumber(), usuarios.getTotalPages());
+        
+        return ResponseEntity.ok(usuarios);
+    }
+
     @GetMapping("/email/{email}")
     public ResponseEntity<UsuarioOutput> buscarPorEmail(@PathVariable String email) {
         LOGGER.info("Buscando usuário por email: {}", email);
@@ -129,9 +156,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/nao-classificados")
-    public ResponseEntity<List<UsuarioClassificacaoOutput>> listarNaoClassificados() {
+    public ResponseEntity<List<UsuarioNaoClassificadoOutput>> listarNaoClassificados() {
         LOGGER.info("Listando usuários não classificados");
-        java.util.List<UsuarioClassificacaoOutput> lista = buscarUsuariosNaoClassificadosUseCase.executar();
+        java.util.List<UsuarioNaoClassificadoOutput> lista = buscarUsuariosNaoClassificadosUseCase.executar();
         LOGGER.info("Total de usuários não classificados: {}", lista.size());
         return ResponseEntity.ok(lista);
     }
@@ -142,6 +169,29 @@ public class UsuarioController {
         java.util.List<VoluntarioListagemOutput> lista = listarVoluntariosUseCase.executar();
         LOGGER.info("Total de voluntários encontrados: {}", lista.size());
         return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/voluntarios/paginado")
+    public ResponseEntity<Slice<VoluntarioListagemOutput>> listarVoluntariosPaginado(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "idUsuario") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        
+        LOGGER.info("Listando voluntários com paginação - página: {}, tamanho: {}, ordenação: {} {}", 
+                   page, size, sortBy, sortDir);
+        
+        Sort sort = sortDir.equalsIgnoreCase("desc") ? 
+                   Sort.by(sortBy).descending() : 
+                   Sort.by(sortBy).ascending();
+        
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Slice<VoluntarioListagemOutput> voluntarios = listarVoluntariosUseCase.executarComPaginacao(pageable);
+        
+        LOGGER.info("Voluntários encontrados na página: {}, tem próxima página: {}", 
+                   voluntarios.getNumberOfElements(), voluntarios.hasNext());
+        
+        return ResponseEntity.ok(voluntarios);
     }
 
     @PutMapping("/{id}")
@@ -168,7 +218,7 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/autenticar")
+    @PostMapping("/login")
     public ResponseEntity<UsuarioTokenOutput> autenticar(@Valid @RequestBody UsuarioAutenticacaoInput input) {
         LOGGER.info("Autenticando usuário: {}", input.getEmail());
         UsuarioTokenOutput token = autenticarUsuarioUseCase.executar(input);
@@ -206,9 +256,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/voluntario/credenciais")
-    public ResponseEntity<String> enviarCredenciaisVoluntario(@RequestParam String email, @RequestParam String nome, @RequestParam String senha) {
+    public ResponseEntity<String> enviarCredenciaisVoluntario(@RequestParam String email, @RequestParam String nome, @RequestParam String senha, @RequestParam Integer idUsuario) {
         LOGGER.info("Enviando credenciais para voluntário: {} - {}", nome, email);
-        String resultado = enviarCredenciaisVoluntarioUseCase.executar(email, nome, senha);
+        String resultado = enviarCredenciaisVoluntarioUseCase.executar(email, nome, senha, idUsuario);
         LOGGER.info("Credenciais enviadas para voluntário: {} - {}", nome, email);
         return ResponseEntity.ok(resultado);
     }

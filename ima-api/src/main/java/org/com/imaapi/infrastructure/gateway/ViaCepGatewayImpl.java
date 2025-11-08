@@ -31,11 +31,23 @@ public class ViaCepGatewayImpl implements ViaCepGateway {
             String url = String.format(VIA_CEP_API, cep);
             EnderecoOutput resultado = restTemplate.getForObject(url, EnderecoOutput.class);
             
-            if (resultado != null && resultado.getCep() != null) {
-                LOGGER.info("CEP {} encontrado com sucesso", cep);
-                return resultado;
+            if (resultado != null) {
+                // Verifica se a API retornou um erro (CEP inexistente)
+                if (resultado.getErro() != null && resultado.getErro()) {
+                    LOGGER.warn("CEP {} não encontrado na API ViaCEP (erro=true)", cep);
+                    return null;
+                }
+                
+                // Verifica se o CEP foi encontrado com dados válidos
+                if (resultado.getCep() != null && !resultado.getCep().trim().isEmpty()) {
+                    LOGGER.info("CEP {} encontrado com sucesso", cep);
+                    return resultado;
+                } else {
+                    LOGGER.warn("CEP {} retornou dados vazios da API ViaCEP", cep);
+                    return null;
+                }
             } else {
-                LOGGER.warn("CEP {} não encontrado na API ViaCEP", cep);
+                LOGGER.warn("CEP {} não encontrado na API ViaCEP (resposta nula)", cep);
                 return null;
             }
             

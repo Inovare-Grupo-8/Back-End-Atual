@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ListarEspecialidadesUseCase {
     List<EspecialidadeOutput> listarEspecialidades();
+    List<EspecialidadeOutput> listarEspecialidadesComOffset(int offset, int limit);
 }

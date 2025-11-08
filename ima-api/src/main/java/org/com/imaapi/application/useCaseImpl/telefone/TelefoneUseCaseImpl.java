@@ -76,6 +76,29 @@ public class TelefoneUseCaseImpl implements TelefoneUseCase {
 
     @Override
     @Transactional
+    public Telefone atualizarPorFicha(Integer idFicha, TelefoneInput telefoneInput) {
+        LOGGER.info("Atualizando telefone para a ficha com ID: {}", idFicha);
+        
+        // Buscar telefones existentes para a ficha
+        List<Telefone> telefones = telefoneRepository.findByFichaIdFicha(idFicha);
+        
+        if (telefones.isEmpty()) {
+            LOGGER.error("Nenhum telefone encontrado para a ficha com ID: {}", idFicha);
+            return null;
+        }
+        
+        // Atualizar o primeiro telefone encontrado
+        Telefone telefone = telefones.get(0);
+        telefone.setDdd(telefoneInput.getDdd());
+        telefone.setPrefixo(telefoneInput.getPrefixo());
+        telefone.setSufixo(telefoneInput.getSufixo());
+        telefone.setWhatsapp(telefoneInput.getWhatsapp());
+        
+        return telefoneRepository.save(telefone);
+    }
+
+    @Override
+    @Transactional
     public boolean remover(Integer idTelefone) {
         LOGGER.info("Removendo telefone com ID: {}", idTelefone);
         

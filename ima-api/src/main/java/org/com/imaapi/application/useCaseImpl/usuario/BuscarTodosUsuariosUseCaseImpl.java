@@ -3,8 +3,10 @@ package org.com.imaapi.application.useCaseImpl.usuario;
 import org.com.imaapi.application.dto.usuario.output.UsuarioListarOutput;
 import org.com.imaapi.application.useCase.usuario.BuscarTodosUsuariosUseCase;
 import org.com.imaapi.domain.model.Usuario;
+import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.repository.UsuarioRepository;
-import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,14 +25,33 @@ public class BuscarTodosUsuariosUseCaseImpl implements BuscarTodosUsuariosUseCas
     @Override
     @Transactional(readOnly = true)
     public List<UsuarioListarOutput> executar() {
-        return usuarioRepository.findAll().stream()
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        return usuarios.stream()
                 .map(this::toOutput)
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UsuarioListarOutput> executarComPaginacao(Pageable pageable) {
+        Page<Usuario> usuarios = usuarioRepository.findAll(pageable);
+        return usuarios.map(this::toOutput);
+    }
+
     private UsuarioListarOutput toOutput(Usuario usuario) {
         UsuarioListarOutput output = new UsuarioListarOutput();
-        BeanUtils.copyProperties(usuario, output);
+        
+        // Mapear dados básicos do usuário
+        output.setIdUsuario(usuario.getIdUsuario());
+        output.setEmail(usuario.getEmail());
+        output.setTipo(usuario.getTipo());
+        
+        // Mapear nome da ficha se existir
+        Ficha ficha = usuario.getFicha();
+        if (ficha != null) {
+            output.setNome(ficha.getNome());
+        }
+        
         return output;
     }
 }
