@@ -1,7 +1,6 @@
 package org.com.imaapi.application.useCaseImpl.usuario;
 
 import org.com.imaapi.application.dto.usuario.output.UsuarioOutput;
-import org.com.imaapi.application.dto.usuario.output.EnderecoOutput;
 import org.com.imaapi.application.dto.usuario.output.TelefoneOutput;
 import org.com.imaapi.application.useCase.usuario.BuscarUsuarioPorIdUseCase;
 import org.com.imaapi.application.useCaseImpl.endereco.EnderecoUtil;
@@ -12,6 +11,7 @@ import org.com.imaapi.domain.model.Voluntario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.com.imaapi.domain.repository.TelefoneRepository;
 import org.com.imaapi.domain.repository.VoluntarioRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,10 +39,13 @@ public class BuscarUsuarioPorIdUseCaseImpl implements BuscarUsuarioPorIdUseCase 
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "usuarioPorId", key = "#id")
     public Optional<UsuarioOutput> executar(Integer id) {
         if (id == null) {
             return Optional.empty();
         }
+
+        System.out.println(">>> Buscando no banco (sem cache) <<<");
 
         return usuarioRepository.findById(id)
                 .map(this::toOutput);
@@ -59,54 +62,49 @@ public class BuscarUsuarioPorIdUseCaseImpl implements BuscarUsuarioPorIdUseCase 
         }
 
         UsuarioOutput output = new UsuarioOutput();
-        
-        // Dados básicos do usuário (primeira fase)
+
         output.setId(usuario.getIdUsuario());
         output.setNome(ficha.getNome());
         output.setSobrenome(ficha.getSobrenome());
         output.setCpf(ficha.getCpf());
         output.setEmail(usuario.getEmail());
         output.setDataCadastro(usuario.getCriadoEm());
-        
-        // Dados da segunda fase
+
         output.setDataNascimento(ficha.getDtNascim());
-        
+
         if (ficha.getRendaMinima() != null) {
             output.setRendaMinima(ficha.getRendaMinima().doubleValue());
         }
-        
+
         if (ficha.getRendaMaxima() != null) {
             output.setRendaMaxima(ficha.getRendaMaxima().doubleValue());
         }
-        
+
         if (ficha.getGenero() != null) {
             output.setGenero(ficha.getGenero().toString());
         }
-        
+
         output.setTipo(usuario.getTipo());
         output.setAreaOrientacao(ficha.getAreaOrientacao());
         output.setComoSoube(ficha.getComoSoube());
         output.setProfissao(ficha.getProfissao());
-        
-        // Buscar dados do voluntário se aplicável
+
         if (usuario.getTipo() != null && usuario.getTipo().toString().equals("VOLUNTARIO")) {
             Voluntario voluntario = voluntarioRepository.findByUsuario_IdUsuario(usuario.getIdUsuario());
             if (voluntario != null) {
                 output.setFuncao(voluntario.getFuncao());
             }
         }
-        
-        // Buscar telefone
+
         List<Telefone> telefones = telefoneRepository.findByFichaIdFicha(ficha.getIdFicha());
         if (!telefones.isEmpty()) {
             output.setTelefone(TelefoneOutput.fromEntity(telefones.get(0)));
         }
-        
-        // Buscar endereço
+
         if (ficha.getEndereco() != null) {
             output.setEndereco(enderecoUtil.converterParaEnderecoOutput(ficha.getEndereco()));
         }
-        
+
         return output;
     }
 }

@@ -58,12 +58,9 @@ public class CadastrarUsuarioSegundaFaseUseCaseImpl implements CadastrarUsuarioS
     @Override
     @Transactional
     public UsuarioOutput executar(Integer idUsuario, UsuarioInputSegundaFase usuarioInputSegundaFase) {
-<<<<<<< HEAD
 
-=======
         LOGGER.info("Iniciando cadastro da segunda fase para usuário ID: {}", idUsuario);
         
->>>>>>> 204f541f8e664dc779ac5756847b1c93f2b8a0d8
         if (idUsuario == null || usuarioInputSegundaFase == null) {
             LOGGER.error("Parâmetros inválidos: idUsuario={}, usuarioInputSegundaFase={}", idUsuario, usuarioInputSegundaFase);
             return null;
