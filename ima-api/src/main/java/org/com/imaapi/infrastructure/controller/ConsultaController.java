@@ -1,6 +1,6 @@
 package org.com.imaapi.infrastructure.controller;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import org.com.imaapi.application.dto.consulta.input.ConsultaInput;
 import org.com.imaapi.application.dto.consulta.input.ConsultaRemarcarInput;

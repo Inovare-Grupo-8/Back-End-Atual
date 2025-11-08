@@ -23,29 +23,29 @@ public class ConsultaInput {
     private String observacoes;
 
     @NotNull(message = "Especialidade é obrigatória")
-    private Integer idEspecialidade;
+    private Integer idEspecialidade; // corresponde a fk_especialidade
 
-    @NotNull(message = "Assistido é obrigatório")
-    private Integer idAssistido;
+    @NotNull(message = "Cliente é obrigatório")
+    private Integer idCliente; // corresponde a fk_cliente
 
-    @NotNull(message = "Voluntário é obrigatório")
-    private Integer idVoluntario;
-
+    @NotNull(message = "Especialista é obrigatório")
+    private Integer idEspecialista; // corresponde a fk_especialista
 
     public ConsultaInput() {}
 
     public ConsultaInput(LocalDateTime horario, StatusConsulta status, ModalidadeConsulta modalidade,
-                         String local, String observacoes, Integer idEspecialidade, Integer idAssistido, Integer idVoluntario) {
+                         String local, String observacoes, Integer idEspecialidade, Integer idCliente, Integer idEspecialista, Integer idVoluntario) {
         this.horario = horario;
         this.status = status;
         this.modalidade = modalidade;
         this.local = local;
         this.observacoes = observacoes;
         this.idEspecialidade = idEspecialidade;
-        this.idAssistido = idAssistido;
-        this.idVoluntario = idVoluntario;
+        this.idCliente = idCliente;
+        this.idEspecialista = idEspecialista;
     }
 
+    // ===== GETTERS E SETTERS =====
 
     public LocalDateTime getHorario() {
         return horario;
@@ -95,19 +95,23 @@ public class ConsultaInput {
         this.idEspecialidade = idEspecialidade;
     }
 
-    public Integer getIdAssistido() {
-        return idAssistido;
+    public Integer getIdCliente() {
+        return idCliente;
     }
 
-    public void setIdAssistido(Integer idAssistido) {
-        this.idAssistido = idAssistido;
+    public void setIdCliente(Integer idCliente) {
+        this.idCliente = idCliente;
+    }
+
+    public Integer getIdEspecialista() {
+        return idEspecialista;
+    }
+
+    public void setIdEspecialista(Integer idEspecialista) {
+        this.idEspecialista = idEspecialista;
     }
 
     public Integer getIdVoluntario() {
-        return idVoluntario;
-    }
-
-    public void setIdVoluntario(Integer idVoluntario) {
-        this.idVoluntario = idVoluntario;
+        this.IdVoluntario= idVoluntario;
     }
 }

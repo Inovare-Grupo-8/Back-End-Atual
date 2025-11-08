@@ -21,6 +21,7 @@ public class CadastrarUsuarioSegundaFaseUseCaseImpl implements CadastrarUsuarioS
     @Override
     @Transactional
     public UsuarioOutput executar(Integer idUsuario, UsuarioInputSegundaFase usuarioInputSegundaFase) {
+
         if (idUsuario == null || usuarioInputSegundaFase == null) {
             return null;
         }
@@ -41,4 +42,5 @@ public class CadastrarUsuarioSegundaFaseUseCaseImpl implements CadastrarUsuarioS
                 })
                 .orElse(null);
     }
+
 }

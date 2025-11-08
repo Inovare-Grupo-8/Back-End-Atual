@@ -1,8 +1,8 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
+import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.application.useCase.consulta.CriarConsultaUseCase;
 import org.com.imaapi.application.dto.consulta.input.ConsultaInput;
-import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.com.imaapi.domain.repository.UsuarioRepository;
