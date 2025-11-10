@@ -4,6 +4,7 @@ import org.com.imaapi.application.dto.usuario.input.UsuarioInputPrimeiraFase;
 import org.com.imaapi.application.dto.usuario.output.UsuarioPrimeiraFaseOutput;
 import org.com.imaapi.application.useCase.usuario.CadastrarVoluntarioPrimeiraFaseUseCase;
 import org.com.imaapi.application.useCase.usuario.EnviarCredenciaisVoluntarioUseCase;
+import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
 import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.repository.FichaRepository;
@@ -24,14 +25,17 @@ public class CadastrarVoluntarioPrimeiraFaseUseCaseImpl implements CadastrarVolu
     private final UsuarioRepository usuarioRepository;
     private final FichaRepository fichaRepository;
     private final EnviarCredenciaisVoluntarioUseCase enviarCredenciaisVoluntarioUseCase;
+    private final PasswordEncoderGateway passwordEncoderGateway;
 
     public CadastrarVoluntarioPrimeiraFaseUseCaseImpl(
             UsuarioRepository usuarioRepository,
             FichaRepository fichaRepository,
-            EnviarCredenciaisVoluntarioUseCase enviarCredenciaisVoluntarioUseCase) {
+            EnviarCredenciaisVoluntarioUseCase enviarCredenciaisVoluntarioUseCase,
+            PasswordEncoderGateway passwordEncoderGateway) {
         this.usuarioRepository = usuarioRepository;
         this.fichaRepository = fichaRepository;
         this.enviarCredenciaisVoluntarioUseCase = enviarCredenciaisVoluntarioUseCase;
+        this.passwordEncoderGateway = passwordEncoderGateway;
         logger.info("CadastrarVoluntarioPrimeiraFaseUseCaseImpl inicializado com sucesso");
     }
 
@@ -61,7 +65,7 @@ public class CadastrarVoluntarioPrimeiraFaseUseCaseImpl implements CadastrarVolu
             
             Usuario usuario = Usuario.criarVoluntario(
                 usuarioInputPrimeiraFase.getEmail(),
-                usuarioInputPrimeiraFase.getSenha(),
+                    passwordEncoderGateway.encode(usuarioInputPrimeiraFase.getSenha()),
                 ficha
             );
             usuario = usuarioRepository.save(usuario);
