@@ -17,7 +17,7 @@ public class FeedbackConsulta {
     @JoinColumn(name = "fk_consulta")
     private Consulta consulta;
     
-    @Column(name = "comentario")
+    @Column(name = "comentario", columnDefinition = "TEXT")
     private String comentario;
     
     @Column(name = "dt_feedback")

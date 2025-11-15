@@ -35,14 +35,14 @@ Como executar (Windows)
 - Executar: `mvnw.cmd spring-boot:run`
 - Alternativamente, executar o JAR gerado em `target/` com `java -jar target/<artifact>.jar`
 
-Variáveis de ambiente necessárias
+Variáveis de ambiente necessárias (não incluir valores aqui)
 - `EMAIL`
 - `FILA_GRATUIDADE`
-- `FILA_AGENDAMENTO_GRATUIDADE`
 - `MEU_BD` (URL JDBC do banco)
 - `PASS_BD`
 - `SENHA`
 - `USER_BD`
+- `FILA_AGENDAMENTO_GRATUIDADE`
 
 Observações sobre variáveis
 - Defina estas variáveis no ambiente do sistema ou em `src/main/resources/application.properties` sem inserir valores públicos no repositório.

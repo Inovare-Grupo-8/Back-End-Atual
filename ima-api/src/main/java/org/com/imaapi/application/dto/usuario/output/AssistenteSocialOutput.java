@@ -1,6 +1,7 @@
 package org.com.imaapi.application.dto.usuario.output;
 
 import lombok.Data;
+import org.com.imaapi.domain.model.Endereco;
 
 @Data
 public class AssistenteSocialOutput {
@@ -13,5 +14,5 @@ public class AssistenteSocialOutput {
     private String email;
     private String bio;
     private String fotoUrl;
-    private EnderecoOutput endereco;
+    private Endereco endereco;
 }

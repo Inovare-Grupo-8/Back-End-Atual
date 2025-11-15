@@ -96,28 +96,6 @@ public class TelefoneController {
         return ResponseEntity.status(HttpStatus.CREATED).body(output);
     }
     
-    @PutMapping("/ficha/{idFicha}")
-    @Operation(summary = "Atualizar telefone por ficha", description = "Atualiza o telefone associado a uma ficha")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Telefone atualizado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-        @ApiResponse(responseCode = "404", description = "Telefone não encontrado para a ficha")
-    })
-    public ResponseEntity<TelefoneOutput> atualizarPorFicha(
-            @PathVariable Integer idFicha,
-            @RequestBody @Valid TelefoneInput telefoneInput) {
-        LOGGER.info("Atualizando telefone para a ficha com ID: {}", idFicha);
-        
-        Telefone telefone = telefoneUseCase.atualizarPorFicha(idFicha, telefoneInput);
-        
-        if (telefone == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        TelefoneOutput output = TelefoneOutput.fromEntity(telefone);
-        return ResponseEntity.ok(output);
-    }
-    
     @PutMapping("/{idTelefone}")
     @Operation(summary = "Atualizar telefone", description = "Atualiza os dados de um telefone existente")
     @ApiResponses(value = {

@@ -55,34 +55,6 @@ public enum Funcao {
 
         String normalizedInput = normalizeValue(value);
 
-        switch (normalizedInput) {
-            case "advogado":
-            case "advogada":
-                return JURIDICA;
-            case "psicologo":
-            case "psicologa":
-                return PSICOLOGIA;
-            case "psicopedagogo":
-            case "psicopedagoga":
-                return PSICOPEDAGOGIA;
-            case "assistente_social":
-                return ASSISTENCIA_SOCIAL;
-            case "contador":
-            case "contadora":
-                return CONTABIL;
-            case "financeiro":
-            case "financeira":
-                return FINANCEIRA;
-            case "pediatra":
-                return PEDIATRIA;
-            case "fisioterapeuta":
-                return FISIOTERAPIA;
-            case "quiropraxista":
-                return QUIROPRAXIA;
-            case "nutricionista":
-                return NUTRICAO;
-        }
-
         for (Funcao funcao : Funcao.values()) {
             String normalizedEnum = normalizeValue(funcao.value);
             String normalizedName = normalizeValue(funcao.name());

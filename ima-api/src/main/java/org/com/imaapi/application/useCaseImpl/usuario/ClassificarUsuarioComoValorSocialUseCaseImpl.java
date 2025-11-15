@@ -34,15 +34,7 @@ public class ClassificarUsuarioComoValorSocialUseCaseImpl implements Classificar
                     Usuario salvo = usuarioRepository.save(usuario);
 
                     UsuarioListarOutput output = new UsuarioListarOutput();
-                    output.setIdUsuario(salvo.getIdUsuario());
-                    output.setEmail(salvo.getEmail());
-                    output.setTipo(salvo.getTipo());
-                    
-                    // Incluir o nome da ficha se existir
-                    if (salvo.getFicha() != null) {
-                        output.setNome(salvo.getFicha().getNome());
-                    }
-                    
+                    BeanUtils.copyProperties(salvo, output);
                     return output;
                 })
                 .orElse(null);

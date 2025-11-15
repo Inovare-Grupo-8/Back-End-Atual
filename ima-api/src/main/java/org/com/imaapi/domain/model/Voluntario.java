@@ -71,19 +71,9 @@ public class Voluntario {
 
     @PrePersist
     public void prePersist() {
-        if (this.dataCadastro == null) {
-            this.dataCadastro = LocalDate.now();
-        }
-        if (this.criadoEm == null) {
-            this.criadoEm = LocalDateTime.now();
-        }
-        if (this.atualizadoEm == null) {
-            this.atualizadoEm = LocalDateTime.now();
-        }
-        if (this.versao == null) {
-            this.versao = 0;
-        }
-        // garantir que o id do voluntário seja igual ao fk_usuario
+        this.criadoEm = LocalDateTime.now();
+        this.atualizadoEm = LocalDateTime.now();
+        this.versao = 0;
         this.idVoluntario = this.fkUsuario;
     }
 

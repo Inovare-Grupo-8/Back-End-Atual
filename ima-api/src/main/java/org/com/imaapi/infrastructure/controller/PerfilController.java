@@ -77,16 +77,16 @@ public class PerfilController {
     }
 
     @PutMapping("/{tipo}/endereco")
-    public ResponseEntity<EnderecoOutput> atualizarEndereco(
+    public ResponseEntity<Void> atualizarEndereco(
             @RequestParam Integer usuarioId,
             @PathVariable String tipo,
             @RequestBody @Valid EnderecoInput enderecoInput) {
-        EnderecoOutput enderecoAtualizado = atualizarEnderecoUseCase.atualizarEndereco(
+        boolean atualizado = atualizarEnderecoUseCase.atualizarEndereco(
                 usuarioId, enderecoInput.getCep(), enderecoInput.getNumero(), enderecoInput.getComplemento());
-        if (enderecoAtualizado == null) {
+        if (!atualizado) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(enderecoAtualizado);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{tipo}/foto")
@@ -197,19 +197,19 @@ public class PerfilController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/assistente-social")
-    public ResponseEntity<AssistenteSocialOutput> buscarPerfilAssistenteSocial(@RequestParam Integer usuarioId) {
-        try {
-            AssistenteSocialOutput perfil = buscarDadosPessoaisUseCase.buscarAssistenteSocial(usuarioId);
-            if (perfil == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(perfil);
-        } catch (Exception e) {
-            LOGGER.error("Erro ao buscar perfil do assistente social: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//    @GetMapping("/assistente-social")
+//    public ResponseEntity<AssistenteSocialOutput> buscarPerfilAssistenteSocial(@RequestParam Integer usuarioId) {
+//        try {
+//            AssistenteSocialOutput perfil = buscarDadosPessoaisUseCase.buscarAssistenteSocial(usuarioId);
+//            if (perfil == null) {
+//                return ResponseEntity.notFound().build();
+//            }
+//            return ResponseEntity.ok(perfil);
+//        } catch (Exception e) {
+//            LOGGER.error("Erro ao buscar perfil do assistente social: {}", e.getMessage(), e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 
     @PatchMapping("/assistente-social/dados-profissionais")
     @ResponseBody

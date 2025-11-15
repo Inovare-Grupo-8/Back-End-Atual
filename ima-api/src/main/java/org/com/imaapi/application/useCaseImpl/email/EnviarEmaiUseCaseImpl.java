@@ -77,7 +77,7 @@ public class EnviarEmaiUseCaseImpl implements EnviarEmailUseCase {
                         String nomeVoluntario = credenciais[0];
                         String emailVoluntario = credenciais[1];
                         String senhaVoluntario = credenciais[2];
-                        htmlContent = gerarCredenciaisVoluntario.gerar(nomeVoluntario, emailVoluntario, senhaVoluntario, dto.getIdUsuario());
+                        htmlContent = gerarCredenciaisVoluntario.gerar(nomeVoluntario, emailVoluntario, senhaVoluntario);
                         break;
                     case "agendamento realizado":
                         logger.info("Enviando email agendamento de voluntario");

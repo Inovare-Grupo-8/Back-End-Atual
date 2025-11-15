@@ -5,7 +5,6 @@ import org.com.imaapi.application.dto.usuario.input.AssistenteSocialInput;
 import org.com.imaapi.application.dto.usuario.output.AssistenteSocialOutput;
 import org.com.imaapi.application.useCase.usuario.AtualizarAssistenteSocialUseCase;
 import org.com.imaapi.application.useCase.usuario.BuscarAssistenteSocialUseCase;
-import org.com.imaapi.application.useCase.usuario.BuscarTodosAssistentesSociaisUseCase;
 import org.com.imaapi.application.useCase.usuario.CadastrarAssistenteSocialUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/assistentes-sociais")
 @RequiredArgsConstructor
@@ -25,7 +22,6 @@ public class AssistenteSocialController {
 
     private final CadastrarAssistenteSocialUseCase cadastrarAssistenteSocialUseCase;
     private final BuscarAssistenteSocialUseCase buscarAssistenteSocialUseCase;
-    private final BuscarTodosAssistentesSociaisUseCase buscarTodosAssistentesSociaisUseCase;
     private final AtualizarAssistenteSocialUseCase atualizarAssistenteSocialUseCase;
 
     @PostMapping
@@ -34,26 +30,6 @@ public class AssistenteSocialController {
         AssistenteSocialOutput output = cadastrarAssistenteSocialUseCase.executar(input);
         LOGGER.info("Assistente social cadastrado com sucesso para email: {}", input.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(output);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<AssistenteSocialOutput>> buscarTodos() {
-        LOGGER.info("Buscando todos os assistentes sociais");
-        List<AssistenteSocialOutput> assistentesSociais = buscarTodosAssistentesSociaisUseCase.executar();
-        LOGGER.info("Encontrados {} assistentes sociais", assistentesSociais.size());
-        return ResponseEntity.ok(assistentesSociais);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<AssistenteSocialOutput> buscarPorId(@PathVariable Integer id) {
-        LOGGER.info("Buscando assistente social por ID: {}", id);
-        AssistenteSocialOutput output = buscarAssistenteSocialUseCase.executar(id);
-        if (output == null) {
-            LOGGER.warn("Assistente social não encontrado para o ID: {}", id);
-            return ResponseEntity.notFound().build();
-        }
-        LOGGER.info("Assistente social encontrado com sucesso. ID: {}", id);
-        return ResponseEntity.ok(output);
     }
 
     @GetMapping("/perfil")

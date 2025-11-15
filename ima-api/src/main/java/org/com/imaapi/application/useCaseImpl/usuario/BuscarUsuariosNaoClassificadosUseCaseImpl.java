@@ -1,11 +1,10 @@
 package org.com.imaapi.application.useCaseImpl.usuario;
 
-import org.com.imaapi.application.dto.usuario.output.UsuarioNaoClassificadoOutput;
+import org.com.imaapi.application.dto.usuario.output.UsuarioClassificacaoOutput;
 import org.com.imaapi.application.useCase.usuario.BuscarUsuariosNaoClassificadosUseCase;
 import org.com.imaapi.domain.model.Usuario;
-import org.com.imaapi.domain.model.Ficha;
-import org.com.imaapi.domain.model.enums.TipoUsuario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,7 @@ public class BuscarUsuariosNaoClassificadosUseCaseImpl implements BuscarUsuarios
 
     @Override
     @Transactional(readOnly = true)
-    public List<UsuarioNaoClassificadoOutput> executar() {
+    public List<UsuarioClassificacaoOutput> executar() {
         return usuarioRepository.findAll().stream()
                 .filter(this::isNaoClassificado)
                 .map(this::toOutput)
@@ -31,26 +30,12 @@ public class BuscarUsuariosNaoClassificadosUseCaseImpl implements BuscarUsuarios
     }
 
     private boolean isNaoClassificado(Usuario usuario) {
-        return usuario.getTipo() == TipoUsuario.NAO_CLASSIFICADO;
+        return !usuario.getClassificacao();
     }
 
-    private UsuarioNaoClassificadoOutput toOutput(Usuario usuario) {
-        UsuarioNaoClassificadoOutput output = new UsuarioNaoClassificadoOutput();
-        
-        // Mapear apenas campos essenciais (não nulos para usuários não classificados)
-        output.setId(usuario.getIdUsuario());
-        output.setEmail(usuario.getEmail());
-        output.setTipo(usuario.getTipo());
-        output.setDataCadastro(usuario.getDataCadastro());
-        
-        // Mapear dados básicos da ficha se existir
-        Ficha ficha = usuario.getFicha();
-        if (ficha != null) {
-            output.setNome(ficha.getNome());
-            output.setSobrenome(ficha.getSobrenome());
-            output.setCpf(ficha.getCpf());
-        }
-        
+    private UsuarioClassificacaoOutput toOutput(Usuario usuario) {
+        UsuarioClassificacaoOutput output = new UsuarioClassificacaoOutput();
+        BeanUtils.copyProperties(usuario, output);
         return output;
     }
 }

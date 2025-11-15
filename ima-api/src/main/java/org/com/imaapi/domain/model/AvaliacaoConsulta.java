@@ -14,7 +14,7 @@ public class AvaliacaoConsulta {
     private Integer idAvaliacao;
     
     @ManyToOne
-    @JoinColumn(name = "fk_consulta")
+    @JoinColumn(name = "id_consulta")
     private Consulta consulta;
     
     @Column(name = "nota")

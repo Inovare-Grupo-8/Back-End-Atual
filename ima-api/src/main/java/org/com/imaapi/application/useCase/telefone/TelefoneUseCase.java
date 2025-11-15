@@ -11,6 +11,5 @@ public interface TelefoneUseCase {
     Optional<Telefone> buscarPorId(Integer idTelefone);
     Telefone salvar(Integer idFicha, TelefoneInput telefoneInput);
     Telefone atualizar(Integer idTelefone, TelefoneInput telefoneInput);
-    Telefone atualizarPorFicha(Integer idFicha, TelefoneInput telefoneInput);
     boolean remover(Integer idTelefone);
 }
