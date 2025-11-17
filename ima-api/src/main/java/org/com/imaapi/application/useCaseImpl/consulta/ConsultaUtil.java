@@ -43,9 +43,43 @@ public class ConsultaUtil {
             output.setModalidade(consulta.getModalidade().toString());
             output.setLocal(consulta.getLocal());
             output.setObservacoes(consulta.getObservacoes());
+            
+            // Campos de auditoria
+            output.setFeedbackStatus(consulta.getFeedbackStatus());
+            output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
+            output.setCriadoEm(consulta.getCriadoEm());
+            output.setAtualizadoEm(consulta.getAtualizadoEm());
+            
+            // Objetos completos
             output.setEspecialidade(consulta.getEspecialidade());
             output.setAssistido(consulta.getAssistido());
             output.setVoluntario(consulta.getVoluntario());
+            
+            // IDs e nomes individuais
+            if (consulta.getEspecialidade() != null) {
+                output.setIdEspecialidade(consulta.getEspecialidade().getIdEspecialidade());
+                output.setNomeEspecialidade(consulta.getEspecialidade().getNome());
+            }
+            
+            if (consulta.getAssistido() != null) {
+                output.setIdAssistido(consulta.getAssistido().getIdUsuario());
+                output.setIdCliente(consulta.getAssistido().getIdUsuario()); // Compatibilidade
+                if (consulta.getAssistido().getFicha() != null) {
+                    output.setNomeAssistido(consulta.getAssistido().getFicha().getNome() + " " + 
+                                          consulta.getAssistido().getFicha().getSobrenome());
+                    output.setNomeCliente(output.getNomeAssistido()); // Compatibilidade
+                }
+            }
+            
+            if (consulta.getVoluntario() != null) {
+                output.setIdVoluntario(consulta.getVoluntario().getIdUsuario());
+                output.setIdEspecialista(consulta.getVoluntario().getIdUsuario()); // Compatibilidade
+                if (consulta.getVoluntario().getFicha() != null) {
+                    output.setNomeVoluntario(consulta.getVoluntario().getFicha().getNome() + " " + 
+                                           consulta.getVoluntario().getFicha().getSobrenome());
+                    output.setNomeEspecialista(output.getNomeVoluntario()); // Compatibilidade
+                }
+            }
             
             logger.debug("Consulta ID {} convertida para output com sucesso", consulta.getIdConsulta());
             return output;
