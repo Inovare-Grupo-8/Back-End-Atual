@@ -93,9 +93,9 @@ public class ConsultaController {
     }
 
     @PostMapping("/cancelar/{id}")
-    public ResponseEntity<ConsultaOutput> cancelarConsulta(@PathVariable Integer id) {
+    public ResponseEntity<ConsultaSimpleOutput> cancelarConsulta(@PathVariable Integer id) {
         logger.info("Cancelando consulta id: {}", id);
-        ConsultaOutput consulta = cancelarConsultaUseCase.cancelarConsulta(id);
+        ConsultaSimpleOutput consulta = cancelarConsultaUseCase.cancelarConsulta(id);
         logger.info("Consulta cancelada id: {}", id);
         return ResponseEntity.ok(consulta);
     }
