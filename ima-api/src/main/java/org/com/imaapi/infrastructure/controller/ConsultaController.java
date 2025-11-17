@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.com.imaapi.application.dto.consulta.input.ConsultaInput;
 import org.com.imaapi.application.dto.consulta.input.ConsultaRemarcarInput;
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.application.useCase.consulta.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,9 +63,9 @@ public class ConsultaController {
     private AdicionarAvaliacaoConsultaUseCase adicionarAvaliacaoConsultaUseCase;
 
     @PostMapping
-    public ResponseEntity<ConsultaOutput> criarEvento(@RequestBody @Valid ConsultaInput consultaInput) {
+    public ResponseEntity<ConsultaSimpleOutput> criarEvento(@RequestBody @Valid ConsultaInput consultaInput) {
         logger.info("Criando nova consulta");
-        ConsultaOutput output = criarConsultaUseCase.criarConsulta(consultaInput);
+        ConsultaSimpleOutput output = criarConsultaUseCase.criarConsulta(consultaInput);
         logger.info("Consulta criada com sucesso");
         return ResponseEntity.ok(output);
     }
@@ -81,7 +82,7 @@ public class ConsultaController {
     }
 
     @GetMapping("/consultas/{id}")
-    public ResponseEntity<ConsultaOutput> getConsultaPorId(@PathVariable Integer id) {
+    public ResponseEntity<ConsultaSimpleOutput> getConsultaPorId(@PathVariable Integer id) {
         logger.info("Buscando consulta por id: {}", id);
         return Optional.ofNullable(buscarConsultaPorIdUseCase.buscarConsultaPorId(id))
                 .map(consulta -> {

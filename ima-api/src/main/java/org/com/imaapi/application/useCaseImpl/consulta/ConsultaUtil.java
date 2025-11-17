@@ -1,6 +1,7 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
 import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.model.Usuario;
@@ -50,43 +51,41 @@ public class ConsultaUtil {
             output.setCriadoEm(consulta.getCriadoEm());
             output.setAtualizadoEm(consulta.getAtualizadoEm());
             
-            // Objetos completos
-            output.setEspecialidade(consulta.getEspecialidade());
-            output.setAssistido(consulta.getAssistido());
-            output.setVoluntario(consulta.getVoluntario());
-            
-            // IDs e nomes individuais
-            if (consulta.getEspecialidade() != null) {
-                output.setIdEspecialidade(consulta.getEspecialidade().getIdEspecialidade());
-                output.setNomeEspecialidade(consulta.getEspecialidade().getNome());
-            }
-            
-            if (consulta.getAssistido() != null) {
-                output.setIdAssistido(consulta.getAssistido().getIdUsuario());
-                output.setIdCliente(consulta.getAssistido().getIdUsuario()); // Compatibilidade
-                if (consulta.getAssistido().getFicha() != null) {
-                    output.setNomeAssistido(consulta.getAssistido().getFicha().getNome() + " " + 
-                                          consulta.getAssistido().getFicha().getSobrenome());
-                    output.setNomeCliente(output.getNomeAssistido()); // Compatibilidade
-                }
-            }
-            
-            if (consulta.getVoluntario() != null) {
-                output.setIdVoluntario(consulta.getVoluntario().getIdUsuario());
-                output.setIdEspecialista(consulta.getVoluntario().getIdUsuario()); // Compatibilidade
-                if (consulta.getVoluntario().getFicha() != null) {
-                    output.setNomeVoluntario(consulta.getVoluntario().getFicha().getNome() + " " + 
-                                           consulta.getVoluntario().getFicha().getSobrenome());
-                    output.setNomeEspecialista(output.getNomeVoluntario()); // Compatibilidade
-                }
-            }
-            
-            logger.debug("Consulta ID {} convertida para output com sucesso", consulta.getIdConsulta());
+            logger.debug("Consulta convertida com sucesso - ID: {}", consulta.getIdConsulta());
             return output;
             
         } catch (Exception e) {
-            logger.error("Erro ao converter consulta para output: {}", e.getMessage());
-            throw new RuntimeException("Erro na conversão da consulta", e);
+            logger.error("Erro ao converter consulta: {}", e.getMessage());
+            throw new RuntimeException("Erro ao mapear consulta para output", e);
+        }
+    }
+
+    // Novo método para converter para DTO simples (sem campos null)
+    public ConsultaSimpleOutput mapConsultaToSimpleOutput(Consulta consulta) {
+        if (consulta == null) {
+            logger.debug("Consulta nula recebida para conversão simples");
+            return null;
+        }
+        
+        try {
+            ConsultaSimpleOutput output = new ConsultaSimpleOutput();
+            output.setIdConsulta(consulta.getIdConsulta());
+            output.setHorario(consulta.getHorario());
+            output.setStatus(consulta.getStatus() != null ? consulta.getStatus().toString() : "");
+            output.setModalidade(consulta.getModalidade() != null ? consulta.getModalidade().toString() : "");
+            output.setLocal(consulta.getLocal());
+            output.setObservacoes(consulta.getObservacoes());
+            output.setFeedbackStatus(consulta.getFeedbackStatus());
+            output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
+            output.setCriadoEm(consulta.getCriadoEm());
+            output.setAtualizadoEm(consulta.getAtualizadoEm());
+            
+            logger.debug("Consulta convertida para DTO simples com sucesso - ID: {}", consulta.getIdConsulta());
+            return output;
+            
+        } catch (Exception e) {
+            logger.error("Erro ao converter consulta para DTO simples: {}", e.getMessage());
+            throw new RuntimeException("Erro ao mapear consulta para output simples", e);
         }
     }
 
