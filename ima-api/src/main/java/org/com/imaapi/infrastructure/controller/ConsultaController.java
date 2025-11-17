@@ -101,11 +101,11 @@ public class ConsultaController {
     }
 
     @PatchMapping("/consultas/{id}/remarcar")
-    public ResponseEntity<Void> remarcarConsulta(@PathVariable Integer id, @RequestBody ConsultaRemarcarInput input) {
+    public ResponseEntity<ConsultaSimpleOutput> remarcarConsulta(@PathVariable Integer id, @RequestBody ConsultaRemarcarInput input) {
         logger.info("Remarcando consulta id: {}", id);
-        remarcarConsultaUseCase.remarcarConsulta(id, input);
+        ConsultaSimpleOutput consulta = remarcarConsultaUseCase.remarcarConsulta(id, input);
         logger.info("Consulta remarcada id: {}", id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(consulta);
     }
 
     @GetMapping("/consultas/historico")
