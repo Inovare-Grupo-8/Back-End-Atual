@@ -1,9 +1,9 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.useCase.consulta.BuscarConsultasUsuarioLogadoUseCase;
-import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.input.BuscarConsultasInput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.domain.model.Consulta;
-import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.Periodo;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.slf4j.Logger;
@@ -30,52 +30,102 @@ public class BuscarConsultasUsuarioLogadoUseCaseImpl implements BuscarConsultasU
     private ConsultaUtil consultaUtil;
 
     @Override
-    public List<ConsultaOutput> buscarConsultasDoUsuarioLogado(Periodo periodo, LocalDate referencia) {
-        logger.info("Buscando consultas do usuário logado para período: {} com referência: {}", periodo, referencia);
+    public List<ConsultaSimpleOutput> buscarConsultasDoUsuario(BuscarConsultasInput input) {
+        logger.info("Executando busca de consultas para usuário ID: {}", input.getUserId());
 
+        // Validações de negócio
+        validarInput(input);
+
+        // Aplicar regras de negócio
+        Integer userId = obterUserIdValido(input.getUserId());
+        Periodo periodo = converterPeriodo(input.getPeriodo());
+        LocalDate dataReferencia = obterDataReferencia(input.getDataReferencia());
+
+        // Calcular intervalo de tempo
+        IntervaloTempo intervalo = calcularIntervalo(periodo, dataReferencia);
+        
+        logger.debug("Buscando consultas para usuário ID: {} no período de {} até {}", 
+                    userId, intervalo.inicio, intervalo.fim);
+
+        // Buscar consultas no repositório
+        List<Consulta> consultas = consultaRepository
+                .findByAssistido_IdUsuarioOrVoluntario_IdUsuarioAndHorarioBetween(
+                    userId, userId, intervalo.inicio, intervalo.fim);
+
+        logger.info("Encontradas {} consultas para o usuário ID: {}", consultas.size(), userId);
+
+        // Ordenar consultas
+        List<Consulta> consultasOrdenadas = consultas.stream()
+                .sorted(Comparator.comparing(Consulta::getHorario).reversed())
+                .collect(Collectors.toList());
+
+        // Mapear para DTO de output
+        return consultaUtil.mapConsultasToSimpleOutput(consultasOrdenadas);
+    }
+
+    private void validarInput(BuscarConsultasInput input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Input não pode ser nulo");
+        }
+        if (input.getPeriodo() == null || input.getPeriodo().trim().isEmpty()) {
+            throw new IllegalArgumentException("Período é obrigatório");
+        }
+    }
+
+    private Integer obterUserIdValido(Integer userId) {
+        return (userId != null && userId > 0) ? userId : 1;
+    }
+
+    private Periodo converterPeriodo(String periodoStr) {
         try {
-            Usuario usuarioLogado = consultaUtil.getUsuarioLogado();
-            Integer userId = usuarioLogado.getIdUsuario();
+            return Periodo.valueOf(periodoStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            logger.warn("Período inválido fornecido: {}. Usando ATUAL como padrão", periodoStr);
+            return Periodo.ATUAL;
+        }
+    }
 
-            LocalDateTime inicio;
-            LocalDateTime fim;
+    private LocalDate obterDataReferencia(LocalDate dataReferencia) {
+        return (dataReferencia != null) ? dataReferencia : LocalDate.now();
+    }
 
-            switch (periodo) {
-                case DIA:
-                    inicio = referencia.atStartOfDay();
-                    fim = referencia.atTime(23, 59, 59);
-                    break;
-                case SEMANA:
-                    DayOfWeek diaSemana = referencia.getDayOfWeek();
-                    int diasParaSegunda = diaSemana.getValue() - DayOfWeek.MONDAY.getValue();
-                    LocalDate segundaFeira = referencia.minusDays(diasParaSegunda);
-                    inicio = segundaFeira.atStartOfDay();
-                    fim = segundaFeira.plusDays(6).atTime(23, 59, 59);
-                    break;
-                case MES:
-                    inicio = referencia.withDayOfMonth(1).atStartOfDay();
-                    fim = referencia.withDayOfMonth(referencia.lengthOfMonth()).atTime(23, 59, 59);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Período não suportado: " + periodo);
-            }
+    private IntervaloTempo calcularIntervalo(Periodo periodo, LocalDate referencia) {
+        LocalDateTime inicio;
+        LocalDateTime fim;
 
-            logger.debug("Buscando consultas para usuário ID: {} no período de {} até {}", userId, inicio, fim);
+        switch (periodo) {
+            case DIA:
+                inicio = referencia.atStartOfDay();
+                fim = referencia.atTime(23, 59, 59);
+                break;
+            case SEMANA:
+                DayOfWeek diaSemana = referencia.getDayOfWeek();
+                int diasParaSegunda = diaSemana.getValue() - DayOfWeek.MONDAY.getValue();
+                LocalDate segundaFeira = referencia.minusDays(diasParaSegunda);
+                inicio = segundaFeira.atStartOfDay();
+                fim = segundaFeira.plusDays(6).atTime(23, 59, 59);
+                break;
+            case MES:
+                inicio = referencia.withDayOfMonth(1).atStartOfDay();
+                fim = referencia.withDayOfMonth(referencia.lengthOfMonth()).atTime(23, 59, 59);
+                break;
+            case ATUAL:
+            default:
+                inicio = LocalDateTime.now();
+                fim = referencia.plusMonths(6).atTime(23, 59, 59);
+                break;
+        }
 
-            List<Consulta> consultas = consultaRepository
-                    .findByAssistido_IdUsuarioOrVoluntario_IdUsuarioAndHorarioBetween(userId, userId, inicio, fim);
+        return new IntervaloTempo(inicio, fim);
+    }
 
-            logger.debug("Encontradas {} consultas para o usuário no período", consultas.size());
+    private static class IntervaloTempo {
+        final LocalDateTime inicio;
+        final LocalDateTime fim;
 
-            List<Consulta> consultasOrdenadas = consultas.stream()
-                    .sorted(Comparator.comparing(Consulta::getHorario).reversed())
-                    .collect(Collectors.toList());
-
-            return consultaUtil.mapConsultasToOutput(consultasOrdenadas);
-
-        } catch (Exception e) {
-            logger.error("Erro ao buscar consultas do usuário logado para período {}: {}", periodo, e.getMessage());
-            throw new RuntimeException("Erro ao buscar consultas do usuário logado", e);
+        IntervaloTempo(LocalDateTime inicio, LocalDateTime fim) {
+            this.inicio = inicio;
+            this.fim = fim;
         }
     }
 }

@@ -117,6 +117,12 @@ public class ConsultaUtil {
         }
     }
 
+    public List<ConsultaSimpleOutput> mapConsultasToSimpleOutput(List<Consulta> consultas) {
+        return consultas.stream()
+                .map(this::mapConsultaToSimpleOutput)
+                .collect(Collectors.toList());
+    }
+
     // Valida se o tipo de usuário é válido
     public void validarTipoUsuario(String user) {
         if (user == null || user.trim().isEmpty()) {

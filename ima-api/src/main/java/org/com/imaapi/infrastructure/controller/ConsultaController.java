@@ -1,6 +1,7 @@
 package org.com.imaapi.infrastructure.controller;
 
 import jakarta.validation.Valid;
+import org.com.imaapi.application.dto.consulta.input.BuscarConsultasInput;
 import org.com.imaapi.application.dto.consulta.input.ConsultaInput;
 import org.com.imaapi.application.dto.consulta.input.ConsultaRemarcarInput;
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
@@ -71,12 +72,21 @@ public class ConsultaController {
     }
 
     @GetMapping("/consultas/minhas")
-    public ResponseEntity<List<ConsultaOutput>> getMinhasConsultas() {
-        logger.info("Buscando consultas do usuário logado");
-        List<ConsultaOutput> consultas = buscarConsultasUsuarioLogadoUseCase.buscarConsultasDoUsuarioLogado(
-            org.com.imaapi.domain.model.enums.Periodo.ATUAL, 
-            java.time.LocalDate.now()
+    public ResponseEntity<List<ConsultaSimpleOutput>> getMinhasConsultas(
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(defaultValue = "ATUAL") String periodo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataReferencia) {
+        
+        logger.info("Buscando consultas do usuário - userId: {}, periodo: {}", userId, periodo);
+        
+        BuscarConsultasInput input = new BuscarConsultasInput(
+            userId,
+            periodo,
+            dataReferencia != null ? dataReferencia : LocalDate.now()
         );
+        
+        List<ConsultaSimpleOutput> consultas = buscarConsultasUsuarioLogadoUseCase.buscarConsultasDoUsuario(input);
+        
         logger.info("Total de consultas encontradas: {}", consultas.size());
         return ResponseEntity.ok(consultas);
     }
