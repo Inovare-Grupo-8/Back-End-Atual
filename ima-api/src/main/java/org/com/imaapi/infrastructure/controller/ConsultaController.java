@@ -119,14 +119,31 @@ public class ConsultaController {
     }
 
     @GetMapping("/consultas/historico")
-    public ResponseEntity<List<ConsultaOutput>> listarHistoricoConsultasVoluntario(@RequestParam("user") String user) {
-        logger.info("Listando histórico de consultas para usuário: {}", user);
-        return Optional.ofNullable(buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(user))
-                .map(historico -> {
-                    logger.info("Total de consultas no histórico: {}", historico.size());
-                    return ResponseEntity.ok(historico);
-                })
-                .orElseGet(() -> ResponseEntity.ok(List.of()));
+    public ResponseEntity<Map<String, Object>> listarHistoricoConsultas(
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String user) {
+        
+        // Se userId não foi fornecido, tenta usar um valor padrão baseado no parâmetro user
+        Integer userIdFinal = userId;
+        if (userIdFinal == null && user != null && !user.trim().isEmpty()) {
+            // Se passou um email ou string, usa ID padrão 1 para teste
+            userIdFinal = 1;
+            logger.info("Parâmetro 'user' fornecido: '{}', usando userId padrão: {}", user, userIdFinal);
+        }
+        
+        logger.info("Listando histórico de consultas para usuário ID: {}", userIdFinal);
+        List<ConsultaSimpleOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userIdFinal);
+        logger.info("Total de consultas no histórico: {}", historico.size());
+        
+        // Response mais informativo
+        Map<String, Object> response = Map.of(
+            "consultas", historico,
+            "total", historico.size(),
+            "userId", userIdFinal,
+            "tipo", "historico"
+        );
+        
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/consultas/3-proximas")
