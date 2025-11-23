@@ -1,7 +1,7 @@
 package org.com.imaapi.application.useCase.consulta;
 
-import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 
 public interface BuscarConsultaPorIdUseCase {
-    ConsultaOutput buscarConsultaPorId(Integer id);
+    ConsultaSimpleOutput buscarConsultaPorId(Integer id);
 }

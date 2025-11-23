@@ -1,9 +1,8 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.useCase.consulta.BuscarHistoricoConsultasUseCase;
-import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.domain.model.Consulta;
-import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.slf4j.Logger;
@@ -11,8 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsultasUseCase {
@@ -22,45 +23,59 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
     @Autowired
     private ConsultaRepository consultaRepository;
 
-    @Autowired
-    private ConsultaUtil consultaUtil;
-
     @Override
-    public List<ConsultaOutput> buscarHistoricoConsultas(String user) {
-        logger.info("Buscando histórico de consultas para o usuário tipo: {}", user);
+    public List<ConsultaSimpleOutput> buscarHistoricoConsultas(Integer userId) {
+        logger.info("Buscando histórico de consultas para o usuário ID: {}", userId);
 
-        try {
-            consultaUtil.validarTipoUsuario(user);
+        // Se userId não for fornecido, usa ID padrão 1 para teste
+        Integer userIdFinal = (userId != null && userId > 0) ? userId : 1;
 
-            // Obter o usuário logado
-            Usuario usuarioLogado = consultaUtil.getUsuarioLogado();
-            if (usuarioLogado == null) {
-                logger.error("Usuário não encontrado: {}", user);
-                return Collections.emptyList();
-            }
+        // Status que representam consultas concluídas/históricas
+        List<StatusConsulta> statusFinalizados = Arrays.asList(
+                StatusConsulta.REALIZADA,
+                StatusConsulta.CANCELADA
+        );
 
-            // Status que representam consultas concluídas/históricas
-            List<StatusConsulta> statusConcluidos = consultaUtil.getStatusFinalizados();
+        logger.debug("Buscando consultas finalizadas para usuário ID: {} com status: {}", userIdFinal, statusFinalizados);
 
-            List<Consulta> consultas;
-            if (user.equalsIgnoreCase("voluntario")) {
-                consultas = consultaRepository.findByVoluntario_IdUsuarioAndStatusIn(
-                        usuarioLogado.getIdUsuario(), statusConcluidos);
-            } else if (user.equalsIgnoreCase("assistido")) {
-                consultas = consultaRepository.findByAssistido_IdUsuarioAndStatusIn(
-                        usuarioLogado.getIdUsuario(), statusConcluidos);
-            } else {
-                logger.error("Tipo de usuário não suportado: {}", user);
-                return Collections.emptyList();
-            }
+        // Buscar consultas do usuário como assistido
+        List<Consulta> consultasAssistido = consultaRepository.findByAssistido_IdUsuarioAndStatusIn(userIdFinal, statusFinalizados);
+        
+        // Buscar consultas do usuário como voluntário
+        List<Consulta> consultasVoluntario = consultaRepository.findByVoluntario_IdUsuarioAndStatusIn(userIdFinal, statusFinalizados);
+        
+        // Combinar as duas listas
+        List<Consulta> consultas = new java.util.ArrayList<>();
+        consultas.addAll(consultasAssistido);
+        consultas.addAll(consultasVoluntario);
+        
+        // Remover duplicatas e ordenar por data (mais recentes primeiro)
+        consultas = consultas.stream()
+                .distinct()
+                .sorted((c1, c2) -> c2.getHorario().compareTo(c1.getHorario())) // Ordem decrescente
+                .collect(Collectors.toList());
 
-            logger.info("Encontradas {} consultas no histórico para usuário tipo: {}", consultas.size(), user);
+        logger.info("Encontradas {} consultas no histórico para usuário ID: {} ({}   como assistido, {} como voluntário)", 
+                   consultas.size(), userIdFinal, consultasAssistido.size(), consultasVoluntario.size());
 
-            return consultaUtil.mapConsultasToOutput(consultas);
-
-        } catch (Exception e) {
-            logger.error("Erro ao buscar histórico de consultas para usuário {}: {}", user, e.getMessage());
-            throw new RuntimeException("Erro ao buscar histórico de consultas", e);
+        if (consultas.isEmpty()) {
+            return Collections.emptyList();
         }
+
+        // Mapear para DTO simples
+        return consultas.stream().map(consulta -> {
+            ConsultaSimpleOutput output = new ConsultaSimpleOutput();
+            output.setIdConsulta(consulta.getIdConsulta());
+            output.setHorario(consulta.getHorario());
+            output.setStatus(consulta.getStatus().name());
+            output.setModalidade(consulta.getModalidade().name());
+            output.setLocal(consulta.getLocal());
+            output.setObservacoes(consulta.getObservacoes());
+            output.setFeedbackStatus(consulta.getFeedbackStatus());
+            output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
+            output.setCriadoEm(consulta.getCriadoEm());
+            output.setAtualizadoEm(consulta.getAtualizadoEm());
+            return output;
+        }).collect(Collectors.toList());
     }
 }

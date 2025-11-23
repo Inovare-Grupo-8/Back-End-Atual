@@ -1,10 +1,11 @@
 package org.com.imaapi.infrastructure.controller;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
+import org.com.imaapi.application.dto.consulta.input.BuscarConsultasInput;
 import org.com.imaapi.application.dto.consulta.input.ConsultaInput;
 import org.com.imaapi.application.dto.consulta.input.ConsultaRemarcarInput;
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.application.useCase.consulta.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,26 +64,35 @@ public class ConsultaController {
     private AdicionarAvaliacaoConsultaUseCase adicionarAvaliacaoConsultaUseCase;
 
     @PostMapping
-    public ResponseEntity<ConsultaOutput> criarEvento(@RequestBody @Valid ConsultaInput consultaInput) {
+    public ResponseEntity<ConsultaSimpleOutput> criarEvento(@RequestBody @Valid ConsultaInput consultaInput) {
         logger.info("Criando nova consulta");
-        ConsultaOutput output = criarConsultaUseCase.criarConsulta(consultaInput);
+        ConsultaSimpleOutput output = criarConsultaUseCase.criarConsulta(consultaInput);
         logger.info("Consulta criada com sucesso");
         return ResponseEntity.ok(output);
     }
 
     @GetMapping("/consultas/minhas")
-    public ResponseEntity<List<ConsultaOutput>> getMinhasConsultas() {
-        logger.info("Buscando consultas do usuário logado");
-        List<ConsultaOutput> consultas = buscarConsultasUsuarioLogadoUseCase.buscarConsultasDoUsuarioLogado(
-            org.com.imaapi.domain.model.enums.Periodo.ATUAL, 
-            java.time.LocalDate.now()
+    public ResponseEntity<List<ConsultaSimpleOutput>> getMinhasConsultas(
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(defaultValue = "ATUAL") String periodo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataReferencia) {
+        
+        logger.info("Buscando consultas do usuário - userId: {}, periodo: {}", userId, periodo);
+        
+        BuscarConsultasInput input = new BuscarConsultasInput(
+            userId,
+            periodo,
+            dataReferencia != null ? dataReferencia : LocalDate.now()
         );
+        
+        List<ConsultaSimpleOutput> consultas = buscarConsultasUsuarioLogadoUseCase.buscarConsultasDoUsuario(input);
+        
         logger.info("Total de consultas encontradas: {}", consultas.size());
         return ResponseEntity.ok(consultas);
     }
 
     @GetMapping("/consultas/{id}")
-    public ResponseEntity<ConsultaOutput> getConsultaPorId(@PathVariable Integer id) {
+    public ResponseEntity<ConsultaSimpleOutput> getConsultaPorId(@PathVariable Integer id) {
         logger.info("Buscando consulta por id: {}", id);
         return Optional.ofNullable(buscarConsultaPorIdUseCase.buscarConsultaPorId(id))
                 .map(consulta -> {
@@ -93,30 +103,47 @@ public class ConsultaController {
     }
 
     @PostMapping("/cancelar/{id}")
-    public ResponseEntity<ConsultaOutput> cancelarConsulta(@PathVariable Integer id) {
+    public ResponseEntity<ConsultaSimpleOutput> cancelarConsulta(@PathVariable Integer id) {
         logger.info("Cancelando consulta id: {}", id);
-        ConsultaOutput consulta = cancelarConsultaUseCase.cancelarConsulta(id);
+        ConsultaSimpleOutput consulta = cancelarConsultaUseCase.cancelarConsulta(id);
         logger.info("Consulta cancelada id: {}", id);
         return ResponseEntity.ok(consulta);
     }
 
     @PatchMapping("/consultas/{id}/remarcar")
-    public ResponseEntity<Void> remarcarConsulta(@PathVariable Integer id, @RequestBody ConsultaRemarcarInput input) {
+    public ResponseEntity<ConsultaSimpleOutput> remarcarConsulta(@PathVariable Integer id, @RequestBody ConsultaRemarcarInput input) {
         logger.info("Remarcando consulta id: {}", id);
-        remarcarConsultaUseCase.remarcarConsulta(id, input);
+        ConsultaSimpleOutput consulta = remarcarConsultaUseCase.remarcarConsulta(id, input);
         logger.info("Consulta remarcada id: {}", id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(consulta);
     }
 
     @GetMapping("/consultas/historico")
-    public ResponseEntity<List<ConsultaOutput>> listarHistoricoConsultasVoluntario(@RequestParam("user") String user) {
-        logger.info("Listando histórico de consultas para usuário: {}", user);
-        return Optional.ofNullable(buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(user))
-                .map(historico -> {
-                    logger.info("Total de consultas no histórico: {}", historico.size());
-                    return ResponseEntity.ok(historico);
-                })
-                .orElseGet(() -> ResponseEntity.ok(List.of()));
+    public ResponseEntity<Map<String, Object>> listarHistoricoConsultas(
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(required = false) String user) {
+        
+        // Se userId não foi fornecido, tenta usar um valor padrão baseado no parâmetro user
+        Integer userIdFinal = userId;
+        if (userIdFinal == null && user != null && !user.trim().isEmpty()) {
+            // Se passou um email ou string, usa ID padrão 1 para teste
+            userIdFinal = 1;
+            logger.info("Parâmetro 'user' fornecido: '{}', usando userId padrão: {}", user, userIdFinal);
+        }
+        
+        logger.info("Listando histórico de consultas para usuário ID: {}", userIdFinal);
+        List<ConsultaSimpleOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userIdFinal);
+        logger.info("Total de consultas no histórico: {}", historico.size());
+        
+        // Response mais informativo
+        Map<String, Object> response = Map.of(
+            "consultas", historico,
+            "total", historico.size(),
+            "userId", userIdFinal,
+            "tipo", "historico"
+        );
+        
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/consultas/3-proximas")

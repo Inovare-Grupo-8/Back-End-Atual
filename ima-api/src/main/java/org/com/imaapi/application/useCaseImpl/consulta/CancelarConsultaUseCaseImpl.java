@@ -1,7 +1,7 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.useCase.consulta.CancelarConsultaUseCase;
-import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
@@ -22,7 +22,7 @@ public class CancelarConsultaUseCaseImpl implements CancelarConsultaUseCase {
     private ConsultaUtil consultaUtil;
 
     @Override
-    public ConsultaOutput cancelarConsulta(Integer consultaId) {
+    public ConsultaSimpleOutput cancelarConsulta(Integer consultaId) {
         logger.info("Cancelando consulta com ID {}", consultaId);
 
         try {
@@ -49,37 +49,16 @@ public class CancelarConsultaUseCaseImpl implements CancelarConsultaUseCase {
                 throw new IllegalStateException("Não é possível cancelar consulta já realizada");
             }
 
-            // Verificar se o usuário logado tem permissão para cancelar esta consulta
-            Usuario usuarioLogado = consultaUtil.getUsuarioLogado();
-            if (usuarioLogado == null) {
-                logger.error("Usuário não autenticado");
-                throw new RuntimeException("Usuário não autenticado");
-            }
-
-            boolean podeCancel = false;
-            if (consulta.getAssistido() != null && 
-                usuarioLogado.getIdUsuario().equals(consulta.getAssistido().getIdUsuario())) {
-                podeCancel = true;
-            } else if (consulta.getVoluntario() != null && 
-                       usuarioLogado.getIdUsuario().equals(consulta.getVoluntario().getIdUsuario())) {
-                podeCancel = true;
-            }
-
-            if (!podeCancel) {
-                logger.error("Usuário {} não tem permissão para cancelar a consulta {}", 
-                           usuarioLogado.getIdUsuario(), consultaId);
-                throw new RuntimeException("Usuário não tem permissão para cancelar esta consulta");
-            }
-
             // Atualizar o status da consulta para CANCELADA
+            logger.info("Cancelando consulta ID: {}", consultaId);
             consulta.setStatus(StatusConsulta.CANCELADA);
 
             // Salvar a consulta atualizada
             Consulta consultaCancelada = consultaRepository.save(consulta);
             logger.info("Consulta cancelada com sucesso. ID: {}", consultaId);
 
-            // Retornar o output
-            return consultaUtil.mapConsultaToOutput(consultaCancelada);
+            // Retornar o output simples
+            return consultaUtil.mapConsultaToSimpleOutput(consultaCancelada);
 
         } catch (Exception e) {
             logger.error("Erro ao cancelar consulta com ID {}: {}", consultaId, e.getMessage());

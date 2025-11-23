@@ -1,8 +1,8 @@
 package org.com.imaapi.application.useCase.consulta;
 
 import org.com.imaapi.application.dto.consulta.input.ConsultaRemarcarInput;
-import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 
 public interface RemarcarConsultaUseCase {
-    ConsultaOutput remarcarConsulta(Integer id, ConsultaRemarcarInput input);
+    ConsultaSimpleOutput remarcarConsulta(Integer id, ConsultaRemarcarInput input);
 }

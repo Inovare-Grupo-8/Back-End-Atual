@@ -5,6 +5,8 @@ import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.model.Especialidade;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -13,33 +15,55 @@ import java.time.LocalDateTime;
 public class Consulta implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_consulta")
     private Integer idConsulta;
 
+    @Column(name = "horario", nullable = false)
     private LocalDateTime horario;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
     private StatusConsulta status;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "modalidade", nullable = false, length = 15)
     private ModalidadeConsulta modalidade;
 
+    @Column(name = "local", length = 45)
     private String local;
+    
+    @Column(name = "observacoes", length = 255)
     private String observacoes;
 
-    @ManyToOne
-    @JoinColumn(name = "especialidade_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_especialidade", nullable = false)
     private Especialidade especialidade;
 
-    @ManyToOne
-    @JoinColumn(name = "assistido_id")
+    @ManyToOne(fetch = FetchType.LAZY) 
+    @JoinColumn(name = "fk_cliente", nullable = false)
     private Usuario assistido;
 
-    @ManyToOne
-    @JoinColumn(name = "voluntario_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_especialista", nullable = false) 
     private Usuario voluntario;
 
+    @Column(name = "feedback_status", length = 20)
     private String feedbackStatus = "PENDENTE";
+    
+    @Column(name = "avaliacao_status", length = 20)
     private String avaliacaoStatus = "PENDENTE";
+
+    @CreationTimestamp
+    @Column(name = "criado_em", updatable = false)
+    private LocalDateTime criadoEm;
+
+    @UpdateTimestamp
+    @Column(name = "atualizado_em")
+    private LocalDateTime atualizadoEm;
+
+    @Column(name = "versao")
+    @Version
+    private Integer versao = 0;
 
     public Consulta() {}
 
@@ -145,5 +169,29 @@ public class Consulta implements Serializable {
 
     public void setAvaliacaoStatus(String avaliacaoStatus) {
         this.avaliacaoStatus = avaliacaoStatus;
+    }
+
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
+    }
+
+    public void setCriadoEm(LocalDateTime criadoEm) {
+        this.criadoEm = criadoEm;
+    }
+
+    public LocalDateTime getAtualizadoEm() {
+        return atualizadoEm;
+    }
+
+    public void setAtualizadoEm(LocalDateTime atualizadoEm) {
+        this.atualizadoEm = atualizadoEm;
+    }
+
+    public Integer getVersao() {
+        return versao;
+    }
+
+    public void setVersao(Integer versao) {
+        this.versao = versao;
     }
 }

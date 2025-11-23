@@ -1,6 +1,7 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
 import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.model.Usuario;
@@ -43,16 +44,48 @@ public class ConsultaUtil {
             output.setModalidade(consulta.getModalidade().toString());
             output.setLocal(consulta.getLocal());
             output.setObservacoes(consulta.getObservacoes());
-            output.setEspecialidade(consulta.getEspecialidade());
-            output.setAssistido(consulta.getAssistido());
-            output.setVoluntario(consulta.getVoluntario());
             
-            logger.debug("Consulta ID {} convertida para output com sucesso", consulta.getIdConsulta());
+            // Campos de auditoria
+            output.setFeedbackStatus(consulta.getFeedbackStatus());
+            output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
+            output.setCriadoEm(consulta.getCriadoEm());
+            output.setAtualizadoEm(consulta.getAtualizadoEm());
+            
+            logger.debug("Consulta convertida com sucesso - ID: {}", consulta.getIdConsulta());
             return output;
             
         } catch (Exception e) {
-            logger.error("Erro ao converter consulta para output: {}", e.getMessage());
-            throw new RuntimeException("Erro na conversão da consulta", e);
+            logger.error("Erro ao converter consulta: {}", e.getMessage());
+            throw new RuntimeException("Erro ao mapear consulta para output", e);
+        }
+    }
+
+    // Novo método para converter para DTO simples (sem campos null)
+    public ConsultaSimpleOutput mapConsultaToSimpleOutput(Consulta consulta) {
+        if (consulta == null) {
+            logger.debug("Consulta nula recebida para conversão simples");
+            return null;
+        }
+        
+        try {
+            ConsultaSimpleOutput output = new ConsultaSimpleOutput();
+            output.setIdConsulta(consulta.getIdConsulta());
+            output.setHorario(consulta.getHorario());
+            output.setStatus(consulta.getStatus() != null ? consulta.getStatus().toString() : "");
+            output.setModalidade(consulta.getModalidade() != null ? consulta.getModalidade().toString() : "");
+            output.setLocal(consulta.getLocal());
+            output.setObservacoes(consulta.getObservacoes());
+            output.setFeedbackStatus(consulta.getFeedbackStatus());
+            output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
+            output.setCriadoEm(consulta.getCriadoEm());
+            output.setAtualizadoEm(consulta.getAtualizadoEm());
+            
+            logger.debug("Consulta convertida para DTO simples com sucesso - ID: {}", consulta.getIdConsulta());
+            return output;
+            
+        } catch (Exception e) {
+            logger.error("Erro ao converter consulta para DTO simples: {}", e.getMessage());
+            throw new RuntimeException("Erro ao mapear consulta para output simples", e);
         }
     }
 
@@ -82,6 +115,12 @@ public class ConsultaUtil {
             logger.error("Erro crítico ao recuperar usuário autenticado: {}", e.getMessage());
             throw new RuntimeException("Falha na autenticação do usuário", e);
         }
+    }
+
+    public List<ConsultaSimpleOutput> mapConsultasToSimpleOutput(List<Consulta> consultas) {
+        return consultas.stream()
+                .map(this::mapConsultaToSimpleOutput)
+                .collect(Collectors.toList());
     }
 
     // Valida se o tipo de usuário é válido
