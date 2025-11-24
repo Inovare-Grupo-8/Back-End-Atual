@@ -9,22 +9,44 @@ public class FeedbackOutput {
     private Integer idConsulta;
     private String comentario;
     private LocalDateTime dtFeedback;
+    private Integer idUsuarioAvaliador;
+    private String nomeUsuarioAvaliador;
 
     public FeedbackOutput() {}
 
-    public FeedbackOutput(Integer idFeedback, Integer idConsulta, String comentario, LocalDateTime dtFeedback) {
+    public FeedbackOutput(Integer idFeedback, Integer idConsulta, String comentario, LocalDateTime dtFeedback,
+                          Integer idUsuarioAvaliador, String nomeUsuarioAvaliador) {
         this.idFeedback = idFeedback;
         this.idConsulta = idConsulta;
         this.comentario = comentario;
         this.dtFeedback = dtFeedback;
+        this.idUsuarioAvaliador = idUsuarioAvaliador;
+        this.nomeUsuarioAvaliador = nomeUsuarioAvaliador;
     }
 
     public static FeedbackOutput fromEntity(FeedbackConsulta feedback) {
+        Integer avaliadorId = null;
+        String avaliadorNome = null;
+        if (feedback.getConsulta() != null) {
+            if (feedback.getConsulta().getAssistido() != null) {
+                avaliadorId = feedback.getConsulta().getAssistido().getIdUsuario();
+                if (feedback.getConsulta().getAssistido().getFicha() != null) {
+                    avaliadorNome = feedback.getConsulta().getAssistido().getFicha().getNome();
+                }
+            } else if (feedback.getConsulta().getVoluntario() != null) {
+                avaliadorId = feedback.getConsulta().getVoluntario().getIdUsuario();
+                if (feedback.getConsulta().getVoluntario().getFicha() != null) {
+                    avaliadorNome = feedback.getConsulta().getVoluntario().getFicha().getNome();
+                }
+            }
+        }
         return new FeedbackOutput(
             feedback.getIdFeedback(),
             feedback.getConsulta().getIdConsulta(),
             feedback.getComentario(),
-            feedback.getDtFeedback()
+            feedback.getDtFeedback(),
+            avaliadorId,
+            avaliadorNome
         );
     }
 
@@ -58,5 +80,21 @@ public class FeedbackOutput {
 
     public void setDtFeedback(LocalDateTime dtFeedback) {
         this.dtFeedback = dtFeedback;
+    }
+
+    public Integer getIdUsuarioAvaliador() {
+        return idUsuarioAvaliador;
+    }
+
+    public void setIdUsuarioAvaliador(Integer idUsuarioAvaliador) {
+        this.idUsuarioAvaliador = idUsuarioAvaliador;
+    }
+
+    public String getNomeUsuarioAvaliador() {
+        return nomeUsuarioAvaliador;
+    }
+
+    public void setNomeUsuarioAvaliador(String nomeUsuarioAvaliador) {
+        this.nomeUsuarioAvaliador = nomeUsuarioAvaliador;
     }
 }

@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface BuscarProximasConsultasUseCase {
     List<ConsultaOutput> buscarProximasConsultas(String user);
+    List<ConsultaOutput> buscarProximasConsultas(String user, Integer userId);
 }

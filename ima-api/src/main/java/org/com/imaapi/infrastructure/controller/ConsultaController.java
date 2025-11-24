@@ -92,28 +92,28 @@ public class ConsultaController {
     }
 
     @GetMapping("/consultas/{id}")
-    public ResponseEntity<ConsultaSimpleOutput> getConsultaPorId(@PathVariable Integer id) {
+    public ResponseEntity<ConsultaOutput> getConsultaPorId(@PathVariable Integer id) {
         logger.info("Buscando consulta por id: {}", id);
         return Optional.ofNullable(buscarConsultaPorIdUseCase.buscarConsultaPorId(id))
                 .map(consulta -> {
                     logger.info("Consulta encontrada para id: {}", id);
                     return ResponseEntity.ok(consulta);
                 })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.<ConsultaOutput>notFound().build());
     }
 
     @PostMapping("/cancelar/{id}")
-    public ResponseEntity<ConsultaSimpleOutput> cancelarConsulta(@PathVariable Integer id) {
+    public ResponseEntity<ConsultaOutput> cancelarConsulta(@PathVariable Integer id) {
         logger.info("Cancelando consulta id: {}", id);
-        ConsultaSimpleOutput consulta = cancelarConsultaUseCase.cancelarConsulta(id);
+        ConsultaOutput consulta = cancelarConsultaUseCase.cancelarConsulta(id);
         logger.info("Consulta cancelada id: {}", id);
         return ResponseEntity.ok(consulta);
     }
 
     @PatchMapping("/consultas/{id}/remarcar")
-    public ResponseEntity<ConsultaSimpleOutput> remarcarConsulta(@PathVariable Integer id, @RequestBody ConsultaRemarcarInput input) {
+    public ResponseEntity<ConsultaOutput> remarcarConsulta(@PathVariable Integer id, @RequestBody ConsultaRemarcarInput input) {
         logger.info("Remarcando consulta id: {}", id);
-        ConsultaSimpleOutput consulta = remarcarConsultaUseCase.remarcarConsulta(id, input);
+        ConsultaOutput consulta = remarcarConsultaUseCase.remarcarConsulta(id, input);
         logger.info("Consulta remarcada id: {}", id);
         return ResponseEntity.ok(consulta);
     }
@@ -147,14 +147,21 @@ public class ConsultaController {
     }
 
     @GetMapping("/consultas/3-proximas")
-    public ResponseEntity<List<ConsultaOutput>> listarProximasConsultas(@RequestParam("user") String user) {
+    public ResponseEntity<List<ConsultaOutput>> listarProximasConsultas(
+            @RequestParam(value = "user", defaultValue = "assistido") String user,
+            @RequestParam(required = false) Integer userId) {
         logger.info("Listando próximas 3 consultas para usuário: {}", user);
-        return Optional.ofNullable(buscarProximasConsultasUseCase.buscarProximasConsultas(user))
-                .map(proximasConsultas -> {
-                    logger.info("Total de próximas consultas encontradas: {}", proximasConsultas.size());
-                    return ResponseEntity.ok(proximasConsultas);
-                })
-                .orElseGet(() -> ResponseEntity.ok(List.of()));
+        try {
+            return Optional.ofNullable(buscarProximasConsultasUseCase.buscarProximasConsultas(user, userId))
+                    .map(proximasConsultas -> {
+                        logger.info("Total de próximas consultas encontradas: {}", proximasConsultas.size());
+                        return ResponseEntity.ok(proximasConsultas);
+                    })
+                    .orElseGet(() -> ResponseEntity.ok(List.of()));
+        } catch (RuntimeException ex) {
+            logger.warn("Falha ao buscar próximas consultas: {}", ex.getMessage());
+            return ResponseEntity.ok(List.of());
+        }
     }
 
     @GetMapping("/consultas/todas")
@@ -170,23 +177,35 @@ public class ConsultaController {
 
     @GetMapping("/horarios-disponiveis")
     public ResponseEntity<Map<String, Object>> getHorariosDisponiveis(
-            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate data,
-            @RequestParam Integer idVoluntario) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+            @RequestParam(required = false) Integer idVoluntario,
+            @RequestParam(required = false) Integer userId) {
         org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ConsultaController.class);
-        logger.info("Buscando horários disponíveis para voluntário id: {} na data: {}", idVoluntario, data);
-        List<LocalDateTime> horarios = buscarHorariosDisponiveisUseCase.buscarHorariosDisponiveis(data, idVoluntario);
+        Integer alvoId = idVoluntario != null ? idVoluntario : userId;
+        if (alvoId == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "idVoluntario ou userId é obrigatório"));
+        }
+        logger.info("Buscando horários disponíveis para voluntário id: {} na data: {}", alvoId, data);
+        List<LocalDateTime> horarios = buscarHorariosDisponiveisUseCase.buscarHorariosDisponiveis(data, alvoId);
         logger.info("Total de horários disponíveis encontrados: {}", horarios.size());
-        
-        // Usando Map.of para criar o mapa de forma mais concisa
-        return ResponseEntity.ok(Map.of("horarios", horarios));
+        return ResponseEntity.ok(Map.of(
+                "data", data,
+                "idVoluntario", alvoId,
+                "horarios", horarios
+        ));
     }
 
-    @GetMapping("/consultas/avaliacoes-feedback")
-    public ResponseEntity<Map<String, Object>> getAvaliacoesFeedback(@RequestParam String user) {
+    @GetMapping({"/consultas/avaliacoes-feedback", "/avaliacoes-feedback"})
+    public ResponseEntity<Map<String, Object>> getAvaliacoesFeedback(@RequestParam(value = "user", defaultValue = "assistido") String user) {
         logger.info("Buscando avaliações e feedbacks para usuário: {}", user);
-        Map<String, Object> result = buscarAvaliacoesFeedbackUseCase.buscarAvaliacoesFeedback(user);
-        logger.info("Avaliações e feedbacks retornados para usuário: {}", user);
-        return ResponseEntity.ok(result);
+        try {
+            Map<String, Object> result = buscarAvaliacoesFeedbackUseCase.buscarAvaliacoesFeedback(user);
+            logger.info("Avaliações e feedbacks retornados para usuário: {}", user);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException ex) {
+            logger.warn("Falha ao buscar avaliações/feedback: {}", ex.getMessage());
+            return ResponseEntity.ok(Map.of("feedbacks", List.of(), "avaliacoes", List.of()));
+        }
     }
 
     @PostMapping("/consultas/{id}/feedback")

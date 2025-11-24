@@ -2,7 +2,7 @@ package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.useCase.consulta.RemarcarConsultaUseCase;
 import org.com.imaapi.application.dto.consulta.input.ConsultaRemarcarInput;
-import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class RemarcarConsultaUseCaseImpl implements RemarcarConsultaUseCase {
@@ -20,12 +22,15 @@ public class RemarcarConsultaUseCaseImpl implements RemarcarConsultaUseCase {
     private final ConsultaRepository consultaRepository;
 
     @Autowired
+    private ConsultaUtil consultaUtil;
+
+    @Autowired
     public RemarcarConsultaUseCaseImpl(ConsultaRepository consultaRepository) {
         this.consultaRepository = consultaRepository;
     }
 
     @Override
-    public ConsultaSimpleOutput remarcarConsulta(Integer id, ConsultaRemarcarInput input) {
+    public ConsultaOutput remarcarConsulta(Integer id, ConsultaRemarcarInput input) {
         logger.info("Remarcando consulta com ID {} para um novo horário {}", id, input.getNovoHorario());
 
         // Validações
@@ -74,19 +79,8 @@ public class RemarcarConsultaUseCaseImpl implements RemarcarConsultaUseCase {
         Consulta consultaRemarcada = consultaRepository.save(consulta);
         logger.info("Consulta remarcada com sucesso para {}", input.getNovoHorario());
 
-        // Mapeamento direto para DTO simples
-        ConsultaSimpleOutput output = new ConsultaSimpleOutput();
-        output.setIdConsulta(consultaRemarcada.getIdConsulta());
-        output.setHorario(consultaRemarcada.getHorario());
-        output.setStatus(consultaRemarcada.getStatus().name());
-        output.setModalidade(consultaRemarcada.getModalidade().name());
-        output.setLocal(consultaRemarcada.getLocal());
-        output.setObservacoes(consultaRemarcada.getObservacoes());
-        output.setFeedbackStatus(consultaRemarcada.getFeedbackStatus());
-        output.setAvaliacaoStatus(consultaRemarcada.getAvaliacaoStatus());
-        output.setCriadoEm(consultaRemarcada.getCriadoEm());
-        output.setAtualizadoEm(consultaRemarcada.getAtualizadoEm());
-        
-        return output;
+        // Retornar o output usando o ConsultaUtil
+        List<ConsultaOutput> outputs = consultaUtil.mapConsultasToOutput(Collections.singletonList(consultaRemarcada));
+        return outputs.isEmpty() ? null : outputs.get(0);
     }
 }

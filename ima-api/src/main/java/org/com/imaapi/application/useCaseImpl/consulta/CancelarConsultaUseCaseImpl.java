@@ -1,15 +1,17 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.useCase.consulta.CancelarConsultaUseCase;
-import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.domain.model.Consulta;
-import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class CancelarConsultaUseCaseImpl implements CancelarConsultaUseCase {
@@ -22,7 +24,7 @@ public class CancelarConsultaUseCaseImpl implements CancelarConsultaUseCase {
     private ConsultaUtil consultaUtil;
 
     @Override
-    public ConsultaSimpleOutput cancelarConsulta(Integer consultaId) {
+    public ConsultaOutput cancelarConsulta(Integer consultaId) {
         logger.info("Cancelando consulta com ID {}", consultaId);
 
         try {
@@ -57,8 +59,9 @@ public class CancelarConsultaUseCaseImpl implements CancelarConsultaUseCase {
             Consulta consultaCancelada = consultaRepository.save(consulta);
             logger.info("Consulta cancelada com sucesso. ID: {}", consultaId);
 
-            // Retornar o output simples
-            return consultaUtil.mapConsultaToSimpleOutput(consultaCancelada);
+            // Retornar o output usando o ConsultaUtil
+            List<ConsultaOutput> outputs = consultaUtil.mapConsultasToOutput(Collections.singletonList(consultaCancelada));
+            return outputs.isEmpty() ? null : outputs.get(0);
 
         } catch (Exception e) {
             logger.error("Erro ao cancelar consulta com ID {}: {}", consultaId, e.getMessage());

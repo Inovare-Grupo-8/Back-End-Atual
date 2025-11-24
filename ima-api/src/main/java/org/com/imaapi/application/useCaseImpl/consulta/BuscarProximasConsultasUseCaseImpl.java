@@ -28,37 +28,39 @@ public class BuscarProximasConsultasUseCaseImpl implements BuscarProximasConsult
     private ConsultaUtil consultaUtil;
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<ConsultaOutput> buscarProximasConsultas(String user) {
+        return buscarProximasConsultas(user, null);
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<ConsultaOutput> buscarProximasConsultas(String user, Integer userId) {
         logger.info("Buscando próximas consultas para o usuário tipo: {}", user);
 
         try {
             consultaUtil.validarTipoUsuario(user);
 
-            // Obter o usuário logado
-            Usuario usuarioLogado = consultaUtil.getUsuarioLogado();
-            if (usuarioLogado == null) {
-                logger.error("Usuário não encontrado: {}", user);
-                return Collections.emptyList();
+            Integer alvoId = userId;
+            if (alvoId == null) {
+                Usuario usuarioLogado = consultaUtil.getUsuarioLogado();
+                if (usuarioLogado == null) {
+                    logger.error("Usuário não encontrado: {}", user);
+                    return Collections.emptyList();
+                }
+                alvoId = usuarioLogado.getIdUsuario();
             }
 
             LocalDateTime agora = LocalDateTime.now();
-            
-            // Status que representam consultas pendentes/futuras
             List<StatusConsulta> statusPendentes = consultaUtil.getStatusPendentes();
 
             List<Consulta> consultas;
             if (user.equalsIgnoreCase("voluntario")) {
-                consultas = consultaRepository.findByVoluntario_IdUsuarioAndHorarioAfterOrderByHorarioAsc(
-                        usuarioLogado.getIdUsuario(), agora);
-            } else if (user.equalsIgnoreCase("assistido")) {
-                consultas = consultaRepository.findByAssistido_IdUsuarioAndHorarioAfterOrderByHorarioAsc(
-                        usuarioLogado.getIdUsuario(), agora);
+                consultas = consultaRepository.findByVoluntario_IdUsuarioAndHorarioAfterOrderByHorarioAsc(alvoId, agora);
             } else {
-                logger.error("Tipo de usuário não suportado: {}", user);
-                return Collections.emptyList();
+                consultas = consultaRepository.findByAssistido_IdUsuarioAndHorarioAfterOrderByHorarioAsc(alvoId, agora);
             }
 
-            // Filtrar apenas consultas com status pendentes e limitar a 3
             List<Consulta> consultasFiltradas = consultas.stream()
                     .filter(c -> statusPendentes.contains(c.getStatus()))
                     .limit(3)

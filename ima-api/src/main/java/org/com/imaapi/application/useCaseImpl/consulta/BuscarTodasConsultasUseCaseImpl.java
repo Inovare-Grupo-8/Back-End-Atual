@@ -22,6 +22,7 @@ public class BuscarTodasConsultasUseCaseImpl implements BuscarTodasConsultasUseC
     private ConsultaRepository consultaRepository;
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<ConsultaOutput> buscarTodasConsultas() {
         logger.info("Buscando todas as consultas do sistema");
 
@@ -50,9 +51,26 @@ public class BuscarTodasConsultasUseCaseImpl implements BuscarTodasConsultasUseC
         output.setModalidade(consulta.getModalidade().toString());
         output.setLocal(consulta.getLocal());
         output.setObservacoes(consulta.getObservacoes());
-        output.setEspecialidade(consulta.getEspecialidade());
-        output.setAssistido(consulta.getAssistido());
-        output.setVoluntario(consulta.getVoluntario());
+        if (consulta.getEspecialidade() != null) {
+            output.setIdEspecialidade(consulta.getEspecialidade().getIdEspecialidade());
+            output.setNomeEspecialidade(consulta.getEspecialidade().getNome());
+        }
+        if (consulta.getVoluntario() != null) {
+            output.setIdVoluntario(consulta.getVoluntario().getIdUsuario());
+            if (consulta.getVoluntario().getFicha() != null) {
+                output.setNomeVoluntario(consulta.getVoluntario().getFicha().getNome());
+            }
+        }
+        if (consulta.getAssistido() != null) {
+            output.setIdAssistido(consulta.getAssistido().getIdUsuario());
+            if (consulta.getAssistido().getFicha() != null) {
+                output.setNomeAssistido(consulta.getAssistido().getFicha().getNome());
+            }
+        }
+        output.setFeedbackStatus(consulta.getFeedbackStatus());
+        output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
+        output.setCriadoEm(consulta.getCriadoEm());
+        output.setAtualizadoEm(consulta.getAtualizadoEm());
         return output;
     }
 }

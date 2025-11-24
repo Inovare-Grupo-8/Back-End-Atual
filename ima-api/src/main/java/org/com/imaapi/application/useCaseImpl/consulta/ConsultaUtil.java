@@ -4,6 +4,8 @@ import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
 import org.com.imaapi.domain.model.Consulta;
+import org.com.imaapi.domain.model.Especialidade;
+import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
@@ -45,6 +47,73 @@ public class ConsultaUtil {
             output.setLocal(consulta.getLocal());
             output.setObservacoes(consulta.getObservacoes());
             
+            if (consulta.getEspecialidade() != null) {
+                output.setIdEspecialidade(consulta.getEspecialidade().getIdEspecialidade());
+                output.setNomeEspecialidade(consulta.getEspecialidade().getNome());
+                Especialidade esp = new Especialidade();
+                esp.setIdEspecialidade(consulta.getEspecialidade().getIdEspecialidade());
+                esp.setNome(consulta.getEspecialidade().getNome());
+                output.setEspecialidade(esp);
+            } else {
+                output.setIdEspecialidade(0);
+                output.setNomeEspecialidade("");
+                output.setEspecialidade(null);
+            }
+
+            if (consulta.getVoluntario() != null) {
+                output.setIdVoluntario(consulta.getVoluntario().getIdUsuario());
+                output.setIdEspecialista(consulta.getVoluntario().getIdUsuario());
+                if (consulta.getVoluntario().getFicha() != null) {
+                    String nomeVol = consulta.getVoluntario().getFicha().getNome();
+                    output.setNomeVoluntario(nomeVol != null ? nomeVol : "");
+                    output.setNomeEspecialista(nomeVol != null ? nomeVol : "");
+                } else {
+                    output.setNomeVoluntario("");
+                    output.setNomeEspecialista("");
+                }
+                Usuario vol = new Usuario();
+                vol.setIdUsuario(consulta.getVoluntario().getIdUsuario());
+                vol.setEmail(consulta.getVoluntario().getEmail());
+                Ficha fichaVol = new Ficha();
+                fichaVol.setNome(consulta.getVoluntario().getFicha() != null ? consulta.getVoluntario().getFicha().getNome() : "");
+                fichaVol.setSobrenome(consulta.getVoluntario().getFicha() != null ? consulta.getVoluntario().getFicha().getSobrenome() : "");
+                vol.setFicha(fichaVol);
+                output.setVoluntario(vol);
+            } else {
+                output.setIdVoluntario(0);
+                output.setNomeVoluntario("");
+                output.setIdEspecialista(0);
+                output.setNomeEspecialista("");
+                output.setVoluntario(null);
+            }
+
+            if (consulta.getAssistido() != null) {
+                output.setIdAssistido(consulta.getAssistido().getIdUsuario());
+                output.setIdCliente(consulta.getAssistido().getIdUsuario());
+                if (consulta.getAssistido().getFicha() != null) {
+                    String nomeAss = consulta.getAssistido().getFicha().getNome();
+                    output.setNomeAssistido(nomeAss != null ? nomeAss : "");
+                    output.setNomeCliente(nomeAss != null ? nomeAss : "");
+                } else {
+                    output.setNomeAssistido("");
+                    output.setNomeCliente("");
+                }
+                Usuario ass = new Usuario();
+                ass.setIdUsuario(consulta.getAssistido().getIdUsuario());
+                ass.setEmail(consulta.getAssistido().getEmail());
+                Ficha fichaAss = new Ficha();
+                fichaAss.setNome(consulta.getAssistido().getFicha() != null ? consulta.getAssistido().getFicha().getNome() : "");
+                fichaAss.setSobrenome(consulta.getAssistido().getFicha() != null ? consulta.getAssistido().getFicha().getSobrenome() : "");
+                ass.setFicha(fichaAss);
+                output.setAssistido(ass);
+            } else {
+                output.setIdAssistido(0);
+                output.setNomeAssistido("");
+                output.setIdCliente(0);
+                output.setNomeCliente("");
+                output.setAssistido(null);
+            }
+
             // Campos de auditoria
             output.setFeedbackStatus(consulta.getFeedbackStatus());
             output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());

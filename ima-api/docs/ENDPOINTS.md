@@ -745,7 +745,7 @@ curl -X PATCH http://localhost:8080/assistentes-sociais/perfil/completo \
 
 ## ConsultaController
 
-Base URL: `/consultas`
+Base URL: `/consulta`
 
 | Método | Endpoint | Descrição | Requisitos | Validações |
 |--------|----------|-----------|------------|------------|
@@ -756,7 +756,7 @@ Base URL: `/consultas`
 | GET | `/status/{status}` | Lista consultas por status | Path: `status` | Status válido |
 | PUT | `/{id}/status` | Atualiza status da consulta | Path: `id`, Body: `StatusConsultaInput` | ID válido, status válido |
 | DELETE | `/{id}` | Cancela uma consulta | Path: `id` | ID válido |
-| GET | `/horarios-disponiveis` | Lista horários disponíveis | Query: `data`, `idVoluntario` | Data válida, ID válido |
+| GET | `/horarios-disponiveis` | Lista horários disponíveis | Query: `data` (ISO `yyyy-MM-dd`), `idVoluntario` | Data válida (ISO), ID válido |
 | GET | `/consultas/{id}` | Busca consulta detalhada por ID | Path: `id` | ID deve ser um número inteiro válido |
 | GET | `/consultas/todas` | Lista todas as consultas detalhadas | - | - |
 | GET | `/{idConsulta}/feedbacks` | Busca feedbacks por consulta | Path: `idConsulta` | ID deve ser um número inteiro válido |
@@ -809,9 +809,12 @@ curl -X GET "http://localhost:8080/consulta/horarios-disponiveis?data=2025-10-16
 **Resposta:**
 ```json
 {
-  "additionalProp1": {},
-  "additionalProp2": {},
-  "additionalProp3": {}
+  "data": "2025-10-16",
+  "idVoluntario": 1,
+  "horarios": [
+    "2025-10-16T09:00:00",
+    "2025-10-16T10:00:00"
+  ]
 }
 ```
 
@@ -1892,5 +1895,24 @@ Base URL: `/avaliacoes`
 ```json
 {
   "conteudo": "Feedback sobre a consulta realizada"
+}
+```
+**Buscar avaliações e feedback do usuário:**
+```bash
+curl -X GET "http://localhost:8080/consulta/consultas/avaliacoes-feedback?user=assistido" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+Alternativo:
+```bash
+curl -X GET "http://localhost:8080/consulta/avaliacoes-feedback?user=voluntario" \
+  -H "Authorization: Bearer {seu_token_jwt}"
+```
+
+**Resposta:**
+```json
+{
+  "feedbacks": [],
+  "avaliacoes": []
 }
 ```
