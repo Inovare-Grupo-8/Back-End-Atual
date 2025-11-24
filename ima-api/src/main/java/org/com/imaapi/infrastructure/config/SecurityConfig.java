@@ -1,6 +1,10 @@
-package org.com.imaapi.infrastructure.config;
+package org.com.imaapi.config;
 
+import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
+import org.com.imaapi.domain.repository.UsuarioRepository;
+import org.com.imaapi.infrastructure.adapter.PasswordEncoderAdapter;
 import org.com.imaapi.infrastructure.config.autenticacao.*;
+import org.com.imaapi.infrastructure.gateway.LoggingPasswordEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -11,9 +15,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.*;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -28,33 +34,106 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfiguracao {
+    private static final String[] URLS_PUBLICAS = {
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/api/public/**",
+            "/api/public/authenticate",
+            "/webjars/**",
+            "/v3/api-docs/**",
+            "/actuator/**",
+            "/usuarios/fase1/**",
+            "/usuarios/fase2/**",
+            "/usuarios/login/**",
+            "/h2-console/**",
+            "/h2-console/**/**",
+            "/perfil/**",
+            "/error/**",
+            "/",
+            "/oauth2/**",
+            "/dev/token",
+            "/uploads/**",
+            "/usuarios/fase1",
+            "/usuarios/fase2"
+    };
+
+    private static final String[] URLS_ADMINISTRADORES = {
+            "/{id}/classificar-usuarios",
+            "/usuarios/classificar-usuarios/**",
+            "/usuarios/{id}/classificar/**",
+            "/{id}", "DELETE",
+            "/usuarios/nao-classificados/**",
+            "/assistentes-sociais/**",
+            "/usuarios/voluntario/fase1",
+            "/usuarios/voluntario/fase2/**",
+            "/usuarios/verificar-cadastro",
+            "/consulta/consultas/todas",
+            "/especialidade/**"
+    };
+
+    private static final String[] URLS_VOLUNTARIOS = {
+            "/usuarios/voluntario/**",
+            "/disponibilidade"
+    };
+
+    private static final String[] URLS_VALOR_SOCIAL = {
+            "/pagamento/**"
+    };
+
+    private static final String[] URLS_ASSISTIDOS_E_VOLUNTARIOS = {
+            "/oauth2/authorize/**",
+            "/agenda/**",
+            "/calendar/eventos/**"
+    };
+
+    private static final String[] URLS_ASSISTIDOS = {
+            "/consulta/**"
+    };
+
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   AutenticacaoSucessHandler autenticacaoSucessHandler) throws Exception {
+        return http
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                    .requestMatchers("/usuarios/primeira-fase", "/usuarios/voluntario/primeira-fase",
-                                    "/usuarios/segunda-fase", "/usuarios/voluntario/segunda-fase",
-                                    "/usuarios/autenticar").permitAll()
-                    .anyRequest().permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(URLS_ADMINISTRADORES).hasRole("ADMINISTRADOR")
+                        .requestMatchers(URLS_VOLUNTARIOS).hasRole("VOLUNTARIO")
+                        .requestMatchers(URLS_VALOR_SOCIAL).hasRole("VALOR_SOCIAL")
+                        .requestMatchers(URLS_ASSISTIDOS).hasAnyRole("VALOR_SOCIAL", "GRATUIDADE")
+                        .requestMatchers(URLS_ASSISTIDOS_E_VOLUNTARIOS).hasAnyRole("VOLUNTARIO", "VALOR_SOCIAL", "GRATUIDADE")
+                        .requestMatchers(URLS_PUBLICAS).permitAll()
+                        .anyRequest()
+                        .authenticated()
                 )
-                    .exceptionHandling(handling -> handling
-                            .authenticationEntryPoint(autenticacaoEntryPoint()))
-                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                    .addFilterBefore(jwtAuthenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(autenticacaoSucessHandler)
+                )
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint(autenticacaoEntryPoint()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .addFilterBefore(jwtAuthenticationFilterBean(), UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(new AutenticacaoProvider(autenticacaoService(), passwordEncoder()));
-        return authenticationManagerBuilder.build();
+    public AuthenticationManager authManager(HttpSecurity http,
+                                             PasswordEncoderGateway passwordEncoderGateway) throws Exception {
+        AuthenticationManagerBuilder authBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        authBuilder.authenticationProvider(
+                new AutenticacaoProvider(autenticacaoService(), passwordEncoderGateway)
+        );
+
+        return authBuilder.build();
     }
 
     @Bean
@@ -78,6 +157,23 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AutenticacaoSucessHandler autenticacaoSucessHandler(
+            UsuarioRepository usuarioRepository,
+            GerenciadorTokenJwt gerenciadorTokenJwt,
+            UsuarioUseCase usuarioService,
+            OAuth2AuthorizedClientService authorizedClientService,
+            SecurityContextRepository securityContextRepository) {
+
+        return new AutenticacaoSucessHandler(
+                usuarioRepository,
+                gerenciadorTokenJwt,
+                usuarioService,
+                authorizedClientService,
+                securityContextRepository
+        );
+    }
+
+    @Bean
     public AuthenticationEntryPoint autenticacaoEntryPoint() {
         return new AutenticacaoEntryPoint();
     }
@@ -88,9 +184,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public PasswordEncoderGateway passwordEncoderGateway() {
+        return new LoggingPasswordEncoder();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoderAdapter(PasswordEncoderGateway gateway) {
+        return new PasswordEncoderAdapter(gateway);
+    }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

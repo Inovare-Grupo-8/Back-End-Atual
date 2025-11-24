@@ -1,6 +1,7 @@
 package org.com.imaapi.infrastructure.config.autenticacao;
 
 import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
+import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -8,7 +9,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,9 +16,9 @@ public class AutenticacaoProvider implements AuthenticationProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AutenticacaoProvider.class);
 
     private final AutenticacaoService autenticacaoService;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoderGateway passwordEncoder;
 
-    public AutenticacaoProvider(AutenticacaoService autenticacaoService, PasswordEncoder passwordEncoder) {
+    public AutenticacaoProvider(AutenticacaoService autenticacaoService, PasswordEncoderGateway passwordEncoder) {
         this.autenticacaoService = autenticacaoService;
         this.passwordEncoder = passwordEncoder;
     }
