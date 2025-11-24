@@ -3,21 +3,21 @@ package org.com.imaapi.infrastructure.adapter;
 import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class PasswordEncoderAdapter implements PasswordEncoder {
-    private final PasswordEncoderGateway passwordEncoderGateway;
+public class PasswordEncoderAdapter implements PasswordEncoderGateway {
+    private final PasswordEncoder passwordEncoder;
 
-    public PasswordEncoderAdapter(PasswordEncoderGateway passwordEncoderGateway) {
-        this.passwordEncoderGateway = passwordEncoderGateway;
+    public PasswordEncoderAdapter(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
 
     @Override
-    public String encode(CharSequence rawPassword) {
-        return passwordEncoderGateway.encode(rawPassword.toString());
+    public String encode(String rawPassword) {
+        return passwordEncoder.encode(rawPassword.toString());
     }
 
     @Override
-    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return passwordEncoderGateway.matches(rawPassword.toString(), encodedPassword);
+    public boolean matches(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword.toString(), encodedPassword);
     }
 }

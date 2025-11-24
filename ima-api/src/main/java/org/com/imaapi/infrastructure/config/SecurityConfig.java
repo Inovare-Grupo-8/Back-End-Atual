@@ -1,10 +1,13 @@
-package org.com.imaapi.config;
+package org.com.imaapi.infrastructure.config;
 
+import org.com.imaapi.application.useCase.usuario.BuscarUsuarioPorEmailUseCase;
+import org.com.imaapi.application.useCase.usuario.CadastrarUsuarioPrimeiraFaseUseCase;
 import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
-import org.com.imaapi.domain.repository.UsuarioRepository;
+import org.com.imaapi.infrastructure.adapter.AutenticacaoServiceAdapter;
+import org.com.imaapi.infrastructure.adapter.GerenciadorTokenJwtAdapter;
 import org.com.imaapi.infrastructure.adapter.PasswordEncoderAdapter;
 import org.com.imaapi.infrastructure.config.autenticacao.*;
-import org.com.imaapi.infrastructure.gateway.LoggingPasswordEncoder;
+import org.com.imaapi.infrastructure.config.autenticacao.handler.AutenticacaoSucessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +21,6 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.*;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,7 +36,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguracao {
+public class SecurityConfig {
     private static final String[] URLS_PUBLICAS = {
             "/swagger-ui/**",
             "/swagger-ui.html",
@@ -63,17 +65,18 @@ public class SecurityConfiguracao {
     };
 
     private static final String[] URLS_ADMINISTRADORES = {
+            "/assistentes-sociais/**",
+            "/assistentes-sociais/{id}",
+            "/assistentes-sociais/perfil/**",
             "/{id}/classificar-usuarios",
             "/usuarios/classificar-usuarios/**",
-            "/usuarios/{id}/classificar/**",
-            "/{id}", "DELETE",
+            "/usuarios/{id}/classificar/",
             "/usuarios/nao-classificados/**",
-            "/assistentes-sociais/**",
             "/usuarios/voluntario/fase1",
             "/usuarios/voluntario/fase2/**",
             "/usuarios/verificar-cadastro",
-            "/consulta/consultas/todas",
-            "/especialidade/**"
+            "/especialidade/**",
+            "/especialidade"
     };
 
     private static final String[] URLS_VOLUNTARIOS = {
@@ -81,20 +84,31 @@ public class SecurityConfiguracao {
             "/disponibilidade"
     };
 
+    private static final String[] URLS_INTERNOS = {
+            "/consultas/{idConsulta}/avaliacoes",
+            "/consultas/{idConsulta}/feedbacks",
+            "/consulta/consultas/todas",
+            "/disponibilidade/**",
+            "/enderecos/{usuarioId}"
+    };
+
     private static final String[] URLS_VALOR_SOCIAL = {
             "/pagamento/**"
+    };
+
+    private static final String[] URLS_ASSISTIDOS = {
+            "/consultas/{idConsulta}/feedbacks",
+            "/consulta/**",
+            "/consulta/consultas/{id}/feedback",
+            "/consulta/consultas/{id}/avaliacao"
     };
 
     private static final String[] URLS_ASSISTIDOS_E_VOLUNTARIOS = {
             "/oauth2/authorize/**",
             "/agenda/**",
-            "/calendar/eventos/**"
+            "/calendar/eventos/**",
+            "/consulta/consultas/minhas"
     };
-
-    private static final String[] URLS_ASSISTIDOS = {
-            "/consulta/**"
-    };
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -109,6 +123,7 @@ public class SecurityConfiguracao {
                         .requestMatchers(URLS_VALOR_SOCIAL).hasRole("VALOR_SOCIAL")
                         .requestMatchers(URLS_ASSISTIDOS).hasAnyRole("VALOR_SOCIAL", "GRATUIDADE")
                         .requestMatchers(URLS_ASSISTIDOS_E_VOLUNTARIOS).hasAnyRole("VOLUNTARIO", "VALOR_SOCIAL", "GRATUIDADE")
+                        .requestMatchers(URLS_INTERNOS).hasAnyRole("ADMINISTRADOR", "VOLUNTARIO")
                         .requestMatchers(URLS_PUBLICAS).permitAll()
                         .anyRequest()
                         .authenticated()
@@ -142,8 +157,8 @@ public class SecurityConfiguracao {
     }
 
     @Bean
-    public GerenciadorTokenJwt jwtAuthenticationUtilBean() {
-        return new GerenciadorTokenJwt();
+    public GerenciadorTokenJwtAdapter jwtAuthenticationUtilBean() {
+        return new GerenciadorTokenJwtAdapter();
     }
 
     @Bean
@@ -158,18 +173,20 @@ public class SecurityConfiguracao {
 
     @Bean
     public AutenticacaoSucessHandler autenticacaoSucessHandler(
-            UsuarioRepository usuarioRepository,
-            GerenciadorTokenJwt gerenciadorTokenJwt,
-            UsuarioUseCase usuarioService,
+            CadastrarUsuarioPrimeiraFaseUseCase cadastrarUsuario,
+            BuscarUsuarioPorEmailUseCase buscarUsuarioPorEmail,
+            GerenciadorTokenJwtAdapter gerenciadorTokenJwtAdapter,
             OAuth2AuthorizedClientService authorizedClientService,
-            SecurityContextRepository securityContextRepository) {
+            SecurityContextRepository securityContextRepository,
+            AutenticacaoServiceAdapter autenticacaoService) {
 
         return new AutenticacaoSucessHandler(
-                usuarioRepository,
-                gerenciadorTokenJwt,
-                usuarioService,
+                cadastrarUsuario,
+                buscarUsuarioPorEmail,
+                gerenciadorTokenJwtAdapter,
                 authorizedClientService,
-                securityContextRepository
+                securityContextRepository,
+                autenticacaoService
         );
     }
 
@@ -179,20 +196,14 @@ public class SecurityConfiguracao {
     }
 
     @Bean
-    public AutenticacaoService autenticacaoService() {
-        return new AutenticacaoService();
+    public AutenticacaoServiceAdapter autenticacaoService() {
+        return new AutenticacaoServiceAdapter();
     }
 
     @Bean
     public PasswordEncoderGateway passwordEncoderGateway() {
-        return new LoggingPasswordEncoder();
+        return new PasswordEncoderAdapter(new BCryptPasswordEncoder());
     }
-
-    @Bean
-    public PasswordEncoder passwordEncoderAdapter(PasswordEncoderGateway gateway) {
-        return new PasswordEncoderAdapter(gateway);
-    }
-
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

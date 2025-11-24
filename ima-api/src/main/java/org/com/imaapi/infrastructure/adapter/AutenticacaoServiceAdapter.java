@@ -1,4 +1,4 @@
-package org.com.imaapi.infrastructure.config.autenticacao;
+package org.com.imaapi.infrastructure.adapter;
 
 import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
 import org.com.imaapi.domain.model.Ficha;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AutenticacaoService implements UserDetailsService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AutenticacaoService.class);
+public class AutenticacaoServiceAdapter implements UserDetailsService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AutenticacaoServiceAdapter.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;

@@ -2,6 +2,7 @@ package org.com.imaapi.infrastructure.config.autenticacao;
 
 import org.com.imaapi.application.dto.usuario.output.UsuarioDetalhesOutput;
 import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
+import org.com.imaapi.infrastructure.adapter.AutenticacaoServiceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -15,11 +16,11 @@ import org.springframework.stereotype.Component;
 public class AutenticacaoProvider implements AuthenticationProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(AutenticacaoProvider.class);
 
-    private final AutenticacaoService autenticacaoService;
+    private final AutenticacaoServiceAdapter autenticacaoServiceAdapter;
     private final PasswordEncoderGateway passwordEncoder;
 
-    public AutenticacaoProvider(AutenticacaoService autenticacaoService, PasswordEncoderGateway passwordEncoder) {
-        this.autenticacaoService = autenticacaoService;
+    public AutenticacaoProvider(AutenticacaoServiceAdapter autenticacaoServiceAdapter, PasswordEncoderGateway passwordEncoder) {
+        this.autenticacaoServiceAdapter = autenticacaoServiceAdapter;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -30,7 +31,7 @@ public class AutenticacaoProvider implements AuthenticationProvider {
 //        LOGGER.info("[AUTENTICAR_PROVIDER] Tentando autenticar usuário: {}", username);
         
         try {
-            UsuarioDetalhesOutput userDetails = (UsuarioDetalhesOutput) this.autenticacaoService.loadUserByUsername(username);
+            UsuarioDetalhesOutput userDetails = (UsuarioDetalhesOutput) this.autenticacaoServiceAdapter.loadUserByUsername(username);
 //            LOGGER.debug("[AUTENTICAR_PROVIDER] UserDetails carregado para: {}", username);
 //            LOGGER.debug("[AUTENTICAR_PROVIDER] Senha fornecida (primeiros 4 caracteres): {}",
 //                    password.length() > 4 ? password.substring(0, 4) + "..." : "***");

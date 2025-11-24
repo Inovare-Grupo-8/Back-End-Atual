@@ -6,6 +6,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.com.imaapi.infrastructure.adapter.AutenticacaoServiceAdapter;
+import org.com.imaapi.infrastructure.adapter.GerenciadorTokenJwtAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,18 +17,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class AutenticacaoFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AutenticacaoFilter.class);
 
-    private final AutenticacaoService autenticacaoService;
+    private final AutenticacaoServiceAdapter autenticacaoServiceAdapter;
 
-    private final GerenciadorTokenJwt jwtTokenManager;
+    private final GerenciadorTokenJwtAdapter jwtTokenManager;
 
-    public AutenticacaoFilter(AutenticacaoService autenticacaoService, GerenciadorTokenJwt tokenManager) {
-        this.autenticacaoService = autenticacaoService;
+    public AutenticacaoFilter(AutenticacaoServiceAdapter autenticacaoServiceAdapter, GerenciadorTokenJwtAdapter tokenManager) {
+        this.autenticacaoServiceAdapter = autenticacaoServiceAdapter;
         this.jwtTokenManager = tokenManager;
     }
 
@@ -68,7 +69,7 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
     }
 
     private void addUsernameInContext(HttpServletRequest request, String username, String jwtToken) {
-        UserDetails userDetails = autenticacaoService.loadUserByUsername(username);
+        UserDetails userDetails = autenticacaoServiceAdapter.loadUserByUsername(username);
 
         if (jwtTokenManager.validarToken(userDetails.getUsername(), jwtToken)) {
             UsernamePasswordAuthenticationToken authToken =
