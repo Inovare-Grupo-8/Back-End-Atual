@@ -1,4 +1,4 @@
-package org.com.imaapi.infrastructure.config;
+package org.com.imaapi.infrastructure.config.Cache;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
