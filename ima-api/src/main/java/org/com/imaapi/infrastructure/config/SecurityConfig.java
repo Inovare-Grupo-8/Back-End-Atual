@@ -40,48 +40,31 @@ public class SecurityConfig {
     private static final String[] URLS_PUBLICAS = {
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/api/public/**",
-            "/api/public/authenticate",
-            "/webjars/**",
-            "/v3/api-docs/**",
-            "/actuator/**",
-            "/usuarios/fase1/**",
-            "/usuarios/fase2/**",
-            "/usuarios/login/**",
-            "/h2-console/**",
-            "/h2-console/**/**",
-            "/perfil/**",
             "/error/**",
             "/",
-            "/oauth2/**",
-            "/dev/token",
-            "/uploads/**",
-            "/usuarios/fase1",
-            "/usuarios/fase2"
+            "/usuarios/primeira-fase/**",
+            "/usuarios/segunda-fase/**",
+            "/usuarios/login"
     };
 
     private static final String[] URLS_ADMINISTRADORES = {
             "/assistentes-sociais/**",
             "/assistentes-sociais/{id}",
             "/assistentes-sociais/perfil/**",
-            "/{id}/classificar-usuarios",
-            "/usuarios/classificar-usuarios/**",
-            "/usuarios/{id}/classificar/",
-            "/usuarios/nao-classificados/**",
-            "/usuarios/voluntario/fase1",
-            "/usuarios/voluntario/fase2/**",
-            "/usuarios/verificar-cadastro",
             "/especialidade/**",
-            "/especialidade"
+            "/perfil/assistente-social/**",
+            "/usuarios/voluntario/primeira-fase",
+            "/usuarios/voluntario/segunda-fase",
+            "/usuarios/{id}",
+            "/usuarios/paginado",
+            "/usuarios/email/{email}",
+            "/usuarios/nome/{termo}",
+            "/usuarios/nao-classificados"
     };
 
     private static final String[] URLS_VOLUNTARIOS = {
             "/usuarios/voluntario/**",
-            "/disponibilidade"
+            "/disponibilidade/**"
     };
 
     private static final String[] URLS_INTERNOS = {
@@ -89,11 +72,9 @@ public class SecurityConfig {
             "/consultas/{idConsulta}/feedbacks",
             "/consulta/consultas/todas",
             "/disponibilidade/**",
-            "/enderecos/{usuarioId}"
-    };
-
-    private static final String[] URLS_VALOR_SOCIAL = {
-            "/pagamento/**"
+            "/enderecos/{usuarioId}",
+            "/perfil/voluntario/dados-profissionais",
+            "/perfil/voluntario/disponibilidade"
     };
 
     private static final String[] URLS_ASSISTIDOS = {
@@ -104,9 +85,7 @@ public class SecurityConfig {
     };
 
     private static final String[] URLS_ASSISTIDOS_E_VOLUNTARIOS = {
-            "/oauth2/authorize/**",
             "/agenda/**",
-            "/calendar/eventos/**",
             "/consulta/consultas/minhas"
     };
 
@@ -120,7 +99,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(URLS_ADMINISTRADORES).hasRole("ADMINISTRADOR")
                         .requestMatchers(URLS_VOLUNTARIOS).hasRole("VOLUNTARIO")
-                        .requestMatchers(URLS_VALOR_SOCIAL).hasRole("VALOR_SOCIAL")
                         .requestMatchers(URLS_ASSISTIDOS).hasAnyRole("VALOR_SOCIAL", "GRATUIDADE")
                         .requestMatchers(URLS_ASSISTIDOS_E_VOLUNTARIOS).hasAnyRole("VOLUNTARIO", "VALOR_SOCIAL", "GRATUIDADE")
                         .requestMatchers(URLS_INTERNOS).hasAnyRole("ADMINISTRADOR", "VOLUNTARIO")
