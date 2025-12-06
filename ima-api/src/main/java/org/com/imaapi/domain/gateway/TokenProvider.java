@@ -1,7 +1,5 @@
 package org.com.imaapi.domain.gateway;
 
-import org.com.imaapi.application.dto.usuario.UsuarioAutenticado;
-
 import java.util.Date;
 import java.util.List;
 

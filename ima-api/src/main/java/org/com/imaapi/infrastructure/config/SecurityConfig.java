@@ -1,6 +1,13 @@
 package org.com.imaapi.infrastructure.config;
 
+import org.com.imaapi.application.useCase.usuario.BuscarUsuarioPorEmailUseCase;
+import org.com.imaapi.application.useCase.usuario.CadastrarUsuarioPrimeiraFaseUseCase;
+import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
+import org.com.imaapi.infrastructure.adapter.AutenticacaoServiceAdapter;
+import org.com.imaapi.infrastructure.adapter.GerenciadorTokenJwtAdapter;
+import org.com.imaapi.infrastructure.adapter.PasswordEncoderAdapter;
 import org.com.imaapi.infrastructure.config.autenticacao.*;
+import org.com.imaapi.infrastructure.config.autenticacao.handler.AutenticacaoSucessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -11,9 +18,10 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.*;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -29,32 +37,96 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private static final String[] URLS_PUBLICAS = {
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/error/**",
+            "/",
+            "/usuarios/primeira-fase/**",
+            "/usuarios/segunda-fase/**",
+            "/usuarios/login"
+    };
+
+    private static final String[] URLS_ADMINISTRADORES = {
+            "/assistentes-sociais/**",
+            "/assistentes-sociais/{id}",
+            "/assistentes-sociais/perfil/**",
+            "/especialidade/**",
+            "/perfil/assistente-social/**",
+            "/usuarios/voluntario/primeira-fase",
+            "/usuarios/voluntario/segunda-fase",
+            "/usuarios/{id}",
+            "/usuarios/paginado",
+            "/usuarios/email/{email}",
+            "/usuarios/nome/{termo}",
+            "/usuarios/nao-classificados"
+    };
+
+    private static final String[] URLS_VOLUNTARIOS = {
+            "/usuarios/voluntario/**",
+            "/disponibilidade/**"
+    };
+
+    private static final String[] URLS_INTERNOS = {
+            "/consultas/{idConsulta}/avaliacoes",
+            "/consultas/{idConsulta}/feedbacks",
+            "/consulta/consultas/todas",
+            "/disponibilidade/**",
+            "/enderecos/{usuarioId}",
+            "/perfil/voluntario/dados-profissionais",
+            "/perfil/voluntario/disponibilidade"
+    };
+
+    private static final String[] URLS_ASSISTIDOS = {
+            "/consultas/{idConsulta}/feedbacks",
+            "/consulta/**",
+            "/consulta/consultas/{id}/feedback",
+            "/consulta/consultas/{id}/avaliacao"
+    };
+
+    private static final String[] URLS_ASSISTIDOS_E_VOLUNTARIOS = {
+            "/agenda/**",
+            "/consulta/consultas/minhas"
+    };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   AutenticacaoSucessHandler autenticacaoSucessHandler) throws Exception {
+        return http
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                    .requestMatchers("/usuarios/primeira-fase", "/usuarios/voluntario/primeira-fase",
-                                    "/usuarios/segunda-fase", "/usuarios/voluntario/segunda-fase",
-                                    "/usuarios/autenticar").permitAll()
-                    .anyRequest().permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(URLS_ADMINISTRADORES).hasRole("ADMINISTRADOR")
+                        .requestMatchers(URLS_VOLUNTARIOS).hasRole("VOLUNTARIO")
+                        .requestMatchers(URLS_ASSISTIDOS).hasAnyRole("VALOR_SOCIAL", "GRATUIDADE")
+                        .requestMatchers(URLS_ASSISTIDOS_E_VOLUNTARIOS).hasAnyRole("VOLUNTARIO", "VALOR_SOCIAL", "GRATUIDADE")
+                        .requestMatchers(URLS_INTERNOS).hasAnyRole("ADMINISTRADOR", "VOLUNTARIO")
+                        .requestMatchers(URLS_PUBLICAS).permitAll()
+                        .anyRequest()
+                        .authenticated()
                 )
-                    .exceptionHandling(handling -> handling
-                            .authenticationEntryPoint(autenticacaoEntryPoint()))
-                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                    .addFilterBefore(jwtAuthenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(autenticacaoSucessHandler)
+                )
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint(autenticacaoEntryPoint()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .addFilterBefore(jwtAuthenticationFilterBean(), UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(new AutenticacaoProvider(autenticacaoService(), passwordEncoder()));
-        return authenticationManagerBuilder.build();
+    public AuthenticationManager authManager(HttpSecurity http,
+                                             PasswordEncoderGateway passwordEncoderGateway) throws Exception {
+        AuthenticationManagerBuilder authBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        authBuilder.authenticationProvider(
+                new AutenticacaoProvider(autenticacaoService(), passwordEncoderGateway)
+        );
+
+        return authBuilder.build();
     }
 
     @Bean
@@ -63,8 +135,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public GerenciadorTokenJwt jwtAuthenticationUtilBean() {
-        return new GerenciadorTokenJwt();
+    public GerenciadorTokenJwtAdapter jwtAuthenticationUtilBean() {
+        return new GerenciadorTokenJwtAdapter();
     }
 
     @Bean
@@ -78,18 +150,37 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AutenticacaoSucessHandler autenticacaoSucessHandler(
+            CadastrarUsuarioPrimeiraFaseUseCase cadastrarUsuario,
+            BuscarUsuarioPorEmailUseCase buscarUsuarioPorEmail,
+            GerenciadorTokenJwtAdapter gerenciadorTokenJwtAdapter,
+            OAuth2AuthorizedClientService authorizedClientService,
+            SecurityContextRepository securityContextRepository,
+            AutenticacaoServiceAdapter autenticacaoService) {
+
+        return new AutenticacaoSucessHandler(
+                cadastrarUsuario,
+                buscarUsuarioPorEmail,
+                gerenciadorTokenJwtAdapter,
+                authorizedClientService,
+                securityContextRepository,
+                autenticacaoService
+        );
+    }
+
+    @Bean
     public AuthenticationEntryPoint autenticacaoEntryPoint() {
         return new AutenticacaoEntryPoint();
     }
 
     @Bean
-    public AutenticacaoService autenticacaoService() {
-        return new AutenticacaoService();
+    public AutenticacaoServiceAdapter autenticacaoService() {
+        return new AutenticacaoServiceAdapter();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public PasswordEncoderGateway passwordEncoderGateway() {
+        return new PasswordEncoderAdapter(new BCryptPasswordEncoder());
     }
 
     @Bean
