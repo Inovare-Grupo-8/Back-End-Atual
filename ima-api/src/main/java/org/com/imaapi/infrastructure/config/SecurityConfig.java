@@ -8,6 +8,7 @@ import org.com.imaapi.infrastructure.adapter.GerenciadorTokenJwtAdapter;
 import org.com.imaapi.infrastructure.adapter.PasswordEncoderAdapter;
 import org.com.imaapi.infrastructure.config.autenticacao.*;
 import org.com.imaapi.infrastructure.config.autenticacao.handler.AutenticacaoSucessHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +18,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -44,7 +46,8 @@ public class SecurityConfig {
             "/",
             "/usuarios/primeira-fase/**",
             "/usuarios/segunda-fase/**",
-            "/usuarios/login"
+            "/usuarios/login",
+            "/usuarios/login/**"
     };
 
     private static final String[] URLS_ADMINISTRADORES = {
@@ -93,10 +96,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    AutenticacaoSucessHandler autenticacaoSucessHandler) throws Exception {
         return http
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/usuarios/login/**").permitAll()
                         .requestMatchers(URLS_ADMINISTRADORES).hasRole("ADMINISTRADOR")
                         .requestMatchers(URLS_VOLUNTARIOS).hasRole("VOLUNTARIO")
                         .requestMatchers(URLS_ASSISTIDOS).hasAnyRole("VALOR_SOCIAL", "GRATUIDADE")
@@ -111,8 +117,8 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint(autenticacaoEntryPoint()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .addFilterBefore(jwtAuthenticationFilterBean(), UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
 
@@ -134,9 +140,15 @@ public class SecurityConfig {
         return new AutenticacaoEntryPoint();
     }
 
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.validity}")
+    private long jwtTokenValidity;
+
     @Bean
     public GerenciadorTokenJwtAdapter jwtAuthenticationUtilBean() {
-        return new GerenciadorTokenJwtAdapter();
+        return new GerenciadorTokenJwtAdapter(secret, jwtTokenValidity);
     }
 
     @Bean
