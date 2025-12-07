@@ -49,6 +49,9 @@ public class ConsultaController {
     private BuscarProximasConsultasUseCase buscarProximasConsultasUseCase;
 
     @Autowired
+    private BuscarProximaConsultaUsuarioUseCase buscarProximaConsultaUsuarioUseCase;
+
+    @Autowired
     private BuscarTodasConsultasUseCase buscarTodasConsultasUseCase;
 
     @Autowired
@@ -163,6 +166,26 @@ public class ConsultaController {
             return ResponseEntity.ok(List.of());
         }
     }
+
+    @GetMapping("/consultas/{idUsuario}/proxima")
+    public ResponseEntity<ConsultaOutput> getProximaConsultaUsuario(@PathVariable Integer idUsuario) {
+        logger.info("Buscando próxima consulta para usuário ID: {}", idUsuario);
+        try {
+            ConsultaOutput proximaConsulta = buscarProximaConsultaUsuarioUseCase.buscarProximaConsulta(idUsuario);
+            if (proximaConsulta != null) {
+                logger.info("Próxima consulta encontrada para usuário ID: {}", idUsuario);
+                return ResponseEntity.ok(proximaConsulta);
+            } else {
+                logger.info("Nenhuma próxima consulta encontrada para usuário ID: {}", idUsuario);
+                return ResponseEntity.noContent().build();
+            }
+        } catch (RuntimeException ex) {
+            logger.error("Erro ao buscar próxima consulta para usuário ID {}: {}", idUsuario, ex.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
 
     @GetMapping("/consultas/todas")
     public ResponseEntity<List<ConsultaOutput>> getTodasConsultas() {

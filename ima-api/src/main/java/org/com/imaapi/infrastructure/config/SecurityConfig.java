@@ -46,7 +46,6 @@ public class SecurityConfig {
             "/",
             "/usuarios/primeira-fase/**",
             "/usuarios/segunda-fase/**",
-            "/usuarios/login",
             "/usuarios/login/**"
     };
 
@@ -71,8 +70,8 @@ public class SecurityConfig {
     };
 
     private static final String[] URLS_INTERNOS = {
-            "/consultas/{idConsulta}/avaliacoes",
-            "/consultas/{idConsulta}/feedbacks",
+            "/consulta/consultas/{idConsulta}/avaliacoes",
+            "/consulta/consultas/{idConsulta}/feedbacks",
             "/consulta/consultas/todas",
             "/disponibilidade/**",
             "/enderecos/{usuarioId}",
@@ -81,7 +80,7 @@ public class SecurityConfig {
     };
 
     private static final String[] URLS_ASSISTIDOS = {
-            "/consultas/{idConsulta}/feedbacks",
+            "/consulta/consultas/{idConsulta}/feedbacks",
             "/consulta/**",
             "/consulta/consultas/{id}/feedback",
             "/consulta/consultas/{id}/avaliacao"
@@ -89,7 +88,8 @@ public class SecurityConfig {
 
     private static final String[] URLS_ASSISTIDOS_E_VOLUNTARIOS = {
             "/agenda/**",
-            "/consulta/consultas/minhas"
+            "/consulta/consultas/minhas",
+            "/consulta/consultas/{idUsuario}/proxima"
     };
 
     @Bean
@@ -102,13 +102,12 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/usuarios/login/**").permitAll()
+                        .requestMatchers(URLS_PUBLICAS).permitAll()
                         .requestMatchers(URLS_ADMINISTRADORES).hasRole("ADMINISTRADOR")
                         .requestMatchers(URLS_VOLUNTARIOS).hasRole("VOLUNTARIO")
                         .requestMatchers(URLS_ASSISTIDOS).hasAnyRole("VALOR_SOCIAL", "GRATUIDADE")
                         .requestMatchers(URLS_ASSISTIDOS_E_VOLUNTARIOS).hasAnyRole("VOLUNTARIO", "VALOR_SOCIAL", "GRATUIDADE")
                         .requestMatchers(URLS_INTERNOS).hasAnyRole("ADMINISTRADOR", "VOLUNTARIO")
-                        .requestMatchers(URLS_PUBLICAS).permitAll()
                         .anyRequest()
                         .authenticated()
                 )
