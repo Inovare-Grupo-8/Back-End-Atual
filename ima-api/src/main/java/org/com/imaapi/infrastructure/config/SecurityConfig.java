@@ -40,8 +40,13 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
     private static final String[] URLS_PUBLICAS = {
-            "/swagger-ui/**",
+            "/swagger-ui/",
             "/swagger-ui.html",
+            "/v3/api-docs/",
+            "/swagger-resources/**",
+            "/swagger-resources",
+            "/configuration/ui",
+            "/configuration/security",
             "/error/**",
             "/",
             "/usuarios/primeira-fase/**",
