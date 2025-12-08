@@ -47,7 +47,8 @@ public class SecurityConfig {
             "/usuarios/primeira-fase/**",
             "/usuarios/segunda-fase/**",
             "/usuarios/login",
-            "/usuarios/login/**"
+            "/usuarios/login/**",
+            "/uploads/**"
     };
 
     private static final String[] URLS_ADMINISTRADORES = {
@@ -62,7 +63,8 @@ public class SecurityConfig {
             "/usuarios/paginado",
             "/usuarios/email/{email}",
             "/usuarios/nome/{termo}",
-            "/usuarios/nao-classificados"
+            "/usuarios/nao-classificados",
+            "/usuarios/classificar/administrador/{id}"
     };
 
     private static final String[] URLS_VOLUNTARIOS = {
@@ -102,13 +104,13 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/usuarios/login/**").permitAll()
+                        .requestMatchers(URLS_PUBLICAS).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuarios/**").permitAll()
                         .requestMatchers(URLS_ADMINISTRADORES).hasRole("ADMINISTRADOR")
                         .requestMatchers(URLS_VOLUNTARIOS).hasRole("VOLUNTARIO")
                         .requestMatchers(URLS_ASSISTIDOS).hasAnyRole("VALOR_SOCIAL", "GRATUIDADE")
                         .requestMatchers(URLS_ASSISTIDOS_E_VOLUNTARIOS).hasAnyRole("VOLUNTARIO", "VALOR_SOCIAL", "GRATUIDADE")
                         .requestMatchers(URLS_INTERNOS).hasAnyRole("ADMINISTRADOR", "VOLUNTARIO")
-                        .requestMatchers(URLS_PUBLICAS).permitAll()
                         .anyRequest()
                         .authenticated()
                 )
