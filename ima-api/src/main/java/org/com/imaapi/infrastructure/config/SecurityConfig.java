@@ -40,8 +40,14 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
     private static final String[] URLS_PUBLICAS = {
-            "/swagger-ui/**",
             "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/swagger-resources",
+            "/configuration/ui",
+            "/configuration/security",
             "/error/**",
             "/",
             "/usuarios/primeira-fase/**",
@@ -73,8 +79,8 @@ public class SecurityConfig {
     };
 
     private static final String[] URLS_INTERNOS = {
-            "/consultas/{idConsulta}/avaliacoes",
-            "/consultas/{idConsulta}/feedbacks",
+            "/consulta/consultas/{idConsulta}/avaliacoes",
+            "/consulta/consultas/{idConsulta}/feedbacks",
             "/consulta/consultas/todas",
             "/disponibilidade/**",
             "/enderecos/{usuarioId}",
@@ -83,7 +89,7 @@ public class SecurityConfig {
     };
 
     private static final String[] URLS_ASSISTIDOS = {
-            "/consultas/{idConsulta}/feedbacks",
+            "/consulta/consultas/{idConsulta}/feedbacks",
             "/consulta/**",
             "/consulta/consultas/{id}/feedback",
             "/consulta/consultas/{id}/avaliacao"
@@ -91,7 +97,8 @@ public class SecurityConfig {
 
     private static final String[] URLS_ASSISTIDOS_E_VOLUNTARIOS = {
             "/agenda/**",
-            "/consulta/consultas/minhas"
+            "/consulta/consultas/minhas",
+            "/consulta/consultas/{idUsuario}/proxima"
     };
 
     @Bean
