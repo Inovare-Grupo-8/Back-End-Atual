@@ -1,7 +1,7 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.useCase.consulta.BuscarHistoricoConsultasUseCase;
-import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
@@ -25,8 +25,8 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
     private ConsultaRepository consultaRepository;
 
     @Override
-    public List<ConsultaSimpleOutput> buscarHistoricoConsultas(Integer userId, String userType) {
-        logger.info("Buscando histórico de consultas para o usuário ID: {} com perfil: {}", userId, userType);
+    public List<ConsultaOutput> buscarHistoricoConsultas(Integer userId) {
+        logger.info("Buscando histórico de consultas para o usuário ID: {}", userId);
 
         if (userId == null || userId <= 0) {
             throw new IllegalArgumentException("userId inválido para histórico de consultas");
@@ -79,7 +79,7 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
         }
 
         return consultas.stream().map(consulta -> {
-            ConsultaSimpleOutput output = new ConsultaSimpleOutput();
+            ConsultaOutput output = new ConsultaOutput();
             output.setIdConsulta(consulta.getIdConsulta());
             output.setHorario(consulta.getHorario());
             output.setStatus(consulta.getStatus().name());
@@ -90,31 +90,34 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
             output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
             output.setCriadoEm(consulta.getCriadoEm());
             output.setAtualizadoEm(consulta.getAtualizadoEm());
-
-            if (consulta.getAssistido() != null) {
-                output.setAssistidoId(consulta.getAssistido().getIdUsuario());
-                if (consulta.getAssistido().getFicha() != null) {
-                    output.setAssistidoNome(consulta.getAssistido().getFicha().getNome());
-                }
-                if (consulta.getAssistido().getEmail() != null) {
-                    output.setAssistidoEmail(consulta.getAssistido().getEmail());
-                }
-            }
-
-            if (consulta.getVoluntario() != null) {
-                output.setVoluntarioId(consulta.getVoluntario().getIdUsuario());
-                if (consulta.getVoluntario().getFicha() != null) {
-                    output.setVoluntarioNome(consulta.getVoluntario().getFicha().getNome());
-                }
-                if (consulta.getVoluntario().getEmail() != null) {
-                    output.setVoluntarioEmail(consulta.getVoluntario().getEmail());
-                }
-            }
-
+            
+            // Adicionar dados de especialidade
             if (consulta.getEspecialidade() != null) {
-                output.setEspecialidadeId(consulta.getEspecialidade().getIdEspecialidade());
-                output.setEspecialidadeNome(consulta.getEspecialidade().getNome());
+                output.setEspecialidade(consulta.getEspecialidade());
+                output.setIdEspecialidade(consulta.getEspecialidade().getIdEspecialidade());
+                output.setNomeEspecialidade(consulta.getEspecialidade().getNome());
             }
+            
+            // Adicionar dados do assistido
+            if (consulta.getAssistido() != null) {
+                output.setAssistido(consulta.getAssistido());
+                output.setIdAssistido(consulta.getAssistido().getIdUsuario());
+                if (consulta.getAssistido().getFicha() != null) {
+                    output.setNomeAssistido(consulta.getAssistido().getFicha().getNome() + " " + 
+                        (consulta.getAssistido().getFicha().getSobrenome() != null ? consulta.getAssistido().getFicha().getSobrenome() : ""));
+                }
+            }
+            
+            // Adicionar dados do voluntário
+            if (consulta.getVoluntario() != null) {
+                output.setVoluntario(consulta.getVoluntario());
+                output.setIdVoluntario(consulta.getVoluntario().getIdUsuario());
+                if (consulta.getVoluntario().getFicha() != null) {
+                    output.setNomeVoluntario(consulta.getVoluntario().getFicha().getNome() + " " + 
+                        (consulta.getVoluntario().getFicha().getSobrenome() != null ? consulta.getVoluntario().getFicha().getSobrenome() : ""));
+                }
+            }
+
             return output;
         }).collect(Collectors.toList());
     }
