@@ -29,12 +29,8 @@ public class ConsultaOutput {
     private String avaliacaoStatus;
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
-    // objetos detalhados omitidos para resposta enxuta
-    @JsonIgnore
     private Especialidade especialidade;
-    @JsonIgnore
     private Usuario assistido;
-    @JsonIgnore
     private Usuario voluntario;
 
     public ConsultaOutput() {}

@@ -135,7 +135,7 @@ public class ConsultaController {
         }
         
         logger.info("Listando histórico de consultas para usuário ID: {}", userIdFinal);
-        List<ConsultaSimpleOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userIdFinal);
+        List<ConsultaOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userIdFinal);
         logger.info("Total de consultas no histórico: {}", historico.size());
         
         // Response mais informativo

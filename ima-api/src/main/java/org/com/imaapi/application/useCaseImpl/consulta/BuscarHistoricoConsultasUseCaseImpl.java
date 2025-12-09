@@ -1,7 +1,7 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
 import org.com.imaapi.application.useCase.consulta.BuscarHistoricoConsultasUseCase;
-import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
@@ -24,7 +24,7 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
     private ConsultaRepository consultaRepository;
 
     @Override
-    public List<ConsultaSimpleOutput> buscarHistoricoConsultas(Integer userId) {
+    public List<ConsultaOutput> buscarHistoricoConsultas(Integer userId) {
         logger.info("Buscando histórico de consultas para o usuário ID: {}", userId);
 
         // Se userId não for fornecido, usa ID padrão 1 para teste
@@ -62,9 +62,9 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
             return Collections.emptyList();
         }
 
-        // Mapear para DTO simples
+        // Mapear para DTO completo com dados de assistido, voluntário e especialidade
         return consultas.stream().map(consulta -> {
-            ConsultaSimpleOutput output = new ConsultaSimpleOutput();
+            ConsultaOutput output = new ConsultaOutput();
             output.setIdConsulta(consulta.getIdConsulta());
             output.setHorario(consulta.getHorario());
             output.setStatus(consulta.getStatus().name());
@@ -75,6 +75,34 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
             output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
             output.setCriadoEm(consulta.getCriadoEm());
             output.setAtualizadoEm(consulta.getAtualizadoEm());
+            
+            // Adicionar dados de especialidade
+            if (consulta.getEspecialidade() != null) {
+                output.setEspecialidade(consulta.getEspecialidade());
+                output.setIdEspecialidade(consulta.getEspecialidade().getIdEspecialidade());
+                output.setNomeEspecialidade(consulta.getEspecialidade().getNome());
+            }
+            
+            // Adicionar dados do assistido
+            if (consulta.getAssistido() != null) {
+                output.setAssistido(consulta.getAssistido());
+                output.setIdAssistido(consulta.getAssistido().getIdUsuario());
+                if (consulta.getAssistido().getFicha() != null) {
+                    output.setNomeAssistido(consulta.getAssistido().getFicha().getNome() + " " + 
+                        (consulta.getAssistido().getFicha().getSobrenome() != null ? consulta.getAssistido().getFicha().getSobrenome() : ""));
+                }
+            }
+            
+            // Adicionar dados do voluntário
+            if (consulta.getVoluntario() != null) {
+                output.setVoluntario(consulta.getVoluntario());
+                output.setIdVoluntario(consulta.getVoluntario().getIdUsuario());
+                if (consulta.getVoluntario().getFicha() != null) {
+                    output.setNomeVoluntario(consulta.getVoluntario().getFicha().getNome() + " " + 
+                        (consulta.getVoluntario().getFicha().getSobrenome() != null ? consulta.getVoluntario().getFicha().getSobrenome() : ""));
+                }
+            }
+            
             return output;
         }).collect(Collectors.toList());
     }
