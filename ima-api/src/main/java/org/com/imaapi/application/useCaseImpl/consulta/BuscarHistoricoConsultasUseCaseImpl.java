@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,45 +25,59 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
     private ConsultaRepository consultaRepository;
 
     @Override
-    public List<ConsultaSimpleOutput> buscarHistoricoConsultas(Integer userId) {
-        logger.info("Buscando histórico de consultas para o usuário ID: {}", userId);
+    public List<ConsultaSimpleOutput> buscarHistoricoConsultas(Integer userId, String userType) {
+        logger.info("Buscando histórico de consultas para o usuário ID: {} com perfil: {}", userId, userType);
 
-        // Se userId não for fornecido, usa ID padrão 1 para teste
-        Integer userIdFinal = (userId != null && userId > 0) ? userId : 1;
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("userId inválido para histórico de consultas");
+        }
 
-        // Status que representam consultas concluídas/históricas
+        String perfilNormalizado = userType != null ? userType.trim().toLowerCase() : "assistido";
+
         List<StatusConsulta> statusFinalizados = Arrays.asList(
                 StatusConsulta.REALIZADA,
                 StatusConsulta.CANCELADA
         );
 
-        logger.debug("Buscando consultas finalizadas para usuário ID: {} com status: {}", userIdFinal, statusFinalizados);
+        logger.debug("Buscando consultas finalizadas para usuário ID: {} com status: {} e perfil: {}",
+                userId, statusFinalizados, perfilNormalizado);
 
-        // Buscar consultas do usuário como assistido
-        List<Consulta> consultasAssistido = consultaRepository.findByAssistido_IdUsuarioAndStatusIn(userIdFinal, statusFinalizados);
-        
-        // Buscar consultas do usuário como voluntário
-        List<Consulta> consultasVoluntario = consultaRepository.findByVoluntario_IdUsuarioAndStatusIn(userIdFinal, statusFinalizados);
-        
-        // Combinar as duas listas
+        List<Consulta> consultasAssistido = Collections.emptyList();
+        List<Consulta> consultasVoluntario = Collections.emptyList();
+
+        switch (perfilNormalizado) {
+            case "voluntario":
+            case "voluntário":
+            case "assistente-social":
+            case "assistente_social":
+                consultasVoluntario = consultaRepository.findByVoluntario_IdUsuarioAndStatusIn(userId, statusFinalizados);
+                break;
+            case "administrador":
+                consultasAssistido = consultaRepository.findByAssistido_IdUsuarioAndStatusIn(userId, statusFinalizados);
+                consultasVoluntario = consultaRepository.findByVoluntario_IdUsuarioAndStatusIn(userId, statusFinalizados);
+                break;
+            default:
+                consultasAssistido = consultaRepository.findByAssistido_IdUsuarioAndStatusIn(userId, statusFinalizados);
+                break;
+        }
+
         List<Consulta> consultas = new java.util.ArrayList<>();
         consultas.addAll(consultasAssistido);
         consultas.addAll(consultasVoluntario);
-        
-        // Remover duplicatas e ordenar por data (mais recentes primeiro)
+
         consultas = consultas.stream()
+                .filter(Objects::nonNull)
                 .distinct()
-                .sorted((c1, c2) -> c2.getHorario().compareTo(c1.getHorario())) // Ordem decrescente
+                .sorted((c1, c2) -> c2.getHorario().compareTo(c1.getHorario()))
                 .collect(Collectors.toList());
 
-        logger.info("Encontradas {} consultas no histórico para usuário ID: {} ({}   como assistido, {} como voluntário)", 
-                   consultas.size(), userIdFinal, consultasAssistido.size(), consultasVoluntario.size());
+        logger.info("Encontradas {} consultas no histórico para usuário ID: {} ({} como assistido, {} como voluntário)",
+                consultas.size(), userId, consultasAssistido.size(), consultasVoluntario.size());
 
         if (consultas.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // Mapear para DTO simples
         return consultas.stream().map(consulta -> {
             ConsultaSimpleOutput output = new ConsultaSimpleOutput();
             output.setIdConsulta(consulta.getIdConsulta());
@@ -75,6 +90,31 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
             output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
             output.setCriadoEm(consulta.getCriadoEm());
             output.setAtualizadoEm(consulta.getAtualizadoEm());
+
+            if (consulta.getAssistido() != null) {
+                output.setAssistidoId(consulta.getAssistido().getIdUsuario());
+                if (consulta.getAssistido().getFicha() != null) {
+                    output.setAssistidoNome(consulta.getAssistido().getFicha().getNome());
+                }
+                if (consulta.getAssistido().getEmail() != null) {
+                    output.setAssistidoEmail(consulta.getAssistido().getEmail());
+                }
+            }
+
+            if (consulta.getVoluntario() != null) {
+                output.setVoluntarioId(consulta.getVoluntario().getIdUsuario());
+                if (consulta.getVoluntario().getFicha() != null) {
+                    output.setVoluntarioNome(consulta.getVoluntario().getFicha().getNome());
+                }
+                if (consulta.getVoluntario().getEmail() != null) {
+                    output.setVoluntarioEmail(consulta.getVoluntario().getEmail());
+                }
+            }
+
+            if (consulta.getEspecialidade() != null) {
+                output.setEspecialidadeId(consulta.getEspecialidade().getIdEspecialidade());
+                output.setEspecialidadeNome(consulta.getEspecialidade().getNome());
+            }
             return output;
         }).collect(Collectors.toList());
     }
