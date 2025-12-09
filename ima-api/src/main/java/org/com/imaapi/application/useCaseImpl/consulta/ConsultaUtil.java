@@ -148,6 +148,31 @@ public class ConsultaUtil {
             output.setAvaliacaoStatus(consulta.getAvaliacaoStatus());
             output.setCriadoEm(consulta.getCriadoEm());
             output.setAtualizadoEm(consulta.getAtualizadoEm());
+
+            if (consulta.getAssistido() != null) {
+                output.setAssistidoId(consulta.getAssistido().getIdUsuario());
+                if (consulta.getAssistido().getFicha() != null) {
+                    output.setAssistidoNome(consulta.getAssistido().getFicha().getNome());
+                }
+                if (consulta.getAssistido().getEmail() != null) {
+                    output.setAssistidoEmail(consulta.getAssistido().getEmail());
+                }
+            }
+
+            if (consulta.getVoluntario() != null) {
+                output.setVoluntarioId(consulta.getVoluntario().getIdUsuario());
+                if (consulta.getVoluntario().getFicha() != null) {
+                    output.setVoluntarioNome(consulta.getVoluntario().getFicha().getNome());
+                }
+                if (consulta.getVoluntario().getEmail() != null) {
+                    output.setVoluntarioEmail(consulta.getVoluntario().getEmail());
+                }
+            }
+
+            if (consulta.getEspecialidade() != null) {
+                output.setEspecialidadeId(consulta.getEspecialidade().getIdEspecialidade());
+                output.setEspecialidadeNome(consulta.getEspecialidade().getNome());
+            }
             
             logger.debug("Consulta convertida para DTO simples com sucesso - ID: {}", consulta.getIdConsulta());
             return output;

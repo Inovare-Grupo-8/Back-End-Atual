@@ -123,15 +123,44 @@ public class ConsultaController {
 
     @GetMapping("/consultas/historico")
     public ResponseEntity<Map<String, Object>> listarHistoricoConsultas(
-            @RequestParam(required = false) Integer userId,
+            @RequestParam Integer userId,
             @RequestParam(required = false) String user) {
-        
-        // Se userId não foi fornecido, tenta usar um valor padrão baseado no parâmetro user
-        Integer userIdFinal = userId;
-        if (userIdFinal == null && user != null && !user.trim().isEmpty()) {
-            // Se passou um email ou string, usa ID padrão 1 para teste
-            userIdFinal = 1;
-            logger.info("Parâmetro 'user' fornecido: '{}', usando userId padrão: {}", user, userIdFinal);
+
+        if (userId == null || userId <= 0) {
+            logger.warn("Parâmetro userId inválido para histórico de consultas: {}", userId);
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Parâmetro userId é obrigatório e deve ser maior que zero"
+            ));
+        }
+
+        String perfilNormalizado = (user != null && !user.trim().isEmpty())
+                ? user.trim().toLowerCase()
+                : "assistido";
+
+        logger.info("Listando histórico de consultas para usuário ID: {} com perfil: {}", userId, perfilNormalizado);
+
+        try {
+            List<ConsultaSimpleOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(
+                    userId,
+                    perfilNormalizado
+            );
+
+            logger.info("Total de consultas no histórico: {}", historico.size());
+
+            Map<String, Object> response = Map.of(
+                    "consultas", historico,
+                    "total", historico.size(),
+                    "userId", userId,
+                    "userType", perfilNormalizado,
+                    "tipo", "historico"
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Falha ao listar histórico: {}", ex.getMessage());
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", ex.getMessage()
+            ));
         }
         
         logger.info("Listando histórico de consultas para usuário ID: {}", userIdFinal);

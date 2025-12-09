@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,42 +28,56 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
     public List<ConsultaOutput> buscarHistoricoConsultas(Integer userId) {
         logger.info("Buscando histórico de consultas para o usuário ID: {}", userId);
 
-        // Se userId não for fornecido, usa ID padrão 1 para teste
-        Integer userIdFinal = (userId != null && userId > 0) ? userId : 1;
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("userId inválido para histórico de consultas");
+        }
 
-        // Status que representam consultas concluídas/históricas
+        String perfilNormalizado = userType != null ? userType.trim().toLowerCase() : "assistido";
+
         List<StatusConsulta> statusFinalizados = Arrays.asList(
                 StatusConsulta.REALIZADA,
                 StatusConsulta.CANCELADA
         );
 
-        logger.debug("Buscando consultas finalizadas para usuário ID: {} com status: {}", userIdFinal, statusFinalizados);
+        logger.debug("Buscando consultas finalizadas para usuário ID: {} com status: {} e perfil: {}",
+                userId, statusFinalizados, perfilNormalizado);
 
-        // Buscar consultas do usuário como assistido
-        List<Consulta> consultasAssistido = consultaRepository.findByAssistido_IdUsuarioAndStatusIn(userIdFinal, statusFinalizados);
-        
-        // Buscar consultas do usuário como voluntário
-        List<Consulta> consultasVoluntario = consultaRepository.findByVoluntario_IdUsuarioAndStatusIn(userIdFinal, statusFinalizados);
-        
-        // Combinar as duas listas
+        List<Consulta> consultasAssistido = Collections.emptyList();
+        List<Consulta> consultasVoluntario = Collections.emptyList();
+
+        switch (perfilNormalizado) {
+            case "voluntario":
+            case "voluntário":
+            case "assistente-social":
+            case "assistente_social":
+                consultasVoluntario = consultaRepository.findByVoluntario_IdUsuarioAndStatusIn(userId, statusFinalizados);
+                break;
+            case "administrador":
+                consultasAssistido = consultaRepository.findByAssistido_IdUsuarioAndStatusIn(userId, statusFinalizados);
+                consultasVoluntario = consultaRepository.findByVoluntario_IdUsuarioAndStatusIn(userId, statusFinalizados);
+                break;
+            default:
+                consultasAssistido = consultaRepository.findByAssistido_IdUsuarioAndStatusIn(userId, statusFinalizados);
+                break;
+        }
+
         List<Consulta> consultas = new java.util.ArrayList<>();
         consultas.addAll(consultasAssistido);
         consultas.addAll(consultasVoluntario);
-        
-        // Remover duplicatas e ordenar por data (mais recentes primeiro)
+
         consultas = consultas.stream()
+                .filter(Objects::nonNull)
                 .distinct()
-                .sorted((c1, c2) -> c2.getHorario().compareTo(c1.getHorario())) // Ordem decrescente
+                .sorted((c1, c2) -> c2.getHorario().compareTo(c1.getHorario()))
                 .collect(Collectors.toList());
 
-        logger.info("Encontradas {} consultas no histórico para usuário ID: {} ({}   como assistido, {} como voluntário)", 
-                   consultas.size(), userIdFinal, consultasAssistido.size(), consultasVoluntario.size());
+        logger.info("Encontradas {} consultas no histórico para usuário ID: {} ({} como assistido, {} como voluntário)",
+                consultas.size(), userId, consultasAssistido.size(), consultasVoluntario.size());
 
         if (consultas.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // Mapear para DTO completo com dados de assistido, voluntário e especialidade
         return consultas.stream().map(consulta -> {
             ConsultaOutput output = new ConsultaOutput();
             output.setIdConsulta(consulta.getIdConsulta());
@@ -102,7 +117,7 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
                         (consulta.getVoluntario().getFicha().getSobrenome() != null ? consulta.getVoluntario().getFicha().getSobrenome() : ""));
                 }
             }
-            
+
             return output;
         }).collect(Collectors.toList());
     }
