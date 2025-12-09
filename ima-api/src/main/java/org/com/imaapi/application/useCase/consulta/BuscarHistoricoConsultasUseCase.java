@@ -4,5 +4,5 @@ import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import java.util.List;
 
 public interface BuscarHistoricoConsultasUseCase {
-    List<ConsultaSimpleOutput> buscarHistoricoConsultas(Integer userId);
+    List<ConsultaSimpleOutput> buscarHistoricoConsultas(Integer userId, String userType);
 }
