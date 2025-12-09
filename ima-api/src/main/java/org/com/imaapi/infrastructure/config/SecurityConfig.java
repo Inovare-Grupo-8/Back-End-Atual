@@ -113,6 +113,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(URLS_PUBLICAS).permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/disponibilidade/voluntario/{voluntarioId}").authenticated()
                         .requestMatchers(URLS_ADMINISTRADORES).hasRole("ADMINISTRADOR")
                         .requestMatchers(URLS_VOLUNTARIOS).hasRole("VOLUNTARIO")
                         .requestMatchers(URLS_ASSISTIDOS).hasAnyRole("VALOR_SOCIAL", "GRATUIDADE")
