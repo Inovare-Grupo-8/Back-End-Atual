@@ -1,0 +1,20 @@
+package org.com.imaapi.infrastructure.mapper;
+
+import com.google.api.client.util.DateTime;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
+public class DateTimeMapper {
+
+    private static ZoneId zonaPadrao;
+
+    static {
+        zonaPadrao = ZoneId.systemDefault();
+    }
+
+    public static DateTime toGoogleDateTime(LocalDateTime localDateTime) {
+        return new DateTime(Date.from(localDateTime.atZone(zonaPadrao).toInstant()));
+    }
+}

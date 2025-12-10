@@ -1,2 +1,10 @@
-/.idea
+# IDE
+.idea/
+.vscode/
+
+# Maven / Java
 target/
+*.class
+
+# Logs
+*.log

@@ -94,18 +94,28 @@ public class BuscarDadosPessoaisUseCaseImpl implements BuscarDadosPessoaisUseCas
         if (voluntario != null) {
             dadosPessoais.setCrp(voluntario.getRegistroProfissional());
             dadosPessoais.setBio(voluntario.getBiografiaProfissional());
+            dadosPessoais.setRegistroProfissional(voluntario.getRegistroProfissional());
+            dadosPessoais.setBiografiaProfissional(voluntario.getBiografiaProfissional());
             if (voluntario.getFuncao() != null) {
                 dadosPessoais.setEspecialidade(voluntario.getFuncao().getValue());
+                dadosPessoais.setFuncao(voluntario.getFuncao().getValue());
             }
-            // Buscar especialidade(s) associadas ao voluntário (especialidade principal)
+            // Buscar especialidade(s) associadas ao voluntário
             try {
-                var especialidades = voluntarioEspecialidadeRepository.findByVoluntario(voluntario);
-                if (especialidades != null && !especialidades.isEmpty()) {
-                    var principal = especialidades.stream()
-                            .filter(e -> Boolean.TRUE.equals(e.getPrincipal()))
-                            .findFirst();
-                    if (principal.isPresent()) {
-                        dadosPessoais.setEspecialidade(principal.get().getEspecialidade().getNome());
+                var especialidadesVoluntario = voluntarioEspecialidadeRepository.findByVoluntario(voluntario);
+                if (especialidadesVoluntario != null && !especialidadesVoluntario.isEmpty()) {
+                    // Ordenar para que a principal venha primeiro
+                    java.util.List<String> nomesEspecialidades = new java.util.ArrayList<>();
+                    especialidadesVoluntario.stream()
+                            .sorted((a, b) -> Boolean.compare(
+                                    Boolean.TRUE.equals(b.getPrincipal()),
+                                    Boolean.TRUE.equals(a.getPrincipal())))
+                            .forEach(e -> nomesEspecialidades.add(e.getEspecialidade().getNome()));
+                    dadosPessoais.setEspecialidades(nomesEspecialidades);
+                    
+                    // A principal é a primeira da lista ordenada
+                    if (!nomesEspecialidades.isEmpty()) {
+                        dadosPessoais.setEspecialidade(nomesEspecialidades.get(0));
                     }
                 }
             } catch (Exception e) {

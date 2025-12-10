@@ -1,27 +1,26 @@
-package org.com.imaapi.infrastructure.config.autenticacao;
+package org.com.imaapi.infrastructure.adapter;
 
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.impl.lang.Function;
 import io.jsonwebtoken.security.Keys;
-import org.com.imaapi.application.dto.usuario.UsuarioAutenticado;
-import org.com.imaapi.domain.gateway.TokenProvider;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.com.imaapi.domain.gateway.JwtTokenProvider;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
-public class GerenciadorTokenJwt implements TokenProvider {
+public class TokenJwtAdapter implements JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private final String secret;
+    private final long jwtTokenValidity;
 
-    @Value("${jwt.validity}")
-    private long jwtTokenValidity;
+    public TokenJwtAdapter(String secret, long jwtTokenValidity) {
+        this.secret = secret;
+        this.jwtTokenValidity = jwtTokenValidity;
+    }
 
     public String extrairUsernameFromToken(String token) {
         return getClaimForToken(token, Claims::getSubject);
@@ -62,7 +61,8 @@ public class GerenciadorTokenJwt implements TokenProvider {
         return Jwts.parser()
                 .setSigningKey(parseSecret())
                 .build()
-                .parseSignedClaims(token).getBody();
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private SecretKey parseSecret() {
