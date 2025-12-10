@@ -30,6 +30,7 @@ public class ConsultaInput {
 
     @NotNull(message = "Especialista é obrigatório")
     private Integer idEspecialista; // corresponde a fk_especialista
+    private Object IdVoluntario;
 
     public ConsultaInput() {}
 
