@@ -25,8 +25,8 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
     private ConsultaRepository consultaRepository;
 
     @Override
-    public List<ConsultaOutput> buscarHistoricoConsultas(Integer userId) {
-        logger.info("Buscando histórico de consultas para o usuário ID: {}", userId);
+    public List<ConsultaOutput> buscarHistoricoConsultas(Integer userId, String userType) {
+        logger.info("Buscando histórico de consultas para o usuário ID: {} e perfil: {}", userId, userType);
 
         if (userId == null || userId <= 0) {
             throw new IllegalArgumentException("userId inválido para histórico de consultas");
@@ -93,14 +93,12 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
             
             // Adicionar dados de especialidade
             if (consulta.getEspecialidade() != null) {
-                output.setEspecialidade(consulta.getEspecialidade());
                 output.setIdEspecialidade(consulta.getEspecialidade().getIdEspecialidade());
                 output.setNomeEspecialidade(consulta.getEspecialidade().getNome());
             }
             
             // Adicionar dados do assistido
             if (consulta.getAssistido() != null) {
-                output.setAssistido(consulta.getAssistido());
                 output.setIdAssistido(consulta.getAssistido().getIdUsuario());
                 if (consulta.getAssistido().getFicha() != null) {
                     output.setNomeAssistido(consulta.getAssistido().getFicha().getNome() + " " + 
@@ -110,7 +108,6 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
             
             // Adicionar dados do voluntário
             if (consulta.getVoluntario() != null) {
-                output.setVoluntario(consulta.getVoluntario());
                 output.setIdVoluntario(consulta.getVoluntario().getIdUsuario());
                 if (consulta.getVoluntario().getFicha() != null) {
                     output.setNomeVoluntario(consulta.getVoluntario().getFicha().getNome() + " " + 

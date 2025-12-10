@@ -137,13 +137,10 @@ public class ConsultaController {
                 ? user.trim().toLowerCase()
                 : "assistido";
 
-        logger.info("Listando histórico de consultas para usuário ID: {} com perfil: {}", userId, perfilNormalizado);
+        logger.info("Listando histórico de consultas para usuário ID: {}", userId);
 
         try {
-            List<ConsultaSimpleOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(
-                    userId,
-                    perfilNormalizado
-            );
+            List<ConsultaOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userId);
 
             logger.info("Total de consultas no histórico: {}", historico.size());
 
@@ -151,7 +148,6 @@ public class ConsultaController {
                     "consultas", historico,
                     "total", historico.size(),
                     "userId", userId,
-                    "userType", perfilNormalizado,
                     "tipo", "historico"
             );
 
@@ -162,20 +158,6 @@ public class ConsultaController {
                     "error", ex.getMessage()
             ));
         }
-        
-        logger.info("Listando histórico de consultas para usuário ID: {}", userIdFinal);
-        List<ConsultaOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userIdFinal);
-        logger.info("Total de consultas no histórico: {}", historico.size());
-        
-        // Response mais informativo
-        Map<String, Object> response = Map.of(
-            "consultas", historico,
-            "total", historico.size(),
-            "userId", userIdFinal,
-            "tipo", "historico"
-        );
-        
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/consultas/3-proximas")
