@@ -91,28 +91,31 @@ public class BuscarHistoricoConsultasUseCaseImpl implements BuscarHistoricoConsu
             output.setCriadoEm(consulta.getCriadoEm());
             output.setAtualizadoEm(consulta.getAtualizadoEm());
             
-            // Adicionar dados de especialidade
+            // Adicionar dados de especialidade (tanto nome quanto objeto completo)
             if (consulta.getEspecialidade() != null) {
                 output.setIdEspecialidade(consulta.getEspecialidade().getIdEspecialidade());
                 output.setNomeEspecialidade(consulta.getEspecialidade().getNome());
+                output.setEspecialidade(consulta.getEspecialidade());
             }
             
-            // Adicionar dados do assistido
+            // Adicionar dados do assistido (tanto nome quanto objeto completo)
             if (consulta.getAssistido() != null) {
                 output.setIdAssistido(consulta.getAssistido().getIdUsuario());
                 if (consulta.getAssistido().getFicha() != null) {
                     output.setNomeAssistido(consulta.getAssistido().getFicha().getNome() + " " + 
                         (consulta.getAssistido().getFicha().getSobrenome() != null ? consulta.getAssistido().getFicha().getSobrenome() : ""));
                 }
+                output.setAssistido(consulta.getAssistido());
             }
             
-            // Adicionar dados do voluntário
+            // Adicionar dados do voluntário (tanto nome quanto objeto completo)
             if (consulta.getVoluntario() != null) {
                 output.setIdVoluntario(consulta.getVoluntario().getIdUsuario());
                 if (consulta.getVoluntario().getFicha() != null) {
                     output.setNomeVoluntario(consulta.getVoluntario().getFicha().getNome() + " " + 
                         (consulta.getVoluntario().getFicha().getSobrenome() != null ? consulta.getVoluntario().getFicha().getSobrenome() : ""));
                 }
+                output.setVoluntario(consulta.getVoluntario());
             }
 
             return output;
