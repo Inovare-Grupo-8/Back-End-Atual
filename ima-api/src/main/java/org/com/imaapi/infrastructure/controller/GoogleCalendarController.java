@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/calendar/eventos")
+@RequestMapping("/api/calendar/eventos")
 public class GoogleCalendarController {
 
     private final CalendarGateway calendarGateway;
