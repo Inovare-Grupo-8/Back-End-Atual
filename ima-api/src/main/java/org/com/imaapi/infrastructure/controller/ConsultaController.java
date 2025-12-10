@@ -137,10 +137,10 @@ public class ConsultaController {
                 ? user.trim().toLowerCase()
                 : "assistido";
 
-        logger.info("Listando histórico de consultas para usuário ID: {}", userId);
+        logger.info("Listando histórico de consultas para usuário ID: {} com perfil: {}", userId, perfilNormalizado);
 
         try {
-            List<ConsultaOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userId);
+            List<ConsultaOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userId, perfilNormalizado);
 
             logger.info("Total de consultas no histórico: {}", historico.size());
 
@@ -148,6 +148,7 @@ public class ConsultaController {
                     "consultas", historico,
                     "total", historico.size(),
                     "userId", userId,
+                    "userType", perfilNormalizado,
                     "tipo", "historico"
             );
 
