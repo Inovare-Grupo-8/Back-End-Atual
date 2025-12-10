@@ -113,4 +113,12 @@ public class ConsultaInput {
     public void setIdVoluntario(Integer idVoluntario) {
         this.idVoluntario = idVoluntario;
     }
+
+    public Integer getIdEspecialista() {
+        return idEspecialista;
+    }
+
+    public void setIdEspecialista(Integer idEspecialista) {
+        this.idEspecialista = idEspecialista;
+    }
 }
