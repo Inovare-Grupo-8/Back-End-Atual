@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/especialidade")
+@RequestMapping("/api/especialidade")
 @RequiredArgsConstructor
 public class EspecialidadeController {
     private final CriarEspecialidadeUseCase criarEspecialidadeUseCase;
