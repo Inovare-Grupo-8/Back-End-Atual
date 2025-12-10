@@ -58,6 +58,7 @@ public class CadastrarUsuarioSegundaFaseUseCaseImpl implements CadastrarUsuarioS
     @Override
     @Transactional
     public UsuarioOutput executar(Integer idUsuario, UsuarioInputSegundaFase usuarioInputSegundaFase) {
+
         LOGGER.info("Iniciando cadastro da segunda fase para usuário ID: {}", idUsuario);
         
         if (idUsuario == null || usuarioInputSegundaFase == null) {

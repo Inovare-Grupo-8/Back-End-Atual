@@ -4,6 +4,7 @@ import lombok.Data;
 import org.com.imaapi.domain.model.enums.Genero;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class UsuarioDadosPessoaisOutput {
@@ -18,5 +19,9 @@ public class UsuarioDadosPessoaisOutput {
     private String crp;
     private String bio;
     private String especialidade;
+    private List<String> especialidades;
+    private String funcao;
+    private String registroProfissional;
+    private String biografiaProfissional;
     private String fotoUrl;
 }
