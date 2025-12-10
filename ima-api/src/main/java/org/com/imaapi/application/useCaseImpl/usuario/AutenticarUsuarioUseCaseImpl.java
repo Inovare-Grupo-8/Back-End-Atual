@@ -4,7 +4,7 @@ import org.com.imaapi.application.dto.usuario.output.UsuarioTokenOutput;
 import org.com.imaapi.application.useCase.usuario.AutenticarUsuarioUseCase;
 import org.com.imaapi.application.dto.usuario.input.UsuarioAutenticacaoInput;
 import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
-import org.com.imaapi.domain.gateway.TokenProvider;
+import org.com.imaapi.domain.gateway.JwtTokenProvider;
 import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -18,14 +18,14 @@ public class AutenticarUsuarioUseCaseImpl implements AutenticarUsuarioUseCase {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoderGateway passwordEncoderGateway;
-    private final TokenProvider tokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AutenticarUsuarioUseCaseImpl(UsuarioRepository usuarioRepository,
                                         PasswordEncoderGateway passwordEncoderGateway,
-                                        TokenProvider tokenProvider) {
+                                        JwtTokenProvider jwtTokenProvider) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoderGateway = passwordEncoderGateway;
-        this.tokenProvider = tokenProvider;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class AutenticarUsuarioUseCaseImpl implements AutenticarUsuarioUseCase {
 
         List<String> authorities = List.of("ROLE_" + usuario.getTipo().name());
 
-        String token = tokenProvider.gerarToken(usuario.getEmail(), authorities);
+        String token = jwtTokenProvider.gerarToken(usuario.getEmail(), authorities);
 
         UsuarioTokenOutput output = new UsuarioTokenOutput();
         output.setEmail(usuario.getEmail());

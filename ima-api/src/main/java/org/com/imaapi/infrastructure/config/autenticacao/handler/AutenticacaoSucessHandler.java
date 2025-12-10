@@ -9,7 +9,7 @@ import org.com.imaapi.application.dto.usuario.output.UsuarioOutput;
 import org.com.imaapi.application.useCase.usuario.BuscarUsuarioPorEmailUseCase;
 import org.com.imaapi.application.useCase.usuario.CadastrarUsuarioPrimeiraFaseUseCase;
 import org.com.imaapi.infrastructure.adapter.AutenticacaoServiceAdapter;
-import org.com.imaapi.infrastructure.adapter.GerenciadorTokenJwtAdapter;
+import org.com.imaapi.infrastructure.adapter.TokenJwtAdapter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,7 +31,7 @@ public class AutenticacaoSucessHandler implements AuthenticationSuccessHandler {
 
     private final CadastrarUsuarioPrimeiraFaseUseCase cadastrarUsuario;
     private final BuscarUsuarioPorEmailUseCase buscarUsuarioPorEmail;
-    private final GerenciadorTokenJwtAdapter gerenciadorTokenJwtAdapter;
+    private final TokenJwtAdapter gerenciadorTokenJwtAdapter;
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final SecurityContextRepository securityContextRepository;
     private final AutenticacaoServiceAdapter autenticacaoService;
@@ -39,7 +39,7 @@ public class AutenticacaoSucessHandler implements AuthenticationSuccessHandler {
     public AutenticacaoSucessHandler(
             CadastrarUsuarioPrimeiraFaseUseCase cadastrarUsuario,
             BuscarUsuarioPorEmailUseCase buscarUsuarioPorEmail,
-            GerenciadorTokenJwtAdapter gerenciadorTokenJwtAdapter,
+            TokenJwtAdapter gerenciadorTokenJwtAdapter,
             OAuth2AuthorizedClientService authorizedClientService,
             SecurityContextRepository securityContextRepository,
             AutenticacaoServiceAdapter autenticacaoService) {
@@ -56,6 +56,7 @@ public class AutenticacaoSucessHandler implements AuthenticationSuccessHandler {
 
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         OAuth2User usuarioOauth = oauthToken.getPrincipal();
+        System.out.println(usuarioOauth.getAttributes());
 
         String email = usuarioOauth.getAttribute("email");
         Boolean emailVerificado = usuarioOauth.getAttribute("email_verified");
@@ -64,8 +65,17 @@ public class AutenticacaoSucessHandler implements AuthenticationSuccessHandler {
             throw new ServletException("Email não verificado pelo provedor OAuth2.");
         }
 
+        String nome = usuarioOauth.getAttribute("name");
+        String sobrenome = usuarioOauth.getAttribute("family_name");
+
+        // Se sobrenome for null, usa a primeira letra do nome
+        if (sobrenome == null || sobrenome.trim().isEmpty()) {
+            sobrenome = nome != null && !nome.isEmpty() ? String.valueOf(nome.charAt(0)) : "N";
+        }
+
         UsuarioInputPrimeiraFase usuarioInput = new UsuarioInputPrimeiraFase();
-        usuarioInput.setNome(usuarioOauth.getAttribute("name"));
+        usuarioInput.setNome(nome);
+        usuarioInput.setSobrenome(sobrenome);
         usuarioInput.setEmail(email);
         usuarioInput.setSenha("usuario_oauth2_temporario");
 

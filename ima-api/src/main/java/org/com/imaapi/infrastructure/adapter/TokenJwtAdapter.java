@@ -5,21 +5,19 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.impl.lang.Function;
 import io.jsonwebtoken.security.Keys;
-import org.com.imaapi.domain.gateway.TokenProvider;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.com.imaapi.domain.gateway.JwtTokenProvider;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
-public class GerenciadorTokenJwtAdapter implements TokenProvider {
+public class TokenJwtAdapter implements JwtTokenProvider {
 
     private final String secret;
     private final long jwtTokenValidity;
 
-    public GerenciadorTokenJwtAdapter(String secret, long jwtTokenValidity) {
+    public TokenJwtAdapter(String secret, long jwtTokenValidity) {
         this.secret = secret;
         this.jwtTokenValidity = jwtTokenValidity;
     }

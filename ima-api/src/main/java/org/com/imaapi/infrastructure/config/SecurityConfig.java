@@ -4,7 +4,7 @@ import org.com.imaapi.application.useCase.usuario.BuscarUsuarioPorEmailUseCase;
 import org.com.imaapi.application.useCase.usuario.CadastrarUsuarioPrimeiraFaseUseCase;
 import org.com.imaapi.domain.gateway.PasswordEncoderGateway;
 import org.com.imaapi.infrastructure.adapter.AutenticacaoServiceAdapter;
-import org.com.imaapi.infrastructure.adapter.GerenciadorTokenJwtAdapter;
+import org.com.imaapi.infrastructure.adapter.TokenJwtAdapter;
 import org.com.imaapi.infrastructure.adapter.PasswordEncoderAdapter;
 import org.com.imaapi.infrastructure.config.autenticacao.*;
 import org.com.imaapi.infrastructure.config.autenticacao.handler.AutenticacaoSucessHandler;
@@ -54,6 +54,7 @@ public class SecurityConfig {
             "/usuarios/segunda-fase/**",
             "/usuarios/login",
             "/usuarios/login/**",
+            "/oauth2/**",
             "/uploads/**"
     };
 
@@ -157,8 +158,8 @@ public class SecurityConfig {
     private long jwtTokenValidity;
 
     @Bean
-    public GerenciadorTokenJwtAdapter jwtAuthenticationUtilBean() {
-        return new GerenciadorTokenJwtAdapter(secret, jwtTokenValidity);
+    public TokenJwtAdapter jwtAuthenticationUtilBean() {
+        return new TokenJwtAdapter(secret, jwtTokenValidity);
     }
 
     @Bean
@@ -175,7 +176,7 @@ public class SecurityConfig {
     public AutenticacaoSucessHandler autenticacaoSucessHandler(
             CadastrarUsuarioPrimeiraFaseUseCase cadastrarUsuario,
             BuscarUsuarioPorEmailUseCase buscarUsuarioPorEmail,
-            GerenciadorTokenJwtAdapter gerenciadorTokenJwtAdapter,
+            TokenJwtAdapter gerenciadorTokenJwtAdapter,
             OAuth2AuthorizedClientService authorizedClientService,
             SecurityContextRepository securityContextRepository,
             AutenticacaoServiceAdapter autenticacaoService) {

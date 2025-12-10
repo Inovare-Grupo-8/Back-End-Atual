@@ -7,7 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.com.imaapi.infrastructure.adapter.AutenticacaoServiceAdapter;
-import org.com.imaapi.infrastructure.adapter.GerenciadorTokenJwtAdapter;
+import org.com.imaapi.infrastructure.adapter.TokenJwtAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,9 +24,9 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
 
     private final AutenticacaoServiceAdapter autenticacaoServiceAdapter;
 
-    private final GerenciadorTokenJwtAdapter jwtTokenManager;
+    private final TokenJwtAdapter jwtTokenManager;
 
-    public AutenticacaoFilter(AutenticacaoServiceAdapter autenticacaoServiceAdapter, GerenciadorTokenJwtAdapter tokenManager) {
+    public AutenticacaoFilter(AutenticacaoServiceAdapter autenticacaoServiceAdapter, TokenJwtAdapter tokenManager) {
         this.autenticacaoServiceAdapter = autenticacaoServiceAdapter;
         this.jwtTokenManager = tokenManager;
     }
