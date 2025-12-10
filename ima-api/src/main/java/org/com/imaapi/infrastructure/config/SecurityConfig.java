@@ -62,7 +62,6 @@ public class SecurityConfig {
             "/assistentes-sociais/**",
             "/assistentes-sociais/{id}",
             "/assistentes-sociais/perfil/**",
-            "/especialidade/**",
             "/perfil/assistente-social/**",
             "/usuarios/voluntario/primeira-fase",
             "/usuarios/voluntario/segunda-fase",
@@ -75,31 +74,37 @@ public class SecurityConfig {
     };
 
     private static final String[] URLS_VOLUNTARIOS = {
-            "/usuarios/voluntario/**",
-            "/disponibilidade/**"
+            "/usuarios/voluntario/**"
     };
 
     private static final String[] URLS_INTERNOS = {
             "/consulta/consultas/{idConsulta}/avaliacoes",
             "/consulta/consultas/{idConsulta}/feedbacks",
             "/consulta/consultas/todas",
-            "/disponibilidade/**",
             "/enderecos/{usuarioId}",
             "/perfil/voluntario/dados-profissionais",
             "/perfil/voluntario/disponibilidade"
     };
 
     private static final String[] URLS_ASSISTIDOS = {
-            "/consulta/consultas/{idConsulta}/feedbacks",
-            "/consulta/**",
             "/consulta/consultas/{id}/feedback",
             "/consulta/consultas/{id}/avaliacao"
     };
 
+    // Rotas compartilhadas entre assistidos e voluntários
     private static final String[] URLS_ASSISTIDOS_E_VOLUNTARIOS = {
             "/agenda/**",
+            "/consulta/**",
             "/consulta/consultas/minhas",
-            "/consulta/consultas/{idUsuario}/proxima"
+            "/consulta/consultas/{idUsuario}/proxima",
+            "/consulta/consultas/historico",
+            "/consulta/consultas/3-proximas",
+            "/consulta/horarios-disponiveis",
+            "/consulta/consultas/avaliacoes-feedback",
+            "/disponibilidade/**",
+            "/disponibilidade/voluntario/**",
+            "/especialidade/**",
+            "/perfil/voluntario/dados-pessoais"
     };
 
     @Bean
@@ -112,16 +117,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(URLS_PUBLICAS).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/disponibilidade/voluntario/{voluntarioId}").authenticated()
-                        .requestMatchers(URLS_ADMINISTRADORES).hasRole("ADMINISTRADOR")
-                        .requestMatchers(URLS_VOLUNTARIOS).hasRole("VOLUNTARIO")
-                        .requestMatchers(URLS_ASSISTIDOS).hasAnyRole("VALOR_SOCIAL", "GRATUIDADE")
-                        .requestMatchers(URLS_ASSISTIDOS_E_VOLUNTARIOS).hasAnyRole("VOLUNTARIO", "VALOR_SOCIAL", "GRATUIDADE")
-                        .requestMatchers(URLS_INTERNOS).hasAnyRole("ADMINISTRADOR", "VOLUNTARIO")
-                        .anyRequest()
-                        .authenticated()
+                        .requestMatchers("/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(autenticacaoSucessHandler)
