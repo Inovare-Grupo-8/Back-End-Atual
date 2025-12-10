@@ -1,5 +1,6 @@
 package org.com.imaapi.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity(name = "EspecialidadeUsuario") 
 @Table(name = "especialidade")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Especialidade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -31,6 +31,9 @@ public class ConsultaInput {
     @NotNull(message = "Voluntário é obrigatório")
     private Integer idVoluntario;
 
+    @NotNull(message = "Especialista é obrigatório")
+    private Integer idEspecialista; // corresponde a fk_especialista
+    private Object IdVoluntario;
 
     public ConsultaInput() {}
 
@@ -109,5 +112,13 @@ public class ConsultaInput {
 
     public void setIdVoluntario(Integer idVoluntario) {
         this.idVoluntario = idVoluntario;
+    }
+
+    public Integer getIdEspecialista() {
+        return idEspecialista;
+    }
+
+    public void setIdEspecialista(Integer idEspecialista) {
+        this.idEspecialista = idEspecialista;
     }
 }

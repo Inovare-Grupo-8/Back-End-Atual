@@ -17,6 +17,14 @@ public class ConsultaSimpleOutput {
     private String avaliacaoStatus;
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
+    private Integer assistidoId;
+    private String assistidoNome;
+    private String assistidoEmail;
+    private Integer voluntarioId;
+    private String voluntarioNome;
+    private String voluntarioEmail;
+    private Integer especialidadeId;
+    private String especialidadeNome;
 
     // Construtor padrão
     public ConsultaSimpleOutput() {}
@@ -25,7 +33,10 @@ public class ConsultaSimpleOutput {
     public ConsultaSimpleOutput(Integer idConsulta, LocalDateTime horario, String status, 
                                String modalidade, String local, String observacoes,
                                String feedbackStatus, String avaliacaoStatus,
-                               LocalDateTime criadoEm, LocalDateTime atualizadoEm) {
+                               LocalDateTime criadoEm, LocalDateTime atualizadoEm,
+                               Integer assistidoId, String assistidoNome, String assistidoEmail,
+                               Integer voluntarioId, String voluntarioNome, String voluntarioEmail,
+                               Integer especialidadeId, String especialidadeNome) {
         this.idConsulta = idConsulta;
         this.horario = horario;
         this.status = status;
@@ -36,6 +47,14 @@ public class ConsultaSimpleOutput {
         this.avaliacaoStatus = avaliacaoStatus;
         this.criadoEm = criadoEm;
         this.atualizadoEm = atualizadoEm;
+        this.assistidoId = assistidoId;
+        this.assistidoNome = assistidoNome;
+        this.assistidoEmail = assistidoEmail;
+        this.voluntarioId = voluntarioId;
+        this.voluntarioNome = voluntarioNome;
+        this.voluntarioEmail = voluntarioEmail;
+        this.especialidadeId = especialidadeId;
+        this.especialidadeNome = especialidadeNome;
     }
 
     // Getters e Setters
@@ -117,5 +136,69 @@ public class ConsultaSimpleOutput {
 
     public void setAtualizadoEm(LocalDateTime atualizadoEm) {
         this.atualizadoEm = atualizadoEm;
+    }
+
+    public Integer getAssistidoId() {
+        return assistidoId;
+    }
+
+    public void setAssistidoId(Integer assistidoId) {
+        this.assistidoId = assistidoId;
+    }
+
+    public String getAssistidoNome() {
+        return assistidoNome;
+    }
+
+    public void setAssistidoNome(String assistidoNome) {
+        this.assistidoNome = assistidoNome;
+    }
+
+    public String getAssistidoEmail() {
+        return assistidoEmail;
+    }
+
+    public void setAssistidoEmail(String assistidoEmail) {
+        this.assistidoEmail = assistidoEmail;
+    }
+
+    public Integer getVoluntarioId() {
+        return voluntarioId;
+    }
+
+    public void setVoluntarioId(Integer voluntarioId) {
+        this.voluntarioId = voluntarioId;
+    }
+
+    public String getVoluntarioNome() {
+        return voluntarioNome;
+    }
+
+    public void setVoluntarioNome(String voluntarioNome) {
+        this.voluntarioNome = voluntarioNome;
+    }
+
+    public String getVoluntarioEmail() {
+        return voluntarioEmail;
+    }
+
+    public void setVoluntarioEmail(String voluntarioEmail) {
+        this.voluntarioEmail = voluntarioEmail;
+    }
+
+    public Integer getEspecialidadeId() {
+        return especialidadeId;
+    }
+
+    public void setEspecialidadeId(Integer especialidadeId) {
+        this.especialidadeId = especialidadeId;
+    }
+
+    public String getEspecialidadeNome() {
+        return especialidadeNome;
+    }
+
+    public void setEspecialidadeNome(String especialidadeNome) {
+        this.especialidadeNome = especialidadeNome;
     }
 }

@@ -1,5 +1,6 @@
 package org.com.imaapi.application.dto.usuario.output;
 
+import org.com.imaapi.domain.model.Ficha;
 import org.com.imaapi.domain.model.enums.Funcao;
 import org.com.imaapi.domain.model.enums.TipoUsuario;
 

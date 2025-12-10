@@ -49,6 +49,9 @@ public class ConsultaController {
     private BuscarProximasConsultasUseCase buscarProximasConsultasUseCase;
 
     @Autowired
+    private BuscarProximaConsultaUsuarioUseCase buscarProximaConsultaUsuarioUseCase;
+
+    @Autowired
     private BuscarTodasConsultasUseCase buscarTodasConsultasUseCase;
 
     @Autowired
@@ -120,30 +123,42 @@ public class ConsultaController {
 
     @GetMapping("/consultas/historico")
     public ResponseEntity<Map<String, Object>> listarHistoricoConsultas(
-            @RequestParam(required = false) Integer userId,
+            @RequestParam Integer userId,
             @RequestParam(required = false) String user) {
-        
-        // Se userId não foi fornecido, tenta usar um valor padrão baseado no parâmetro user
-        Integer userIdFinal = userId;
-        if (userIdFinal == null && user != null && !user.trim().isEmpty()) {
-            // Se passou um email ou string, usa ID padrão 1 para teste
-            userIdFinal = 1;
-            logger.info("Parâmetro 'user' fornecido: '{}', usando userId padrão: {}", user, userIdFinal);
+
+        if (userId == null || userId <= 0) {
+            logger.warn("Parâmetro userId inválido para histórico de consultas: {}", userId);
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Parâmetro userId é obrigatório e deve ser maior que zero"
+            ));
         }
-        
-        logger.info("Listando histórico de consultas para usuário ID: {}", userIdFinal);
-        List<ConsultaSimpleOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userIdFinal);
-        logger.info("Total de consultas no histórico: {}", historico.size());
-        
-        // Response mais informativo
-        Map<String, Object> response = Map.of(
-            "consultas", historico,
-            "total", historico.size(),
-            "userId", userIdFinal,
-            "tipo", "historico"
-        );
-        
-        return ResponseEntity.ok(response);
+
+        String perfilNormalizado = (user != null && !user.trim().isEmpty())
+                ? user.trim().toLowerCase()
+                : "assistido";
+
+        logger.info("Listando histórico de consultas para usuário ID: {} com perfil: {}", userId, perfilNormalizado);
+
+        try {
+            List<ConsultaOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userId, perfilNormalizado);
+
+            logger.info("Total de consultas no histórico: {}", historico.size());
+
+            Map<String, Object> response = Map.of(
+                    "consultas", historico,
+                    "total", historico.size(),
+                    "userId", userId,
+                    "userType", perfilNormalizado,
+                    "tipo", "historico"
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Falha ao listar histórico: {}", ex.getMessage());
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", ex.getMessage()
+            ));
+        }
     }
 
     @GetMapping("/consultas/3-proximas")
@@ -163,6 +178,26 @@ public class ConsultaController {
             return ResponseEntity.ok(List.of());
         }
     }
+
+    @GetMapping("/consultas/{idUsuario}/proxima")
+    public ResponseEntity<ConsultaOutput> getProximaConsultaUsuario(@PathVariable Integer idUsuario) {
+        logger.info("Buscando próxima consulta para usuário ID: {}", idUsuario);
+        try {
+            ConsultaOutput proximaConsulta = buscarProximaConsultaUsuarioUseCase.buscarProximaConsulta(idUsuario);
+            if (proximaConsulta != null) {
+                logger.info("Próxima consulta encontrada para usuário ID: {}", idUsuario);
+                return ResponseEntity.ok(proximaConsulta);
+            } else {
+                logger.info("Nenhuma próxima consulta encontrada para usuário ID: {}", idUsuario);
+                return ResponseEntity.noContent().build();
+            }
+        } catch (RuntimeException ex) {
+            logger.error("Erro ao buscar próxima consulta para usuário ID {}: {}", idUsuario, ex.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
 
     @GetMapping("/consultas/todas")
     public ResponseEntity<List<ConsultaOutput>> getTodasConsultas() {
