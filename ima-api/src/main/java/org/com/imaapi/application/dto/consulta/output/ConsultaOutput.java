@@ -1,10 +1,13 @@
 package org.com.imaapi.application.dto.consulta.output;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.com.imaapi.domain.model.Especialidade;
 import org.com.imaapi.domain.model.Usuario;
 
 import java.time.LocalDateTime;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConsultaOutput {
     private Integer idConsulta;
     private LocalDateTime horario;

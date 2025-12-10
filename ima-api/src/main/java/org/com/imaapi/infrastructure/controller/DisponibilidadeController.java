@@ -9,6 +9,9 @@ import org.com.imaapi.application.useCase.disponibilidade.CriarDisponibilidadeUs
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import org.com.imaapi.application.useCase.disponibilidade.ListarDisponibilidadesUseCase;
+import org.com.imaapi.application.useCase.disponibilidade.DeletarDisponibilidadeUseCase;
 
 @RestController
 @RequestMapping("/disponibilidade")
@@ -17,6 +20,8 @@ public class DisponibilidadeController {
     
     private final CriarDisponibilidadeUseCase criarDisponibilidadeUseCase;
     private final AtualizarDisponibilidadeUseCase atualizarDisponibilidadeUseCase;
+    private final ListarDisponibilidadesUseCase listarDisponibilidadesUseCase;
+    private final DeletarDisponibilidadeUseCase deletarDisponibilidadeUseCase;
     
     @PostMapping
     @Operation(summary = "Criar uma nova disponibilidade")
@@ -32,5 +37,26 @@ public class DisponibilidadeController {
             @RequestBody DisponibilidadeInput disponibilidadeInput) {
         DisponibilidadeOutput disponibilidade = atualizarDisponibilidadeUseCase.atualizarDisponibilidade(id, disponibilidadeInput);
         return ResponseEntity.ok(disponibilidade);
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar todas as disponibilidades")
+    public ResponseEntity<List<DisponibilidadeOutput>> listarTodas() {
+        List<DisponibilidadeOutput> lista = listarDisponibilidadesUseCase.listarDisponibilidades();
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/voluntario/{voluntarioId}")
+    @Operation(summary = "Listar disponibilidades por voluntário")
+    public ResponseEntity<List<DisponibilidadeOutput>> listarPorVoluntario(@PathVariable Integer voluntarioId) {
+        List<DisponibilidadeOutput> lista = listarDisponibilidadesUseCase.listarDisponibilidadesPorVoluntario(voluntarioId);
+        return ResponseEntity.ok(lista);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar disponibilidade por ID")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        deletarDisponibilidadeUseCase.deletarDisponibilidade(id);
+        return ResponseEntity.ok().build();
     }
 }

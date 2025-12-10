@@ -5,7 +5,8 @@ public enum TipoUsuario {
     VOLUNTARIO("voluntario"),
     VALOR_SOCIAL("valor social"),
     NAO_CLASSIFICADO("não classificado"),
-    GRATUIDADE("gratuidade");
+    GRATUIDADE("gratuidade"),
+    ASSISTIDO("assistido");
 
     private final String value;
 

@@ -3,13 +3,15 @@ package org.com.imaapi.application.useCaseImpl.consulta;
 import org.com.imaapi.application.useCase.consulta.CancelarConsultaUseCase;
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.domain.model.Consulta;
-import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.model.enums.StatusConsulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class CancelarConsultaUseCaseImpl implements CancelarConsultaUseCase {
@@ -49,37 +51,17 @@ public class CancelarConsultaUseCaseImpl implements CancelarConsultaUseCase {
                 throw new IllegalStateException("Não é possível cancelar consulta já realizada");
             }
 
-            // Verificar se o usuário logado tem permissão para cancelar esta consulta
-            Usuario usuarioLogado = consultaUtil.getUsuarioLogado();
-            if (usuarioLogado == null) {
-                logger.error("Usuário não autenticado");
-                throw new RuntimeException("Usuário não autenticado");
-            }
-
-            boolean podeCancel = false;
-            if (consulta.getAssistido() != null && 
-                usuarioLogado.getIdUsuario().equals(consulta.getAssistido().getIdUsuario())) {
-                podeCancel = true;
-            } else if (consulta.getVoluntario() != null && 
-                       usuarioLogado.getIdUsuario().equals(consulta.getVoluntario().getIdUsuario())) {
-                podeCancel = true;
-            }
-
-            if (!podeCancel) {
-                logger.error("Usuário {} não tem permissão para cancelar a consulta {}", 
-                           usuarioLogado.getIdUsuario(), consultaId);
-                throw new RuntimeException("Usuário não tem permissão para cancelar esta consulta");
-            }
-
             // Atualizar o status da consulta para CANCELADA
+            logger.info("Cancelando consulta ID: {}", consultaId);
             consulta.setStatus(StatusConsulta.CANCELADA);
 
             // Salvar a consulta atualizada
             Consulta consultaCancelada = consultaRepository.save(consulta);
             logger.info("Consulta cancelada com sucesso. ID: {}", consultaId);
 
-            // Retornar o output
-            return consultaUtil.mapConsultaToOutput(consultaCancelada);
+            // Retornar o output usando o ConsultaUtil
+            List<ConsultaOutput> outputs = consultaUtil.mapConsultasToOutput(Collections.singletonList(consultaCancelada));
+            return outputs.isEmpty() ? null : outputs.get(0);
 
         } catch (Exception e) {
             logger.error("Erro ao cancelar consulta com ID {}: {}", consultaId, e.getMessage());

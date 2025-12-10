@@ -237,5 +237,4 @@ public class CadastrarUsuarioSegundaFaseUseCaseImpl implements CadastrarUsuarioS
         
         return output;
     }
-
 }

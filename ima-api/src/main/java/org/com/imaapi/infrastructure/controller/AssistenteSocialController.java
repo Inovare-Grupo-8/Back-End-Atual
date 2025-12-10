@@ -57,38 +57,38 @@ public class AssistenteSocialController {
     }
 
     @GetMapping("/perfil")
-    public ResponseEntity<AssistenteSocialOutput> getPerfil(@AuthenticationPrincipal UserDetails userDetails) {
-        Integer userId = Integer.parseInt(userDetails.getUsername());
-        LOGGER.info("Buscando perfil do assistente social id: {}", userId);
-        AssistenteSocialOutput output = buscarAssistenteSocialUseCase.executar(userId);
-        LOGGER.info("Perfil do assistente social encontrado id: {}", userId);
+    public ResponseEntity<AssistenteSocialOutput> getPerfil(@RequestParam(required = false) Integer userId) {
+        // Se userId não for fornecido, usa ID padrão 1 para teste
+        Integer userIdFinal = (userId != null) ? userId : 1;
+        LOGGER.info("Buscando perfil do assistente social id: {}", userIdFinal);
+        AssistenteSocialOutput output = buscarAssistenteSocialUseCase.executar(userIdFinal);
+        LOGGER.info("Perfil do assistente social encontrado id: {}", userIdFinal);
         return ResponseEntity.ok(output);
     }
 
     @PutMapping("/perfil")
     public ResponseEntity<AssistenteSocialOutput> atualizarPerfil(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) Integer userId,
             @RequestBody AssistenteSocialInput input) {
-        Integer userId = Integer.parseInt(userDetails.getUsername());
-        LOGGER.info("Atualizando perfil do assistente social id: {}", userId);
-        AssistenteSocialOutput output = atualizarAssistenteSocialUseCase.executar(userId, input);
-        LOGGER.info("Perfil do assistente social atualizado id: {}", userId);
+        // Se userId não for fornecido, usa ID padrão 1 para teste
+        Integer userIdFinal = (userId != null) ? userId : 1;
+        LOGGER.info("Atualizando perfil do assistente social id: {}", userIdFinal);
+        AssistenteSocialOutput output = atualizarAssistenteSocialUseCase.executar(userIdFinal, input);
+        LOGGER.info("Perfil do assistente social atualizado id: {}", userIdFinal);
         return ResponseEntity.ok(output);
     }
 
     @PatchMapping("/perfil/completo")
     public ResponseEntity<AssistenteSocialOutput> atualizarPerfilCompleto(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) Integer userId,
             @RequestBody AssistenteSocialInput input) {
         try {
-            Integer userId = Integer.parseInt(userDetails.getUsername());
-            LOGGER.info("Atualizando perfil completo do assistente social id: {}", userId);
-            AssistenteSocialOutput output = atualizarAssistenteSocialUseCase.executar(userId, input);
-            LOGGER.info("Perfil completo do assistente social atualizado id: {}", userId);
+            // Se userId não for fornecido, usa ID padrão 1 para teste
+            Integer userIdFinal = (userId != null) ? userId : 1;
+            LOGGER.info("Atualizando perfil completo do assistente social id: {}", userIdFinal);
+            AssistenteSocialOutput output = atualizarAssistenteSocialUseCase.executar(userIdFinal, input);
+            LOGGER.info("Perfil completo do assistente social atualizado id: {}", userIdFinal);
             return ResponseEntity.ok(output);
-        } catch (NumberFormatException e) {
-            LOGGER.error("Erro ao converter userId: {}", userDetails.getUsername());
-            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             LOGGER.error("Erro interno ao atualizar perfil completo do assistente social", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

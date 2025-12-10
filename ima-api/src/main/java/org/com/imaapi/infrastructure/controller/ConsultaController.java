@@ -1,10 +1,11 @@
 package org.com.imaapi.infrastructure.controller;
 
-import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
+import org.com.imaapi.application.dto.consulta.input.BuscarConsultasInput;
 import org.com.imaapi.application.dto.consulta.input.ConsultaInput;
 import org.com.imaapi.application.dto.consulta.input.ConsultaRemarcarInput;
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.application.useCase.consulta.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,9 @@ public class ConsultaController {
     private BuscarProximasConsultasUseCase buscarProximasConsultasUseCase;
 
     @Autowired
+    private BuscarProximaConsultaUsuarioUseCase buscarProximaConsultaUsuarioUseCase;
+
+    @Autowired
     private BuscarTodasConsultasUseCase buscarTodasConsultasUseCase;
 
     @Autowired
@@ -63,20 +67,29 @@ public class ConsultaController {
     private AdicionarAvaliacaoConsultaUseCase adicionarAvaliacaoConsultaUseCase;
 
     @PostMapping
-    public ResponseEntity<ConsultaOutput> criarEvento(@RequestBody @Valid ConsultaInput consultaInput) {
+    public ResponseEntity<ConsultaSimpleOutput> criarEvento(@RequestBody @Valid ConsultaInput consultaInput) {
         logger.info("Criando nova consulta");
-        ConsultaOutput output = criarConsultaUseCase.criarConsulta(consultaInput);
+        ConsultaSimpleOutput output = criarConsultaUseCase.criarConsulta(consultaInput);
         logger.info("Consulta criada com sucesso");
         return ResponseEntity.ok(output);
     }
 
     @GetMapping("/consultas/minhas")
-    public ResponseEntity<List<ConsultaOutput>> getMinhasConsultas() {
-        logger.info("Buscando consultas do usuário logado");
-        List<ConsultaOutput> consultas = buscarConsultasUsuarioLogadoUseCase.buscarConsultasDoUsuarioLogado(
-            org.com.imaapi.domain.model.enums.Periodo.ATUAL, 
-            java.time.LocalDate.now()
+    public ResponseEntity<List<ConsultaSimpleOutput>> getMinhasConsultas(
+            @RequestParam(required = false) Integer userId,
+            @RequestParam(defaultValue = "ATUAL") String periodo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataReferencia) {
+        
+        logger.info("Buscando consultas do usuário - userId: {}, periodo: {}", userId, periodo);
+        
+        BuscarConsultasInput input = new BuscarConsultasInput(
+            userId,
+            periodo,
+            dataReferencia != null ? dataReferencia : LocalDate.now()
         );
+        
+        List<ConsultaSimpleOutput> consultas = buscarConsultasUsuarioLogadoUseCase.buscarConsultasDoUsuario(input);
+        
         logger.info("Total de consultas encontradas: {}", consultas.size());
         return ResponseEntity.ok(consultas);
     }
@@ -89,7 +102,7 @@ public class ConsultaController {
                     logger.info("Consulta encontrada para id: {}", id);
                     return ResponseEntity.ok(consulta);
                 })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.<ConsultaOutput>notFound().build());
     }
 
     @PostMapping("/cancelar/{id}")
@@ -101,34 +114,90 @@ public class ConsultaController {
     }
 
     @PatchMapping("/consultas/{id}/remarcar")
-    public ResponseEntity<Void> remarcarConsulta(@PathVariable Integer id, @RequestBody ConsultaRemarcarInput input) {
+    public ResponseEntity<ConsultaOutput> remarcarConsulta(@PathVariable Integer id, @RequestBody ConsultaRemarcarInput input) {
         logger.info("Remarcando consulta id: {}", id);
-        remarcarConsultaUseCase.remarcarConsulta(id, input);
+        ConsultaOutput consulta = remarcarConsultaUseCase.remarcarConsulta(id, input);
         logger.info("Consulta remarcada id: {}", id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(consulta);
     }
 
     @GetMapping("/consultas/historico")
-    public ResponseEntity<List<ConsultaOutput>> listarHistoricoConsultasVoluntario(@RequestParam("user") String user) {
-        logger.info("Listando histórico de consultas para usuário: {}", user);
-        return Optional.ofNullable(buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(user))
-                .map(historico -> {
-                    logger.info("Total de consultas no histórico: {}", historico.size());
-                    return ResponseEntity.ok(historico);
-                })
-                .orElseGet(() -> ResponseEntity.ok(List.of()));
+    public ResponseEntity<Map<String, Object>> listarHistoricoConsultas(
+            @RequestParam Integer userId,
+            @RequestParam(required = false) String user) {
+
+        if (userId == null || userId <= 0) {
+            logger.warn("Parâmetro userId inválido para histórico de consultas: {}", userId);
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Parâmetro userId é obrigatório e deve ser maior que zero"
+            ));
+        }
+
+        String perfilNormalizado = (user != null && !user.trim().isEmpty())
+                ? user.trim().toLowerCase()
+                : "assistido";
+
+        logger.info("Listando histórico de consultas para usuário ID: {} com perfil: {}", userId, perfilNormalizado);
+
+        try {
+            List<ConsultaOutput> historico = buscarHistoricoConsultasUseCase.buscarHistoricoConsultas(userId, perfilNormalizado);
+
+            logger.info("Total de consultas no histórico: {}", historico.size());
+
+            Map<String, Object> response = Map.of(
+                    "consultas", historico,
+                    "total", historico.size(),
+                    "userId", userId,
+                    "userType", perfilNormalizado,
+                    "tipo", "historico"
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Falha ao listar histórico: {}", ex.getMessage());
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", ex.getMessage()
+            ));
+        }
     }
 
     @GetMapping("/consultas/3-proximas")
-    public ResponseEntity<List<ConsultaOutput>> listarProximasConsultas(@RequestParam("user") String user) {
+    public ResponseEntity<List<ConsultaOutput>> listarProximasConsultas(
+            @RequestParam(value = "user", defaultValue = "assistido") String user,
+            @RequestParam(required = false) Integer userId) {
         logger.info("Listando próximas 3 consultas para usuário: {}", user);
-        return Optional.ofNullable(buscarProximasConsultasUseCase.buscarProximasConsultas(user))
-                .map(proximasConsultas -> {
-                    logger.info("Total de próximas consultas encontradas: {}", proximasConsultas.size());
-                    return ResponseEntity.ok(proximasConsultas);
-                })
-                .orElseGet(() -> ResponseEntity.ok(List.of()));
+        try {
+            return Optional.ofNullable(buscarProximasConsultasUseCase.buscarProximasConsultas(user, userId))
+                    .map(proximasConsultas -> {
+                        logger.info("Total de próximas consultas encontradas: {}", proximasConsultas.size());
+                        return ResponseEntity.ok(proximasConsultas);
+                    })
+                    .orElseGet(() -> ResponseEntity.ok(List.of()));
+        } catch (RuntimeException ex) {
+            logger.warn("Falha ao buscar próximas consultas: {}", ex.getMessage());
+            return ResponseEntity.ok(List.of());
+        }
     }
+
+    @GetMapping("/consultas/{idUsuario}/proxima")
+    public ResponseEntity<ConsultaOutput> getProximaConsultaUsuario(@PathVariable Integer idUsuario) {
+        logger.info("Buscando próxima consulta para usuário ID: {}", idUsuario);
+        try {
+            ConsultaOutput proximaConsulta = buscarProximaConsultaUsuarioUseCase.buscarProximaConsulta(idUsuario);
+            if (proximaConsulta != null) {
+                logger.info("Próxima consulta encontrada para usuário ID: {}", idUsuario);
+                return ResponseEntity.ok(proximaConsulta);
+            } else {
+                logger.info("Nenhuma próxima consulta encontrada para usuário ID: {}", idUsuario);
+                return ResponseEntity.noContent().build();
+            }
+        } catch (RuntimeException ex) {
+            logger.error("Erro ao buscar próxima consulta para usuário ID {}: {}", idUsuario, ex.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
 
     @GetMapping("/consultas/todas")
     public ResponseEntity<List<ConsultaOutput>> getTodasConsultas() {
@@ -143,23 +212,35 @@ public class ConsultaController {
 
     @GetMapping("/horarios-disponiveis")
     public ResponseEntity<Map<String, Object>> getHorariosDisponiveis(
-            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate data,
-            @RequestParam Integer idVoluntario) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+            @RequestParam(required = false) Integer idVoluntario,
+            @RequestParam(required = false) Integer userId) {
         org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ConsultaController.class);
-        logger.info("Buscando horários disponíveis para voluntário id: {} na data: {}", idVoluntario, data);
-        List<LocalDateTime> horarios = buscarHorariosDisponiveisUseCase.buscarHorariosDisponiveis(data, idVoluntario);
+        Integer alvoId = idVoluntario != null ? idVoluntario : userId;
+        if (alvoId == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "idVoluntario ou userId é obrigatório"));
+        }
+        logger.info("Buscando horários disponíveis para voluntário id: {} na data: {}", alvoId, data);
+        List<LocalDateTime> horarios = buscarHorariosDisponiveisUseCase.buscarHorariosDisponiveis(data, alvoId);
         logger.info("Total de horários disponíveis encontrados: {}", horarios.size());
-        
-        // Usando Map.of para criar o mapa de forma mais concisa
-        return ResponseEntity.ok(Map.of("horarios", horarios));
+        return ResponseEntity.ok(Map.of(
+                "data", data,
+                "idVoluntario", alvoId,
+                "horarios", horarios
+        ));
     }
 
-    @GetMapping("/consultas/avaliacoes-feedback")
-    public ResponseEntity<Map<String, Object>> getAvaliacoesFeedback(@RequestParam String user) {
+    @GetMapping({"/consultas/avaliacoes-feedback", "/avaliacoes-feedback"})
+    public ResponseEntity<Map<String, Object>> getAvaliacoesFeedback(@RequestParam(value = "user", defaultValue = "assistido") String user) {
         logger.info("Buscando avaliações e feedbacks para usuário: {}", user);
-        Map<String, Object> result = buscarAvaliacoesFeedbackUseCase.buscarAvaliacoesFeedback(user);
-        logger.info("Avaliações e feedbacks retornados para usuário: {}", user);
-        return ResponseEntity.ok(result);
+        try {
+            Map<String, Object> result = buscarAvaliacoesFeedbackUseCase.buscarAvaliacoesFeedback(user);
+            logger.info("Avaliações e feedbacks retornados para usuário: {}", user);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException ex) {
+            logger.warn("Falha ao buscar avaliações/feedback: {}", ex.getMessage());
+            return ResponseEntity.ok(Map.of("feedbacks", List.of(), "avaliacoes", List.of()));
+        }
     }
 
     @PostMapping("/consultas/{id}/feedback")

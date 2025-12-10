@@ -1,8 +1,8 @@
 package org.com.imaapi.application.useCaseImpl.consulta;
 
-import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.application.useCase.consulta.CriarConsultaUseCase;
 import org.com.imaapi.application.dto.consulta.input.ConsultaInput;
+import org.com.imaapi.application.dto.consulta.output.ConsultaSimpleOutput;
 import org.com.imaapi.domain.model.Consulta;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.com.imaapi.domain.repository.UsuarioRepository;
@@ -33,7 +33,7 @@ public class CriarConsultaUseCaseImpl implements CriarConsultaUseCase {
     }
 
     @Override
-    public ConsultaOutput criarConsulta(ConsultaInput input) {
+    public ConsultaSimpleOutput criarConsulta(ConsultaInput input) {
         logger.info("Iniciando criação de consulta");
 
         try {
@@ -63,7 +63,7 @@ public class CriarConsultaUseCaseImpl implements CriarConsultaUseCase {
             Consulta consultaSalva = consultaRepository.save(consulta);
             logger.info("Consulta criada com sucesso: ID = {}", consultaSalva.getIdConsulta());
 
-            return consultaUtil.mapConsultaToOutput(consultaSalva);
+            return consultaUtil.mapConsultaToSimpleOutput(consultaSalva);
 
         } catch (Exception e) {
             logger.error("Erro ao criar consulta: {}", e.getMessage());

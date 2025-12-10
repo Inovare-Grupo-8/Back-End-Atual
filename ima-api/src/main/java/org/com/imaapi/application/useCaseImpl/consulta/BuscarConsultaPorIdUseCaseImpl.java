@@ -3,12 +3,14 @@ package org.com.imaapi.application.useCaseImpl.consulta;
 import org.com.imaapi.application.useCase.consulta.BuscarConsultaPorIdUseCase;
 import org.com.imaapi.application.dto.consulta.output.ConsultaOutput;
 import org.com.imaapi.domain.model.Consulta;
-import org.com.imaapi.domain.model.Usuario;
 import org.com.imaapi.domain.repository.ConsultaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class BuscarConsultaPorIdUseCaseImpl implements BuscarConsultaPorIdUseCase {
@@ -26,37 +28,30 @@ public class BuscarConsultaPorIdUseCaseImpl implements BuscarConsultaPorIdUseCas
         logger.info("Buscando consulta por ID: {}", id);
 
         try {
-            if (id == null) {
-                throw new IllegalArgumentException("ID da consulta é obrigatório");
+            if (id == null || id <= 0) {
+                throw new IllegalArgumentException("ID da consulta deve ser um número positivo");
             }
 
-            Usuario usuarioLogado = consultaUtil.getUsuarioLogado();
-            Integer userId = usuarioLogado.getIdUsuario();
-
-            logger.info("Buscando consulta com ID: {} para usuário: {}", id, userId);
-
+            logger.debug("Executando busca no repositório para ID: {}", id);
+            
             Consulta consulta = consultaRepository.findById(id).orElse(null);
 
             if (consulta == null) {
-                logger.error("Consulta não encontrada com ID: {}", id);
+                logger.warn("Consulta não encontrada com ID: {}", id);
                 return null;
             }
 
-            // Verificar se o usuário logado tem permissão para ver a consulta
-            boolean temPermissao = consulta.getAssistido().getIdUsuario().equals(userId) || 
-                                  consulta.getVoluntario().getIdUsuario().equals(userId);
+            logger.info("Consulta encontrada com ID: {}, convertendo para output", id);
+            
+            // Usar o ConsultaUtil para mapear corretamente
+            List<ConsultaOutput> outputs = consultaUtil.mapConsultasToOutput(Collections.singletonList(consulta));
 
-            if (!temPermissao) {
-                logger.error("Usuário {} não tem permissão para acessar a consulta {}", userId, id);
-                throw new SecurityException("Usuário não tem permissão para acessar esta consulta");
-            }
-
-            logger.info("Consulta encontrada com ID: {} para usuário: {}", id, userId);
-            return consultaUtil.mapConsultaToOutput(consulta);
+            logger.info("Consulta ID: {} convertida com sucesso", id);
+            return outputs.isEmpty() ? null : outputs.get(0);
 
         } catch (Exception e) {
-            logger.error("Erro ao buscar consulta por ID {}: {}", id, e.getMessage());
-            throw new RuntimeException("Erro ao buscar consulta por ID", e);
+            logger.error("Erro ao buscar consulta por ID {}: {}", id, e.getMessage(), e);
+            throw new RuntimeException("Erro ao buscar consulta por ID: " + e.getMessage(), e);
         }
     }
 }
