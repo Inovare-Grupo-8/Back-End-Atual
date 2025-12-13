@@ -197,7 +197,7 @@ public class PerfilController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/assistente-social")
+    @GetMapping("/api/assistente-social")
     public ResponseEntity<AssistenteSocialOutput> buscarPerfilAssistenteSocial(@RequestParam Integer usuarioId) {
         try {
             AssistenteSocialOutput perfil = buscarDadosPessoaisUseCase.buscarAssistenteSocial(usuarioId);

@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/telefones")
+@RequestMapping("/api/telefones")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Tag(name = "Telefones", description = "Operações relacionadas ao gerenciamento de telefones")

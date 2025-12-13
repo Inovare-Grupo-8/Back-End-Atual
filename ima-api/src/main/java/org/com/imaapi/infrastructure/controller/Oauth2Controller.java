@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @Controller
-@RequestMapping("/oauth2")
+@RequestMapping("/api/oauth2")
 public class Oauth2Controller {
 
     private static final Logger logger = LoggerFactory.getLogger(Oauth2Controller.class);

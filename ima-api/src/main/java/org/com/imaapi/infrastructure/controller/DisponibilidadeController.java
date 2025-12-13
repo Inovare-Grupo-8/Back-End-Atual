@@ -14,7 +14,7 @@ import org.com.imaapi.application.useCase.disponibilidade.ListarDisponibilidades
 import org.com.imaapi.application.useCase.disponibilidade.DeletarDisponibilidadeUseCase;
 
 @RestController
-@RequestMapping("/disponibilidade")
+@RequestMapping("/api/disponibilidade")
 @RequiredArgsConstructor
 public class DisponibilidadeController {
     
