@@ -9,6 +9,7 @@ import org.com.imaapi.domain.repository.UsuarioRepository;
 import org.com.imaapi.domain.repository.EspecialidadeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.com.imaapi.application.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,15 +50,15 @@ public class CriarConsultaUseCaseImpl implements CriarConsultaUseCase {
 
             // Buscar entidades pelos IDs com mensagens específicas
             consulta.setEspecialidade(especialidadeRepository.findById(input.getIdEspecialidade())
-                    .orElseThrow(() -> new RuntimeException(
+                    .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Especialidade com ID %d não encontrada", input.getIdEspecialidade()))));
 
             consulta.setAssistido(usuarioRepository.findById(input.getIdAssistido())
-                    .orElseThrow(() -> new RuntimeException(
+                    .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Assistido com ID %d não encontrado", input.getIdAssistido()))));
 
             consulta.setVoluntario(usuarioRepository.findById(input.getIdVoluntario())
-                    .orElseThrow(() -> new RuntimeException(
+                    .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Voluntário com ID %d não encontrado", input.getIdVoluntario()))));
 
             Consulta consultaSalva = consultaRepository.save(consulta);
@@ -67,6 +68,13 @@ public class CriarConsultaUseCaseImpl implements CriarConsultaUseCase {
 
         } catch (Exception e) {
             logger.error("Erro ao criar consulta: {}", e.getMessage());
+            // Preserve specific exceptions so handler can translate them to proper HTTP codes
+            if (e instanceof ResourceNotFoundException) {
+                throw (ResourceNotFoundException) e;
+            }
+            if (e instanceof IllegalArgumentException) {
+                throw (IllegalArgumentException) e;
+            }
             throw new RuntimeException("Erro ao criar consulta", e);
         }
     }
