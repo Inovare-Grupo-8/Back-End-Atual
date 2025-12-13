@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/enderecos")
+@RequestMapping("/enderecos")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Tag(name = "Endereços", description = "Operações relacionadas ao gerenciamento de endereços")

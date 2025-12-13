@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/consultas")
+@RequestMapping("/consultas")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Tag(name = "Avaliações e Feedbacks", description = "Operações relacionadas a avaliações e feedbacks de consultas")

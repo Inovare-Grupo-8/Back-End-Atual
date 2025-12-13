@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/assistentes-sociais")
+@RequestMapping("/assistentes-sociais")
 @RequiredArgsConstructor
 public class AssistenteSocialController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AssistenteSocialController.class);

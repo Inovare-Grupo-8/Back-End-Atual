@@ -27,7 +27,7 @@ import org.com.imaapi.application.dto.usuario.output.VoluntarioListagemOutput;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/usuarios")
 public class UsuarioController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioController.class);
 
