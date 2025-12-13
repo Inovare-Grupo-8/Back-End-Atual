@@ -95,6 +95,11 @@ public class CadastrarUsuarioSegundaFaseUseCaseImpl implements CadastrarUsuarioS
             if (voluntario == null) {
                 voluntario = new Voluntario();
                 voluntario.setUsuario(usuario);
+                // garantir que o identificador seja atribuído antes do persist
+                voluntario.setFkUsuario(usuario.getIdUsuario());
+            } else {
+                // garantir consistência caso exista
+                voluntario.setFkUsuario(usuario.getIdUsuario());
             }
             voluntario.setFuncao(usuarioInputSegundaFase.getFuncao());
             voluntarioRepository.save(voluntario);
