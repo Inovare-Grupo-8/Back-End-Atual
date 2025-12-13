@@ -57,11 +57,19 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             LOGGER.info("[TOKEN EXPIRADO] Usuário: {} - {}", e.getClaims().getSubject(), e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            String body = String.format("{\"error\":\"Token expirado: %s\"}", e.getMessage());
+            response.getWriter().write(body);
+            response.getWriter().flush();
             return;
 
         } catch (Exception e) {
             LOGGER.error("[ERRO TOKEN] Token inválido ou malformado: {}", e.getMessage());
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            String body = String.format("{\"error\":\"Token inválido ou malformado: %s\"}", e.getMessage());
+            response.getWriter().write(body);
+            response.getWriter().flush();
             return;
         }
 
